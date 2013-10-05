@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:columnCount="1" >
+
+    <TextView
+        android:id="@+id/aboutUsText"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_marginLeft="@dimen/left_margin"
+        android:layout_marginTop="@dimen/top_margin"
+        android:layout_row="0"
+        android:text="@string/action_about_us_desc"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/standard_text_size"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+</GridLayout>

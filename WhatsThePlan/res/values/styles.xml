@@ -1,0 +1,30 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <style name="SplashTheme" parent="android:Theme.Light.NoTitleBar.Fullscreen"/>
+      
+    
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+    <color name="button_text">#FFFFFF</color>
+    <color name="red">#FF0000</color>
+    <color name="green">#1D951D</color>
+    <string name="bold_text">bold</string>
+    <color name="blue_button_border">#4476cc</color>
+    <color name="click_button_1">#FA8F2A</color>
+    <color name="click_button_2">#4476cc</color>
+
+</resources>

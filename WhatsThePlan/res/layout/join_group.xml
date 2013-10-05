@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="0"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/welcomeJoinGroupLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_margin"
+            android:typeface="sans"
+            android:textStyle="bold"
+            android:textSize="@dimen/standard_text_size"  
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/joinGroupErrorField"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_less_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:typeface="sans"
+            android:textColor="#FF0000" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <SearchView
+            android:id="@+id/groupSearchView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:typeface="sans"
+            android:textStyle="bold"
+            android:textSize="@dimen/standard_text_size"
+            android:layout_marginTop="@dimen/top_less_margin"
+            android:iconifiedByDefault="false" >
+        </SearchView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="2"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/groupSearchResultsLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_less_margin"
+            android:text="@string/group_search_results_label"
+            android:typeface="sans"
+            android:textStyle="bold"
+            android:textSize="@dimen/standard_text_size" 
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="3"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/groupSearchResultValue"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/top_no_margin"
+            android:typeface="sans"
+            android:textSize="@dimen/standard_text_size" 
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="invisible" />
+
+        <ListView
+            android:id="@+id/joingroupList"
+            android:layout_width="290dp"
+            android:layout_marginTop="@dimen/top_less_margin"
+            android:layout_height="wrap_content"
+            android:divider="#b5b5b5"
+            android:dividerHeight="1dp"
+            android:listSelector="@drawable/list_selector" 
+            android:background="@drawable/gradient_bg"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_row="4"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/joinGroupButton"
+            android:layout_width="290dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/top_less_margin"
+            android:onClick="goFromJoinGroupToViewGroups"
+            android:text="@string/join_group_button_text"
+            android:visibility="invisible" 
+            android:textColor="@color/button_text"
+            android:textSize="@dimen/standard_text_size"
+            android:typeface="sans"
+            android:textStyle="bold"
+            android:background="@drawable/create"/>
+    </LinearLayout>
+
+</GridLayout>

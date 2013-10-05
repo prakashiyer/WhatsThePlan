@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top|center"
+    android:orientation="vertical" >
+    
+    <TextView
+            android:id="@+id/viewGroupMemberListLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_less_margin"
+            android:text="@string/member_list_group_text"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="@dimen/standard_text_size"
+            android:textStyle="bold"
+            android:typeface="sans"/>
+    
+    <ListView
+            android:id="@+id/viewgroupMemberList"
+            android:layout_width="290dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/top_less_margin"
+            android:background="@drawable/gradient_bg"
+            android:divider="#b5b5b5"
+            android:dividerHeight="1dp"/>
+
+</LinearLayout>

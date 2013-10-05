@@ -1,0 +1,48 @@
+package com.theiyer.whatstheplan.entity;
+
+
+public class ExpenseRow {
+
+	private byte[] userImage;
+	private String name;
+	private String emailId;
+	private int value;
+	
+	public ExpenseRow(){
+		
+	}
+
+	public byte[] getUserImage() {
+		return userImage;
+	}
+
+	public void setUserImage(byte[] userImage) {
+		this.userImage = userImage;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getEmailId() {
+		return emailId;
+	}
+
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
+	}
+
+	public int getValue() {
+		return value;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
+	}
+	
+	
+}
