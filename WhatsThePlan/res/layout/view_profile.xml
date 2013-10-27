@@ -40,31 +40,19 @@
         android:layout_gravity="left|top"
         android:layout_row="1"
         android:gravity="center"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
 
-       <ImageView
+        <ImageView
             android:id="@+id/viewProfilePicThumbnail"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="left|top"
-            android:layout_marginTop="@dimen/top_less_margin"
-            android:contentDescription="@string/upload_group_pic_description"
-            android:src="@drawable/ic_launcher" 
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="@dimen/top_margin"
+            android:src="@drawable/ic_launcher"
+            android:layout_gravity="center_horizontal" 
+            android:contentDescription="@string/upload_profile_pic_description"
             android:background="@drawable/image_border"/>
-       <TextView
-            android:id="@+id/viewProfileName"
-            android:layout_width="240dp"
-            android:layout_height="50dp"
-            android:layout_gravity="left|top"
-            android:layout_marginTop="@dimen/top_less_margin"
-            android:typeface="sans"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textSize="@dimen/standard_text_size"     
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:background="@drawable/image_border" />
     </LinearLayout>
-
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -74,8 +62,9 @@
         android:gravity="center"
         android:orientation="vertical" >
 
+      
        <TextView
-            android:id="@+id/viewProfileEmailId"
+            android:id="@+id/viewProfileName"
             android:layout_width="290dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/top_less_margin"
@@ -84,7 +73,7 @@
             android:textSize="@dimen/standard_text_size"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
-    
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,114 +83,18 @@
         android:gravity="center"
         android:orientation="vertical" >
 
-      
-         <CheckBox
-            android:id="@+id/changePasswordCheckBox"
+       <TextView
+            android:id="@+id/viewProfilePhone"
             android:layout_width="290dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_less_margin"
-            android:ems="10"
-            android:onClick="onChangePasswordChecked"
-            android:text="@string/change_password_check_label" 
             android:typeface="sans"
             android:textStyle="bold"
-            android:textSize="@dimen/standard_text_size"/>
-
-
-    </LinearLayout>  
-    
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_gravity="left|top"
-        android:layout_row="4"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <EditText
-            android:id="@+id/changePasswordOldValue"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_no_margin"
-            android:ems="10"
-            android:hint="@string/old_password_label"
-            android:inputType="textPassword"
-            android:typeface="sans"
             android:textSize="@dimen/standard_text_size"
-            android:visibility="invisible" />
-
-    </LinearLayout>     
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_gravity="left|top"
-        android:layout_row="5"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-       <EditText
-            android:id="@+id/changePasswordNewValue"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_no_margin"
-            android:ems="10"
-            android:visibility="invisible"
-            android:hint="@string/new_password_label"
-            android:typeface="sans"
-            android:textSize="@dimen/standard_text_size"
-            android:inputType="textPassword" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
     
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_gravity="left|top"
-        android:layout_row="6"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-       <EditText
-            android:id="@+id/retypePasswordNewValue"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_no_margin"
-            android:ems="10"
-            android:visibility="invisible"
-            android:hint="@string/retype_new_password_label"
-            android:typeface="sans"
-            android:textSize="@dimen/standard_text_size"
-            android:inputType="textPassword" />
-    </LinearLayout>
-    
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_gravity="center_horizontal|top"
-        android:layout_row="7"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <Button
-            android:id="@+id/changePasswordButton"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            android:layout_marginTop="@dimen/top_less_margin"
-            android:onClick="changePassword"
-            android:text="@string/change_password_button" 
-            android:textColor="@color/button_text"
-            android:textSize="@dimen/standard_text_size"
-            android:typeface="sans"
-            android:textStyle="bold"
-            android:background="@drawable/create"/>
-
-    </LinearLayout>
+   
     
 
 </GridLayout>

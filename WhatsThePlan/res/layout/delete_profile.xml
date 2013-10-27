@@ -64,7 +64,7 @@
         android:orientation="vertical" >
 
        <TextView
-            android:id="@+id/deleteProfileEmailId"
+            android:id="@+id/deleteProfilePhone"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/left_margin"
@@ -84,45 +84,24 @@
         android:gravity="center"
         android:orientation="vertical" >
 
-      
-         <CheckBox
-            android:id="@+id/deleteCheckBox"
-            android:layout_width="290dp"
+         <TextView
+            android:id="@+id/deleteProfileLabel"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_less_margin"
-            android:ems="10"
-            android:onClick="onDeleteProfileChecked"
             android:typeface="sans"
             android:textStyle="bold"
             android:textSize="@dimen/standard_text_size"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/delete_profile_check_label" />
+      
+        
 
 
     </LinearLayout>  
     
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_gravity="left|top"
-        android:layout_row="4"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <EditText
-            android:id="@+id/deleteProfilePasswordValue"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_no_margin"
-            android:ems="10"
-            android:hint="@string/old_password_label"
-            android:typeface="sans"
-            android:textSize="@dimen/standard_text_size"
-            android:inputType="textPassword"
-            android:visibility="invisible" />
-
-    </LinearLayout>     
+   
 
     
     <LinearLayout
@@ -138,7 +117,6 @@
             android:id="@+id/deleteProfileButton"
             android:layout_width="290dp"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_less_margin"
             android:onClick="deleteProfile"

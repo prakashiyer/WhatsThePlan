@@ -22,7 +22,7 @@
     <string name="user_email_id_label">Email Id (eg. justmeet@gmail.com)</string>
     <string name="user_details_label">User Information:</string>
     <string name="user_name_label">Name (eg. Prakash Iyer)</string>
-    <string name="user_phone_label">Mobile Number (eg. 9000000001)</string>
+    <string name="user_phone_label">10-digit Mobile Number</string>
     <string name="password_label">Password</string>
     <string name="retype_password_label">Re-type Password</string>
     <string name="create_group_button_text">Create a Group</string>
@@ -63,7 +63,7 @@
     <string name="plans_list_label_text">Upcoming Plans:</string>
     <string name="history_label_text">Plan History:</string>
     <string name="welcome_New_User_SignUp_Value">Welcome, You can start here!</string>
-    <string name="welcome_Code">We have sent you a secret code, type it here</string>
+    <string name="welcome_Code">We have sent you a secret code, type it here and click Register</string>
     <string name="expense_welcome">Expense Report</string>
     <string name="add_expense_text">Add/Edit the amount spent!</string>
     <string name="view_expense_text">Amount spent:</string>
@@ -87,7 +87,8 @@
     <string name="change_password_button">Submit New Password</string>
     <string name="leave_group_button">Exit this Group</string>
     <string name="change_password_check_label">Change Password</string>
-    <string name="delete_profile_check_label">Delete Account</string>
+    <string name="enter_code_check">I am sane and the number is correct.</string>
+    <string name="delete_profile_check_label">Your account will be deleted and all the existing records too</string>
     <string name="delete_profile_button">Delete Account</string>
     <string name="upload_profile_pic_description">Upload Profile pic</string>
     <string name="upload_group_pic_description">Group Profile pic</string>
