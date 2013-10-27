@@ -48,7 +48,7 @@ public class ImageRestWebServiceClient extends AsyncTask<String, Integer, byte[]
 	protected byte[] doInBackground(String... params) {
 		
 		String method = params[0];
-		String path = "/WhatsThePlan/operation/"+method;
+		String path = WTPConstants.SERVICE_PATH+"/"+method;
 
 		//HttpHost target = new HttpHost(TARGET_HOST);
 		HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
@@ -59,7 +59,7 @@ public class ImageRestWebServiceClient extends AsyncTask<String, Integer, byte[]
 	        MultipartEntity entity = new MultipartEntity();
 	       
 	        if("uploadUserImage".equals(method)){
-	        	entity.addPart("emailId", new StringBody(params[1]));
+	        	entity.addPart("phone", new StringBody(params[1]));
 	        } else {
 	        	entity.addPart("groupName", new StringBody(params[1]));
 	        }

@@ -32,14 +32,14 @@ public class ViewExpenseActivity extends Activity {
 				Activity.MODE_PRIVATE);
 
 		String userName = prefs.getString("selectedUser", "");
-		String emailId = prefs.getString("selectedEmailId", "");
+		String phone = prefs.getString("selectedPhone", "");
 		String selectedPlan = prefs.getString("selectedPlan", "");
 		String selectedGroup = prefs.getString("selectedGroup", "");
 
 		TextView addLabel = (TextView) findViewById(R.id.viewexpenseLabel);
 		addLabel.setText(userName + "'s Expenses:");
 
-		String searchQuery = "/fetchExpense?emailId=" + emailId + "&planName="
+		String searchQuery = "/fetchExpense?phone=" + phone + "&planName="
 				+ selectedPlan.replace(" ", "%20") + "&groupName="
 				+ selectedGroup.replace(" ", "%20");
 

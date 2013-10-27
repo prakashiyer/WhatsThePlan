@@ -36,13 +36,13 @@ public class RestWebServiceClient extends AsyncTask<String, Integer, String> {
 	@Override
 	protected void onPreExecute() {
 		
-		showProgressDialog();
+	   showProgressDialog();
 
 	}
 
 	@Override
 	protected String doInBackground(String... params) {
-		String path = "/WhatsThePlan/operation"+params[0];
+		String path = WTPConstants.SERVICE_PATH+params[0];
 
 		//HttpHost target = new HttpHost(TARGET_HOST);
 		HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);

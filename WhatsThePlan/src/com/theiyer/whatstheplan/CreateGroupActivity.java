@@ -68,10 +68,10 @@ public class CreateGroupActivity extends Activity {
 		if (groupName != null && !groupName.isEmpty()) {
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
-			String emailId = prefs.getString("emailId", "");
+			String phone = prefs.getString("phone", "");
 
 			String insertQuery = "/addGroup?groupName="
-					+ groupName.replace(" ", "%20") + "&emailId=" + emailId;
+					+ groupName.replace(" ", "%20") + "&phone=" + phone;
 
 			RestWebServiceClient restClient = new RestWebServiceClient(this);
 			try {
@@ -81,8 +81,8 @@ public class CreateGroupActivity extends Activity {
 					XStream xstream = new XStream();
 					xstream.alias("Group", Group.class);
 					
-					xstream.alias("memberEmailIds", String.class);
-					xstream.addImplicitCollection(Group.class, "memberEmailIds","memberEmailIds",String.class);
+					xstream.alias("members", String.class);
+					xstream.addImplicitCollection(Group.class, "members","members",String.class);
 					xstream.alias("planNames", String.class);
 					xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
 					xstream.alias("pendingMembers", String.class);

@@ -19,7 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Plan;
-import com.theiyer.whatstheplan.entity.UserInformation;
+import com.theiyer.whatstheplan.entity.User;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewPlanMembersActivity extends Activity {
@@ -58,30 +58,30 @@ public class ViewPlanMembersActivity extends Activity {
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null && selectedPlan.equals(plan.getName())) {
 
-					List<String> memberEmailIds = plan.getMemberNames();
+					List<String> members = plan.getMemberNames();
 
-					if (memberEmailIds != null && !memberEmailIds.isEmpty()) {
+					if (members != null && !members.isEmpty()) {
 						List<Map<String, byte[]>> membersList = new ArrayList<Map<String, byte[]>>();
-						for(String memberEmailId: memberEmailIds){
-							String userQuery = "/fetchUserInformation?emailId=" + memberEmailId;
+						for(String phone: members){
+							String userQuery = "/fetchUser?phone=" + phone;
 							RestWebServiceClient userRestClient = new RestWebServiceClient(this);
 							String userResp = userRestClient.execute(new String[] { userQuery })
 									.get();
 							
 							if(userResp != null){
 								XStream userXstream = new XStream();
-								userXstream.alias("UserInformation", UserInformation.class);
+								userXstream.alias("UserInformation", User.class);
 								userXstream.alias("groupNames", String.class);
-								userXstream.addImplicitCollection(UserInformation.class, "groupNames","groupNames",String.class);
+								userXstream.addImplicitCollection(User.class, "groupNames","groupNames",String.class);
 								userXstream.alias("pendingGroupNames", String.class);
-								userXstream.addImplicitCollection(UserInformation.class, "pendingGroupNames","pendingGroupNames",String.class);
-								UserInformation user = (UserInformation) userXstream
+								userXstream.addImplicitCollection(User.class, "pendingGroupNames","pendingGroupNames",String.class);
+								User user = (User) userXstream
 										.fromXML(userResp);
 								if(user != null){
 									
 									ImageRetrieveRestWebServiceClient userImageClient = new ImageRetrieveRestWebServiceClient(
 											this);
-									byte[] userImage = userImageClient.execute(new String[] { "fetchUserImage", memberEmailId }).get();
+									byte[] userImage = userImageClient.execute(new String[] { "fetchUserImage", phone }).get();
 									Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
 									memberMap.put(user.getName(), userImage);
 									membersList.add(memberMap);	

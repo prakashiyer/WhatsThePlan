@@ -48,7 +48,7 @@ public class ViewMyGroupActivity extends Activity implements
 				Activity.MODE_PRIVATE);
 
 		String selectedGroup = prefs.getString("selectedGroup", "");
-		String emailId = prefs.getString("emailId", "");
+		String phone = prefs.getString("phone", "");
 
 		TextView selectedGroupValue = (TextView) findViewById(R.id.selectedGroupValue);
 		selectedGroupValue.setText(" " + selectedGroup);
@@ -64,15 +64,15 @@ public class ViewMyGroupActivity extends Activity implements
 				XStream xstream = new XStream();
 				xstream.alias("Group", Group.class);
 				
-				xstream.alias("memberEmailIds", String.class);
-				xstream.addImplicitCollection(Group.class, "memberEmailIds","memberEmailIds",String.class);
+				xstream.alias("members", String.class);
+				xstream.addImplicitCollection(Group.class, "members","members",String.class);
 				xstream.alias("planNames", String.class);
 				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
 				xstream.alias("pendingMembers", String.class);
 				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
 				Group group = (Group) xstream.fromXML(response);
                 if (group != null && selectedGroup.equals(group.getName())) {
-                	if(emailId.equals(group.getAdmin())){
+                	if(phone.equals(group.getAdmin())){
                 		isAdmin = true;
                 	} else {
                 		isAdmin = false;

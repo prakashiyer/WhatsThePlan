@@ -68,8 +68,8 @@ public class ViewMyPlansActivity extends Activity {
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null && selectedPlan.equals(plan.getName())) {
 
-					String emailId = prefs.getString("emailId", "");
-					if (emailId.equals(plan.getCreator())) {
+					String phone = prefs.getString("phone", "");
+					if (phone.equals(plan.getCreator())) {
 						isCreator = true;
 					}
 					TextView planGroupValue = (TextView) findViewById(R.id.viewPlanGroup);
@@ -95,15 +95,15 @@ public class ViewMyPlansActivity extends Activity {
 					TextView planLocationValue = (TextView) findViewById(R.id.viewPlanLocation);
 					planLocationValue.setText(" " + plan.getLocation());
 
-					List<String> memberEmailIds = plan.getMemberNames();
+					List<String> members = plan.getMemberNames();
 
-					if (memberEmailIds != null && !memberEmailIds.isEmpty()) {
+					if (members != null && !members.isEmpty()) {
 
 						Button membersAttending = (Button) findViewById(R.id.seeMembersButton);
-						membersAttending.setText("Members Attending ("+String.valueOf(memberEmailIds.size())+") >>");
+						membersAttending.setText("Members Attending ("+String.valueOf(members.size())+") >>");
 						TextView rsvpLabel = (TextView) findViewById(R.id.rsvpLabel);
 						Button rsvpPlanButton = (Button) findViewById(R.id.rsvpPlanButton);
-						if (memberEmailIds.contains(emailId)) {
+						if (members.contains(phone)) {
 							rsvpLabel.setText("You are going, Click here to");
 							rsvpPlanButton.setText("Say No");
 						} else {
@@ -142,7 +142,7 @@ public class ViewMyPlansActivity extends Activity {
 				R.color.click_button_2));
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
-		String emailId = prefs.getString("emailId", "");
+		String phone = prefs.getString("phone", "");
 		String selectedPlan = prefs.getString("selectedPlan", "");
 		String rsvp = "no";
 
@@ -151,7 +151,7 @@ public class ViewMyPlansActivity extends Activity {
 		}
 
 		String updateQuery = "/rsvpPlan?planName="
-				+ selectedPlan.replace(" ", "%20") + "&emailId=" + emailId
+				+ selectedPlan.replace(" ", "%20") + "&phone=" + phone
 				+ "&rsvp=" + rsvp;
 
 		TextView errorFieldValue = (TextView) findViewById(R.id.viewPlanErrorField);
@@ -167,14 +167,14 @@ public class ViewMyPlansActivity extends Activity {
 				xstream.addImplicitCollection(Plan.class, "memberNames");
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null && selectedPlan.equals(plan.getName())) {
-					List<String> memberEmailIds = plan.getMemberNames();
+					List<String> members = plan.getMemberNames();
 
-					if (memberEmailIds != null && !memberEmailIds.isEmpty()) {
+					if (members != null && !members.isEmpty()) {
 
 						Button membersAttending = (Button) findViewById(R.id.seeMembersButton);
-						membersAttending.setText("Members Attending ("+String.valueOf(memberEmailIds.size())+") >>");
+						membersAttending.setText("Members Attending ("+String.valueOf(members.size())+") >>");
 						TextView rsvpLabel = (TextView) findViewById(R.id.rsvpLabel);
-						if (memberEmailIds.contains(emailId)) {
+						if (members.contains(phone)) {
 							rsvpLabel.setText("You are going, Click here to");
 							rsvpPlanButton.setText("Say No");
 						} else {

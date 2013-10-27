@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutionException;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -26,6 +27,11 @@ public class ProfileImageUploadActivity extends Activity {
 	private ImageView imgView;
 	private String filePath;
 
+	public static final String PROPERTY_REG_ID = "registration_id";
+
+	SharedPreferences prefs;
+	Context context;
+	String regid;
 	private Bitmap bitmap;
 
 	/** Called when the activity is first created. */
@@ -38,17 +44,20 @@ public class ProfileImageUploadActivity extends Activity {
 		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 		aBar.setBackgroundDrawable(actionBckGrnd);
 		aBar.setTitle(" Profile Photo Selection");
+		SharedPreferences prefs = getSharedPreferences("Prefs",
+				Activity.MODE_PRIVATE);
+		String phone = prefs.getString("phone", "");
+		context = getApplicationContext();
+		
 
 		imgView = (ImageView) findViewById(R.id.profilePicView);
 		
         ImageRetrieveRestWebServiceClient imageRetrieveClient = new ImageRetrieveRestWebServiceClient(this);
 		
 		try {
-			SharedPreferences prefs = getSharedPreferences("Prefs",
-					Activity.MODE_PRIVATE);
-			String emailId = prefs.getString("emailId", "");
+			
 			byte[] response = imageRetrieveClient.execute(
-					new String[] { "fetchUserImage", emailId}).get();
+					new String[] { "fetchUserImage", phone}).get();
 			if (response != null) {
 				Bitmap img = BitmapFactory.decodeByteArray(response, 0,
 						response.length);
@@ -81,13 +90,13 @@ public class ProfileImageUploadActivity extends Activity {
 			try {
 				SharedPreferences prefs = getSharedPreferences("Prefs",
 						Activity.MODE_PRIVATE);
-				String emailId = prefs.getString("emailId", "");
+				String phone = prefs.getString("phone", "");
 				
 				ImageRestWebServiceClient restClient = new ImageRestWebServiceClient(
 						this);
 
 				byte[] response = restClient.execute(
-						new String[] { "uploadUserImage", emailId, filePath }).get();
+						new String[] { "uploadUserImage", phone, filePath }).get();
 				if (response != null) {
 					Bitmap img = BitmapFactory.decodeByteArray(response, 0,
 							response.length);

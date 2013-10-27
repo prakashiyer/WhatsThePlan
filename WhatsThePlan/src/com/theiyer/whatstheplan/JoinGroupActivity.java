@@ -75,8 +75,8 @@ public class JoinGroupActivity extends Activity {
 					XStream xstream = new XStream();
 					xstream.alias("Group", Group.class);
 					
-					xstream.alias("memberEmailIds", String.class);
-					xstream.addImplicitCollection(Group.class, "memberEmailIds","memberEmailIds",String.class);
+					xstream.alias("members", String.class);
+					xstream.addImplicitCollection(Group.class, "members","members",String.class);
 					xstream.alias("planNames", String.class);
 					xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
 					xstream.alias("pendingMembers", String.class);
@@ -108,10 +108,10 @@ public class JoinGroupActivity extends Activity {
 						TextView groupNameValue = (TextView) findViewById(R.id.groupSearchResultValue);
 						groupNameValue.setText(groupName);
 
-						String emailId = prefs.getString("emailId","");
-						List<String> memberEmailIds = group.getMemberEmailIds();
+						String phone = prefs.getString("phone","");
+						List<String> members = group.getMembers();
 						List<String> pendingMembers = group.getPendingMembers();
-						if(pendingMembers == null || (!pendingMembers.contains(emailId) && !memberEmailIds.contains(emailId))){
+						if(pendingMembers == null || (!pendingMembers.contains(phone) && !members.contains(phone))){
 							Button joinButton = (Button) findViewById(R.id.joinGroupButton);
 							joinButton.setVisibility(Button.VISIBLE);
 						} else {
@@ -150,10 +150,10 @@ public class JoinGroupActivity extends Activity {
 		String groupName = groupNameValue.getText().toString();
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
-		String emailId = prefs.getString("emailId", "");
+		String phone = prefs.getString("phone", "");
 
 		String joinQuery = "/joinGroup?groupName=" + groupName.replace(" ", "%20")
-				+ "&emailId=" + emailId;
+				+ "&phone=" + phone;
 		TextView errorFieldValue = (TextView) findViewById(R.id.joinGroupErrorField);
 		RestWebServiceClient restClient = new RestWebServiceClient(this);
 		try {
@@ -162,8 +162,8 @@ public class JoinGroupActivity extends Activity {
 			XStream xstream = new XStream();
 			xstream.alias("Group", Group.class);
 			
-			xstream.alias("memberEmailIds", String.class);
-			xstream.addImplicitCollection(Group.class, "memberEmailIds","memberEmailIds",String.class);
+			xstream.alias("members", String.class);
+			xstream.addImplicitCollection(Group.class, "members","members",String.class);
 			xstream.alias("planNames", String.class);
 			xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
 			Group group = (Group) xstream.fromXML(response);

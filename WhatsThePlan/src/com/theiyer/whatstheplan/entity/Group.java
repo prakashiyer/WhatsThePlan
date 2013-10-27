@@ -6,7 +6,7 @@ public class Group {
 
 	private int id;
 	private String name;
-	private List<String> memberEmailIds;
+	private List<String> members;
 	private List<String> planNames;
 	private List<String> pendingMembers;
 	private String admin;
@@ -31,12 +31,12 @@ public class Group {
 		this.name = name;
 	}
 
-	public List<String> getMemberEmailIds() {
-		return memberEmailIds;
+	public List<String> getMembers() {
+		return members;
 	}
 
-	public void setMemberEmailIds(List<String> memberEmailIds) {
-		this.memberEmailIds = memberEmailIds;
+	public void setMembers(List<String> members) {
+		this.members = members;
 	}
 
 	public List<String> getPlanNames() {

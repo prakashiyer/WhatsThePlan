@@ -5,7 +5,7 @@ public class ExpenseRow {
 
 	private byte[] userImage;
 	private String name;
-	private String emailId;
+	private String phone;
 	private int value;
 	
 	public ExpenseRow(){
@@ -28,12 +28,12 @@ public class ExpenseRow {
 		this.name = name;
 	}
 
-	public String getEmailId() {
-		return emailId;
+	public String getPhone() {
+		return phone;
 	}
 
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public int getValue() {

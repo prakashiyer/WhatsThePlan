@@ -42,10 +42,10 @@ public class ImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer
 	@Override
 	protected byte[] doInBackground(String... params) {
 		String method = params[0];
-		String path = "/WhatsThePlan/operation/"+method;
+		String path = WTPConstants.SERVICE_PATH+"/"+method;
 
 		if("fetchUserImage".equals(method)){
-        	path = path+"?emailId="+params[1];
+        	path = path+"?phone="+params[1];
         } else {
         	path = path+"?groupName="+params[1];
         }

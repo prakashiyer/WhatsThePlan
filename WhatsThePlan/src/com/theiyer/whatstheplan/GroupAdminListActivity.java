@@ -27,7 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Group;
-import com.theiyer.whatstheplan.entity.UserInformation;
+import com.theiyer.whatstheplan.entity.User;
 import com.thoughtworks.xstream.XStream;
 
 public class GroupAdminListActivity extends Activity implements OnItemClickListener {
@@ -82,8 +82,8 @@ public class GroupAdminListActivity extends Activity implements OnItemClickListe
 			if (response != null) {
 				XStream xstream = new XStream();
 				xstream.alias("Group", Group.class);		
-				xstream.alias("memberEmailIds", String.class);
-				xstream.addImplicitCollection(Group.class, "memberEmailIds","memberEmailIds",String.class);
+				xstream.alias("members", String.class);
+				xstream.addImplicitCollection(Group.class, "members","members",String.class);
 				xstream.alias("planNames", String.class);
 				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
 				xstream.alias("pendingMembers", String.class);
@@ -97,25 +97,25 @@ public class GroupAdminListActivity extends Activity implements OnItemClickListe
 						
 						membersList = new ArrayList<Map<String, byte[]>>();
 						userMap = new HashMap<String, String>();
-						for(String emailId: pendingMembers){
-							String userQuery = "/fetchUserInformation?emailId=" + emailId;
+						for(String phone: pendingMembers){
+							String userQuery = "/fetchUser?phone=" + phone;
 							RestWebServiceClient userRestClient = new RestWebServiceClient(this);
 							String userResp = userRestClient.execute(new String[] { userQuery })
 									.get();
 							
 							if(userResp != null){
 								XStream userXs = new XStream();
-								userXs.alias("UserInformation", UserInformation.class);
+								userXs.alias("UserInformation", User.class);
 								userXs.alias("groupNames", String.class);
-								userXs.addImplicitCollection(UserInformation.class, "groupNames","groupNames",String.class);
+								userXs.addImplicitCollection(User.class, "groupNames","groupNames",String.class);
 								userXs.alias("pendingGroupNames", String.class);
-								userXs.addImplicitCollection(UserInformation.class, "pendingGroupNames","pendingGroupNames",String.class);
-								UserInformation user = (UserInformation) userXs
+								userXs.addImplicitCollection(User.class, "pendingGroupNames","pendingGroupNames",String.class);
+								User user = (User) userXs
 										.fromXML(userResp);
 								if(user != null){
 									ImageRetrieveRestWebServiceClient userImageClient = new ImageRetrieveRestWebServiceClient(
 											this);
-									byte[] userImage = userImageClient.execute(new String[] { "fetchUserImage", emailId }).get();
+									byte[] userImage = userImageClient.execute(new String[] { "fetchUserImage", phone }).get();
 									Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
 									memberMap.put(user.getName(), userImage);
 									userMap.put(user.getName(), user.getPhone());
@@ -166,7 +166,7 @@ public class GroupAdminListActivity extends Activity implements OnItemClickListe
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     	
 		String selectedMember = "";
-		String selectedMemberEmailId = "";
+		String selectedMemberPhone = "";
 		if(membersList != null && !membersList.isEmpty()){
 			Map<String,byte[]> selectedMap = membersList.get(position);
 			
@@ -176,8 +176,8 @@ public class GroupAdminListActivity extends Activity implements OnItemClickListe
 				SharedPreferences.Editor editor = prefs.edit();
 				selectedMember = entry.getKey();
 				editor.putString("selectedMember",selectedMember);
-				selectedMemberEmailId = userMap.get(selectedMember);
-				editor.putString("selectedMemberEmailId", selectedMemberEmailId);
+				selectedMemberPhone = userMap.get(selectedMember);
+				editor.putString("selectedMemberPhone", selectedMemberPhone);
 				editor.apply();
 				break;
 			}
@@ -191,14 +191,14 @@ public class GroupAdminListActivity extends Activity implements OnItemClickListe
 					
 					SharedPreferences prefs = getSharedPreferences("Prefs",
 							Activity.MODE_PRIVATE);
-					String selectedMemberEmailId = prefs.getString("selectedMemberEmailId",
+					String phone = prefs.getString("selectedMemberPhone",
 							"New User");
 
 					String selectedGroup = prefs.getString("selectedGroup", "");					
 					
 					RestWebServiceClient restClient = new RestWebServiceClient(context);
-					String searchQuery = "/setAdminDecisionForUser?emailId="
-							+ selectedMemberEmailId + "&groupName="
+					String searchQuery = "/setAdminDecisionForUser?phone="
+							+ phone + "&groupName="
 							+ selectedGroup.replace(" ", "%20") + "&decision=yes";
 					TextView errorFieldValue = (TextView) findViewById(R.id.viewGroupAdminErrorField);
 					try {
@@ -223,14 +223,14 @@ public class GroupAdminListActivity extends Activity implements OnItemClickListe
 				public void onClick(DialogInterface dialog, int which) {
 					SharedPreferences prefs = getSharedPreferences("Prefs",
 							Activity.MODE_PRIVATE);
-					String selectedMemberEmailId = prefs.getString("selectedMemberEmailId",
+					String phone = prefs.getString("selectedMemberPhone",
 							"New User");
 
 					String selectedGroup = prefs.getString("selectedGroup", "");					
 					
 					RestWebServiceClient restClient = new RestWebServiceClient(context);
-					String searchQuery = "/setAdminDecisionForUser?emailId="
-							+ selectedMemberEmailId + "&groupName="
+					String searchQuery = "/setAdminDecisionForUser?phone="
+							+ phone + "&groupName="
 							+ selectedGroup.replace(" ", "%20") + "&decision=no";
 					TextView errorFieldValue = (TextView) findViewById(R.id.viewGroupAdminErrorField);
 					try {

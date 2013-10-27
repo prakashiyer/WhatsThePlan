@@ -50,7 +50,7 @@ public class InviteListAdapter extends BaseAdapter {
 			Map<String,String> emailMap = data.get(position);
             for(Entry<String,String> entry: emailMap.entrySet()){
             	contactName.setText("Name  |    "+entry.getKey());
-            	contactEmail.setText("Email   |    "+entry.getValue());
+            	contactEmail.setText("Phone   |    "+entry.getValue());
 			}
 			return view;
 		}

@@ -91,14 +91,14 @@ public class ExpenseReportActivity extends Activity implements OnItemClickListen
 		ExpenseRow expenseRow = expenseRows.get(position);
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
-		String emailId = prefs.getString("emailId", "New User");
-		if(emailId.equals(expenseRow.getEmailId())){
+		String phone = prefs.getString("phone", "New User");
+		if(phone.equals(expenseRow.getPhone())){
 			Intent intent = new Intent(this, AddExpenseActivity.class);
 			startActivity(intent);
 		} else {
 			SharedPreferences.Editor editor = prefs.edit();
 			editor.putString("selectedUser",expenseRow.getName());
-			editor.putString("selectedEmailId",expenseRow.getEmailId());
+			editor.putString("selectedPhone",expenseRow.getPhone());
 			editor.apply();
 			Intent intent = new Intent(this, ViewExpenseActivity.class);
 			startActivity(intent);

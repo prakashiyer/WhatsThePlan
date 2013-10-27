@@ -180,9 +180,9 @@ public class InviteListActivity extends Activity implements MultiChoiceModeListe
 				Activity.MODE_PRIVATE);
 		String groupName = prefs.getString("selectedGroup", "");
 		if(!selectedList.isEmpty()){
-			for(String emailId: selectedList){
+			for(String phone: selectedList){
 				String joinQuery = "/invite?groupName=" + groupName.replace(" ", "%20")
-						+ "&emailId=" + emailId;
+						+ "&phone=" + phone;
 				RestWebServiceClient restClient = new RestWebServiceClient(this);
 				try {
 					String response = restClient.execute(
@@ -190,8 +190,8 @@ public class InviteListActivity extends Activity implements MultiChoiceModeListe
 					XStream xstream = new XStream();
 					xstream.alias("Group", Group.class);
 					
-					xstream.alias("memberEmailIds", String.class);
-					xstream.addImplicitCollection(Group.class, "memberEmailIds","memberEmailIds",String.class);
+					xstream.alias("members", String.class);
+					xstream.addImplicitCollection(Group.class, "members","members",String.class);
 					xstream.alias("planNames", String.class);
 					xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
 					Group group = (Group) xstream.fromXML(response);

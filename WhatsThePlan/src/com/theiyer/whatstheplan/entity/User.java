@@ -2,7 +2,7 @@ package com.theiyer.whatstheplan.entity;
 
 import java.util.List;
 
-public class UserInformation {
+public class User {
 	
 	private int id;
 	private String name;
@@ -10,7 +10,7 @@ public class UserInformation {
 	private List<String> groupNames;
 	private List<String> pendingGroupNames;
 	
-	public UserInformation(){
+	public User(){
 		
 	}
 

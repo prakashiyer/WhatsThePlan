@@ -77,7 +77,7 @@ public class CreatePlanActivity extends FragmentActivity {
 
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
-		String emailId = prefs.getString("emailId", "");
+		String phone = prefs.getString("phone", "");
 
 		TextView planDateEditText = (TextView) findViewById(R.id.newPlanDateValue);
 		String planDate = planDateEditText.getText().toString();
@@ -98,10 +98,10 @@ public class CreatePlanActivity extends FragmentActivity {
 		String selectedGroup = prefs.getString("selectedGroup", "");
 
 		String insertQuery = "/addPlan?name=" + planName.replace(" ", "%20")
-				+ "&emailId=" + emailId + "&date=" + planDate + "&time="
+				+ "&phone=" + phone + "&date=" + planDate + "&time="
 				+ planTime+":00" + "&location=" + planLocation.replace(" ", "%20")
 				+ "&groupName=" + selectedGroup.replace(" ", "%20")
-				+ "&creator=" + emailId;
+				+ "&creator=" + phone;
 
 		TextView errorFieldValue = (TextView) findViewById(R.id.createPlanErrorField);
 		errorFieldValue.setText("");
@@ -125,7 +125,7 @@ public class CreatePlanActivity extends FragmentActivity {
 					CalendarHelper calendarHelper = new CalendarHelper(this);
 					calendarHelper.execute(new String[] { plan.getStartTime(),
 							plan.getName(), plan.getLocation(),
-							String.valueOf(plan.getId()), emailId });
+							String.valueOf(plan.getId()), phone });
 					Intent intent = new Intent(this, ViewMyPlansActivity.class);
 					startActivity(intent);
 				} else {

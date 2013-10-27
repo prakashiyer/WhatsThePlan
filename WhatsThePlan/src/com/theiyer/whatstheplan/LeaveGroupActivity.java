@@ -48,9 +48,9 @@ public class LeaveGroupActivity extends Activity {
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
-		String emailId = prefs.getString("emailId", "");
+		String phone = prefs.getString("phone", "");
 		String selectedGroup = prefs.getString("selectedGroup", "New User");
-		String searchQuery = "/leaveGroup?emailId=" + emailId
+		String searchQuery = "/leaveGroup?phone=" + phone
 				+ "&groupName=" + selectedGroup.replace(" ", "%20");
 
 		TextView errorFieldValue = (TextView) findViewById(R.id.leaveGroupErrorField);
@@ -62,8 +62,8 @@ public class LeaveGroupActivity extends Activity {
 			if (response != null) {
 				XStream xstream = new XStream();
 				xstream.alias("Group", Group.class);
-				xstream.alias("memberEmailIds", String.class);
-				xstream.addImplicitCollection(Group.class, "memberEmailIds","memberEmailIds",String.class);
+				xstream.alias("members", String.class);
+				xstream.addImplicitCollection(Group.class, "members","members",String.class);
 				xstream.alias("planNames", String.class);
 				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
 				xstream.alias("pendingMembers", String.class);

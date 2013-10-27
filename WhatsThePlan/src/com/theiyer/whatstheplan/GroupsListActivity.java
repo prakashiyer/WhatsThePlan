@@ -23,7 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Group;
-import com.theiyer.whatstheplan.entity.UserInformation;
+import com.theiyer.whatstheplan.entity.User;
 import com.thoughtworks.xstream.XStream;
 
 public class GroupsListActivity extends Activity implements OnItemClickListener {
@@ -51,9 +51,9 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 		
 		
 
-		String emailId = prefs.getString("emailId", "");
+		String phone = prefs.getString("phone", "");
 
-		String searchQuery = "/fetchUserInformation?emailId=" + emailId;
+		String searchQuery = "/fetchUser?phone=" + phone;
 
 		
 		RestWebServiceClient restClient = new RestWebServiceClient(this);
@@ -63,12 +63,12 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 
 			if (response != null) {
 				XStream xstream = new XStream();
-				xstream.alias("UserInformation", UserInformation.class);
+				xstream.alias("UserInformation", User.class);
 				xstream.alias("groupNames", String.class);
-				xstream.addImplicitCollection(UserInformation.class, "groupNames","groupNames",String.class);
+				xstream.addImplicitCollection(User.class, "groupNames","groupNames",String.class);
 				xstream.alias("pendingGroupNames", String.class);
-				xstream.addImplicitCollection(UserInformation.class, "pendingGroupNames","pendingGroupNames",String.class);
-				UserInformation user = (UserInformation) xstream
+				xstream.addImplicitCollection(User.class, "pendingGroupNames","pendingGroupNames",String.class);
+				User user = (User) xstream
 						.fromXML(response);
 				if (user != null && user.getGroupNames()!= null && !(user.getGroupNames().isEmpty())) {
 
@@ -127,7 +127,7 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		SharedPreferences prefs = getSharedPreferences(
 				"Prefs", Activity.MODE_PRIVATE);
-		String emailId = prefs.getString("emailId", "");
+		String phone = prefs.getString("phone", "");
 		String selectedGroup = "";
 		TextView errorFieldValue = (TextView) findViewById(R.id.listGroupsErrorField);
 		if(groupsList != null && !groupsList.isEmpty()){
@@ -150,28 +150,24 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 					XStream xstream = new XStream();
 					xstream.alias("Group", Group.class);
 					
-					xstream.alias("memberEmailIds", String.class);
-					xstream.addImplicitCollection(Group.class, "memberEmailIds","memberEmailIds",String.class);
+					xstream.alias("members", String.class);
+					xstream.addImplicitCollection(Group.class, "members","members",String.class);
 					xstream.alias("planNames", String.class);
 					xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
 					xstream.alias("pendingMembers", String.class);
 					xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
 					Group group = (Group) xstream.fromXML(response);
 					if (group != null && selectedGroup.equals(group.getName())) {
-						if(emailId.equals(group.getAdmin())){
-							
+						if(phone.equals(group.getAdmin())){
 							Intent intent = new Intent(this, GroupAdminListActivity.class);
 							startActivity(intent);
 						} else {
-							
 							Intent intent = new Intent(this, ViewMyGroupActivity.class);
 							startActivity(intent);
 						}
 					}					
 				}
-			} catch (InterruptedException e) {
-				
-				
+			} catch (InterruptedException e) {				
 				errorFieldValue
 						.setText("Apologies for any inconvenience caused. There is a problem with the service!");
 			} catch (ExecutionException e) {

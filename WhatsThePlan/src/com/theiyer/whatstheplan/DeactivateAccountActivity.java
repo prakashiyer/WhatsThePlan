@@ -17,8 +17,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class DeactivateAccountActivity extends Activity {
@@ -44,25 +42,9 @@ public class DeactivateAccountActivity extends Activity {
 		TextView userNameValue = (TextView) findViewById(R.id.deleteProfileName);
 		userNameValue.setText("Name: " + userName);
 
-		String emailId = prefs.getString("emailId", "");
-		TextView emailIdValue = (TextView) findViewById(R.id.deleteProfileEmailId);
-		emailIdValue.setText("Email Id: " + emailId);
-
-	}
-
-	/** Called when the user checks the delet account */
-	public void onDeleteProfileChecked(View view) {
-		CheckBox checkBox = (CheckBox) findViewById(R.id.deleteCheckBox);
-
-		EditText oldPassword = (EditText) findViewById(R.id.deleteProfilePasswordValue);
-		Button deleteButton = (Button) findViewById(R.id.deleteProfileButton);
-		if (checkBox.isChecked()) {
-			oldPassword.setVisibility(EditText.VISIBLE);
-			deleteButton.setVisibility(Button.VISIBLE);
-		} else {
-			oldPassword.setVisibility(EditText.INVISIBLE);
-			deleteButton.setVisibility(Button.INVISIBLE);
-		}
+		String phone = prefs.getString("phone", "");
+		TextView phoneValue = (TextView) findViewById(R.id.deleteProfilePhone);
+		phoneValue.setText("Phone: " + phone);
 
 	}
 
@@ -72,18 +54,12 @@ public class DeactivateAccountActivity extends Activity {
 		changePassButton.setTextColor(getResources().getColor(R.color.click_button_2));
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
-		String currentPass = prefs.getString("password", "");
-		String emailId = prefs.getString("emailId", "");
-		EditText oldPasswordValue = (EditText) findViewById(R.id.deleteProfilePasswordValue);
-		String oldPass = oldPasswordValue.getText().toString();
+		String phone = prefs.getString("phone", "");
 		TextView errorFieldValue = (TextView) findViewById(R.id.deleteProfileErrorField);
-		if (!currentPass.equals(oldPass)) {
-			errorFieldValue.setText("Wrong existing password!");
-		}
 		errorFieldValue.setText("");
 		
 
-		String searchQuery = "/deleteAccount?emailId=" + emailId;
+		String searchQuery = "/deleteAccount?phone=" + phone;
 
 		RestWebServiceClient restClient = new RestWebServiceClient(this);
 		try {

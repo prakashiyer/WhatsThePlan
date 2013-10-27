@@ -1,5 +1,7 @@
 package com.theiyer.whatstheplan;
 
+import com.theiyer.whatstheplan.util.WTPConstants;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActionBar;
@@ -47,7 +49,7 @@ public class MainActivity extends Activity {
                // This method will be executed once the timer is over
                // Start your app main activity
            	AccountManager am = AccountManager.get(context); // "this" references the current Context
-       		Account[] accounts = am.getAccountsByType("com.theiyer.whatstheplan");
+       		Account[] accounts = am.getAccountsByType(WTPConstants.ACCOUNT_ADDRESS);
        		if(accounts != null && accounts.length > 0){
        			Account account = accounts[0];
        			SharedPreferences prefs = getSharedPreferences("Prefs", Activity.MODE_PRIVATE);

@@ -41,14 +41,14 @@ public class AddExpenseActivity extends Activity {
 				Activity.MODE_PRIVATE);
 
 		String userName = prefs.getString("userName", "");
-		String emailId = prefs.getString("emailId", "");
+		String phone = prefs.getString("phone", "");
 		String selectedPlan = prefs.getString("selectedPlan", "");
 		String selectedGroup = prefs.getString("selectedGroup", "");
 
 		TextView addLabel = (TextView) findViewById(R.id.addexpenseLabel);
 		addLabel.setText(userName + "'s Expenses:");
 
-		String searchQuery = "/fetchExpense?emailId=" + emailId + "&planName="
+		String searchQuery = "/fetchExpense?phone=" + phone + "&planName="
 				+ selectedPlan.replace(" ", "%20") + "&groupName="
 				+ selectedGroup.replace(" ", "%20");
 
@@ -147,7 +147,7 @@ public class AddExpenseActivity extends Activity {
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 
-		String emailId = prefs.getString("emailId", "");
+		String phone = prefs.getString("phone", "");
 		String selectedPlan = prefs.getString("selectedPlan", "");
 		String selectedGroup = prefs.getString("selectedGroup", "");
 
@@ -158,7 +158,7 @@ public class AddExpenseActivity extends Activity {
 
 		if (title1 != null && !title1.isEmpty() && exp1 != null
 				&& !exp1.isEmpty()) {
-			updateExpense(emailId, selectedPlan, selectedGroup, title1, exp1,
+			updateExpense(phone, selectedPlan, selectedGroup, title1, exp1,
 					edit1);
 		}
 
@@ -169,7 +169,7 @@ public class AddExpenseActivity extends Activity {
 
 		if (title2 != null && !title2.isEmpty() && exp2 != null
 				&& !exp2.isEmpty()) {
-			updateExpense(emailId, selectedPlan, selectedGroup, title2, exp2,
+			updateExpense(phone, selectedPlan, selectedGroup, title2, exp2,
 					edit2);
 		}
 
@@ -180,7 +180,7 @@ public class AddExpenseActivity extends Activity {
 
 		if (title3 != null && !title3.isEmpty() && exp3 != null
 				&& !exp3.isEmpty()) {
-			updateExpense(emailId, selectedPlan, selectedGroup, title3, exp3,
+			updateExpense(phone, selectedPlan, selectedGroup, title3, exp3,
 					edit3);
 		}
 
@@ -191,7 +191,7 @@ public class AddExpenseActivity extends Activity {
 
 		if (title4 != null && !title4.isEmpty() && exp4 != null
 				&& !exp4.isEmpty()) {
-			updateExpense(emailId, selectedPlan, selectedGroup, title4, exp4,
+			updateExpense(phone, selectedPlan, selectedGroup, title4, exp4,
 					edit4);
 		}
 
@@ -202,7 +202,7 @@ public class AddExpenseActivity extends Activity {
 
 		if (title5 != null && !title5.isEmpty() && exp5 != null
 				&& !exp5.isEmpty()) {
-			updateExpense(emailId, selectedPlan, selectedGroup, title5, exp5,
+			updateExpense(phone, selectedPlan, selectedGroup, title5, exp5,
 					edit5);
 		}
 		Intent intent = new Intent(this, ExpenseReportActivity.class);
@@ -210,33 +210,30 @@ public class AddExpenseActivity extends Activity {
 
 	}
 
-	private String updateExpense(String emailId, String selectedPlan,
+	private void updateExpense(String phone, String selectedPlan,
 			String selectedGroup, String title, String exp, boolean edit) {
 		String query = "";
 		if (edit) {
 			query = "/updateExpense?planName="
-					+ selectedPlan.replace(" ", "%20") + "&emailId=" + emailId
+					+ selectedPlan.replace(" ", "%20") + "&phone=" + phone
 					+ "&groupName=" + selectedGroup.replace(" ", "%20")
 					+ "&title=" + title + "&value=" + exp;
 		} else {
 			query = "/addExpense?planName=" + selectedPlan.replace(" ", "%20")
-					+ "&emailId=" + emailId + "&groupName="
+					+ "&phone=" + phone + "&groupName="
 					+ selectedGroup.replace(" ", "%20") + "&title=" + title
 					+ "&value=" + exp;
 		}
 
 		RestWebServiceClient restClient = new RestWebServiceClient(this);
 		try {
-			String response = restClient.execute(new String[] { query }).get();
-			if (response != null) {
-				return response;
-			}
+			restClient.execute(new String[] { query }).get();
+			
 		} catch (InterruptedException e) {
 			
 		} catch (ExecutionException e) {
 			
 		}
-		return null;
 	}
 	
 	@Override
