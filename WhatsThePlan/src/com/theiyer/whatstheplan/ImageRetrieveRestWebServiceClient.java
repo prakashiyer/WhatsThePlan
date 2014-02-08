@@ -8,11 +8,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import com.theiyer.whatstheplan.util.WTPConstants;
-
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.widget.ImageView;
+
+import com.theiyer.whatstheplan.util.WTPConstants;
 
 public class ImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
 
@@ -68,6 +72,22 @@ public class ImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer
 
 	@Override
 	protected void onPostExecute(byte[] response) {
+		
+		
+		if(response != null){
+			Bitmap img = BitmapFactory.decodeByteArray(response, 0, response.length);
+
+			Activity activity = (Activity) mContext;
+			
+			
+			//For ViewMyGroupActivity
+			ImageView imgView = (ImageView) activity.findViewById(R.id.selectedGroupPicThumbnail);
+			if(imgView != null){
+				imgView.setImageBitmap(img);
+			}
+			
+		}
+		
 		pDlg.dismiss();
 	}
 

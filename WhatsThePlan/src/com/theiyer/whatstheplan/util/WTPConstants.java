@@ -2,7 +2,8 @@ package com.theiyer.whatstheplan.util;
 
 public interface WTPConstants {
 	
-	public static final String TARGET_HOST = "103.250.19.29";
+	//public static final String TARGET_HOST = "103.29.97.131";
+	public static final String TARGET_HOST =  "ec2-54-200-227-62.us-west-2.compute.amazonaws.com";
 	//public static final String TARGET_HOST = "www.theiyersolutions.com";
 	
 	public static final String SENDER_ID = "358164918628";

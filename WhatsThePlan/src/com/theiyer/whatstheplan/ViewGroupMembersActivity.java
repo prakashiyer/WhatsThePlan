@@ -8,10 +8,12 @@ import java.util.concurrent.ExecutionException;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ListView;
 
@@ -21,8 +23,10 @@ import com.thoughtworks.xstream.XStream;
 
 public class ViewGroupMembersActivity extends Activity {
 
+	
 	ListView memberListView;
 	MemberListAdapter adapter;
+	private ProgressDialog pDlg;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,8 +47,15 @@ public class ViewGroupMembersActivity extends Activity {
 
 		RestWebServiceClient restClient = new RestWebServiceClient(this);
 		try {
-			String response = restClient.execute(new String[] { searchQuery })
-					.get();
+			restClient.execute(new String[] { searchQuery });
+		    
+			String response = restClient.get();
+			
+			pDlg = new ProgressDialog(this);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
 
 			if (response != null) {
 				XStream xstream = new XStream();
@@ -82,7 +93,8 @@ public class ViewGroupMembersActivity extends Activity {
 								if(user != null){
 									ImageRetrieveRestWebServiceClient userImageClient = new ImageRetrieveRestWebServiceClient(
 											this);
-									byte[] userImage = userImageClient.execute(new String[] { "fetchUserImage", phone }).get();
+									userImageClient.execute(new String[] { "fetchUserImage", phone });
+									byte[] userImage = userImageClient.get();
 									Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
 									memberMap.put(user.getName(), userImage);
 									membersList.add(memberMap);	
@@ -97,7 +109,7 @@ public class ViewGroupMembersActivity extends Activity {
 							memberListView.setAdapter(adapter);
 						}
 
-						
+						pDlg.dismiss();
 					}
 
 				}

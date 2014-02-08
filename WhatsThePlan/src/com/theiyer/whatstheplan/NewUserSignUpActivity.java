@@ -252,7 +252,7 @@ public class NewUserSignUpActivity extends Activity {
 
 				String path = WTPConstants.SERVICE_PATH+"/addRegId?regId="
 						+ regid + "&phone="+params[0];
-
+                
 				// HttpHost target = new HttpHost(TARGET_HOST);
 				HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 				HttpClient client = new DefaultHttpClient();
