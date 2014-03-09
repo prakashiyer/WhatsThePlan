@@ -4,14 +4,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,12 +30,15 @@ import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.entity.User;
+import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewPlanMembersActivity extends Activity {
 
 	ListView memberListView;
 	MemberListAdapter adapter;
+	List<Map<String, byte[]>> membersList;
+	TextView memberListLabel;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,79 +52,17 @@ public class ViewPlanMembersActivity extends Activity {
 
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
-		
+		membersList = new ArrayList<Map<String, byte[]>>();
+		memberListView = (ListView) findViewById(R.id.viewplanmemberList);
+		adapter = new MemberListAdapter(this);
+		memberListLabel = (TextView) findViewById(R.id.viewPlanMemberListLabel);
 
 		String selectedPlan = prefs.getString("selectedPlan", "New User");
 		String searchQuery = "/fetchPlan?planName="
 				+ selectedPlan.replace(" ", "%20");
 
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			String response = restClient.execute(new String[] { searchQuery })
-					.get();
-
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("Plan", Plan.class);
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
-				Plan plan = (Plan) xstream.fromXML(response);
-				if (plan != null && selectedPlan.equals(plan.getName())) {
-
-					List<String> members = plan.getMemberNames();
-
-					if (members != null && !members.isEmpty()) {
-						List<Map<String, byte[]>> membersList = new ArrayList<Map<String, byte[]>>();
-						for(String phone: members){
-							String userQuery = "/fetchUser?phone=" + phone;
-							RestWebServiceClient userRestClient = new RestWebServiceClient(this);
-							String userResp = userRestClient.execute(new String[] { userQuery })
-									.get();
-							
-							if(userResp != null){
-								XStream userXstream = new XStream();
-								userXstream.alias("UserInformation", User.class);
-								userXstream.alias("groupNames", String.class);
-								userXstream.addImplicitCollection(User.class, "groupNames","groupNames",String.class);
-								userXstream.alias("pendingGroupNames", String.class);
-								userXstream.addImplicitCollection(User.class, "pendingGroupNames","pendingGroupNames",String.class);
-								User user = (User) userXstream
-										.fromXML(userResp);
-								if(user != null){
-									
-									ImageRetrieveRestWebServiceClient userImageClient = new ImageRetrieveRestWebServiceClient(
-											this);
-									byte[] userImage = userImageClient.execute(new String[] { "fetchUserImage", phone }).get();
-									Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
-									memberMap.put(user.getName(), userImage);
-									membersList.add(memberMap);	
-								}	
-							}
-						}
-						
-						if(!membersList.isEmpty()){
-							
-							memberListView = (ListView) findViewById(R.id.viewplanmemberList);
-
-							adapter = new MemberListAdapter(this, membersList);
-							memberListView.setAdapter(adapter);
-							TextView memberListLabel = (TextView) findViewById(R.id.viewPlanMemberListLabel);
-							memberListLabel.setVisibility(TextView.VISIBLE);
-							memberListView.setVisibility(ListView.VISIBLE);
-						}
-
-						
-					}
-
-				}
-			}
-		} catch (InterruptedException e) {
-			
-			
-		} catch (ExecutionException e) {
-			
-			
-		}
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(new String[] { searchQuery });
 	}
 	
 	
@@ -161,6 +112,186 @@ public class ViewPlanMembersActivity extends Activity {
 	public void onBackPressed() {
 	    Intent intent = new Intent(this, ViewMyPlansActivity.class);
 	    startActivity(intent);
+	}
+	
+	public class WebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+		private String query;
+		private String isLastMember = "false";
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			query = params[0];
+			String path = WTPConstants.SERVICE_PATH+query;
+
+			if(query.contains("fetchUser")){
+				isLastMember = params[1];
+			}
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			if (response != null && query.contains("fetchPlan")) {
+				XStream xstream = new XStream();
+				xstream.alias("Plan", Plan.class);
+				xstream.alias("memberNames", String.class);
+				xstream.addImplicitCollection(Plan.class, "memberNames");
+				Plan plan = (Plan) xstream.fromXML(response);
+				if (plan != null) {
+
+					List<String> members = plan.getMemberNames();
+
+					if (members != null && !members.isEmpty()) {
+						String isLastMember = "false";
+						for(int i=0; i<members.size(); i++){
+							String userQuery = "/fetchUser?phone=" + members.get(i);
+							if(i == members.size()-1){
+								isLastMember = "true";
+							}
+							WebServiceClient userRestClient = new WebServiceClient(mContext);
+							userRestClient.execute(new String[] { userQuery, isLastMember });
+						}
+					}
+
+				}
+			}
+			
+			if(response != null && query.contains("fetchUser")){
+				XStream userXstream = new XStream();
+				userXstream.alias("UserInformation", User.class);
+				userXstream.alias("groupNames", String.class);
+				userXstream.addImplicitCollection(User.class, "groupNames","groupNames",String.class);
+				userXstream.alias("pendingGroupNames", String.class);
+				userXstream.addImplicitCollection(User.class, "pendingGroupNames","pendingGroupNames",String.class);
+				User user = (User) userXstream
+						.fromXML(response);
+				if(user != null){
+					
+					WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
+							mContext);
+					userImageClient.execute(new String[] { "fetchUserImage", user.getPhone(), user.getName(), isLastMember });
+					
+				}	
+			}
+			pDlg.dismiss();
+		}
+
+	}
+	
+	public class WebImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+		private String userName;
+		private String isLastMember;
+
+		public WebImageRetrieveRestWebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			showProgressDialog();
+
+		}
+
+		@Override
+		protected byte[] doInBackground(String... params) {
+			String method = params[0];
+			String path = WTPConstants.SERVICE_PATH+"/"+method;
+
+			if("fetchUserImage".equals(method)){
+	        	path = path+"?phone="+params[1];
+	        	userName = params[2];
+	        	isLastMember = params[3];
+	        } else {
+	        	path = path+"?groupName="+params[1];
+	        }
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				byte[] byteresult = EntityUtils.toByteArray(results);
+				return byteresult;
+			} catch (Exception e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(byte[] response) {
+			
+			
+			if(response != null){
+				Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
+				memberMap.put(userName, response);
+				membersList.add(memberMap);	
+				
+				if(!membersList.isEmpty() && isLastMember.equals("true")){
+					
+				    adapter.setData(membersList);
+					memberListView.setAdapter(adapter);
+					memberListLabel.setVisibility(TextView.VISIBLE);
+					memberListView.setVisibility(ListView.VISIBLE);
+				}
+			}
+			
+			pDlg.dismiss();
+		}
+
 	}
 
 }

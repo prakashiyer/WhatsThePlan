@@ -19,8 +19,21 @@ public class GroupListAdapter extends BaseAdapter {
 		 
 	    private Activity activity;
 	    private List<Map<String, byte[]>> data; 
-	    private static LayoutInflater inflater=null;
+	    public List<Map<String, byte[]>> getData() {
+			return data;
+		}
+
+		public void setData(List<Map<String, byte[]>> data) {
+			this.data = data;
+		}
+
+		private static LayoutInflater inflater=null;
 	 
+		public GroupListAdapter(Activity a) {
+	        activity = a;
+	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    }
+		
 	    public GroupListAdapter(Activity a, List<Map<String, byte[]>> d) {
 	        activity = a;
 	        data=d;

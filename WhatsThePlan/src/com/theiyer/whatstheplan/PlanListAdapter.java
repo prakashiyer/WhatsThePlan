@@ -16,7 +16,20 @@ public class PlanListAdapter extends BaseAdapter {
 		 
 	    private Activity activity;
 	    private List<Map<String, String>> data; 
-	    private static LayoutInflater inflater=null;
+	    public List<Map<String, String>> getData() {
+			return data;
+		}
+
+		public void setData(List<Map<String, String>> data) {
+			this.data = data;
+		}
+
+		private static LayoutInflater inflater=null;
+		
+		 public PlanListAdapter(Activity a) {
+		        activity = a;
+		        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		 }
 	 
 	    public PlanListAdapter(Activity a, List<Map<String, String>> d) {
 	        activity = a;

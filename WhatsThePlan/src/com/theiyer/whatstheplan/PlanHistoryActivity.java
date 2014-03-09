@@ -5,14 +5,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +31,7 @@ import android.widget.ListView;
 
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.entity.PlanList;
+import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class PlanHistoryActivity extends Activity implements OnItemClickListener {
@@ -44,51 +55,11 @@ public class PlanHistoryActivity extends Activity implements OnItemClickListener
 		String selectedGroup = prefs.getString("selectedGroup", "");
 		String searchQuery = "/fetchPlanHistory?groupName="+selectedGroup.replace(" ", "%20");
 
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			String response = restClient.execute(new String[] { searchQuery })
-					.get();
-
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("PlanList", PlanList.class);
-				xstream.alias("plans", Plan.class);
-				xstream.addImplicitCollection(PlanList.class, "plans");
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
-				PlanList planList = (PlanList) xstream.fromXML(response);
-				if (planList != null && planList.getPlans() != null) {
-
-					List<Plan> plans = planList.getPlans();
-
-					if (plans != null && !plans.isEmpty()) {
-					    plansResult = new ArrayList<Map<String, String>>();
-						for (Plan plan : plans) {
-							Map<String, String> planMap = new HashMap<String, String>();
-							planMap.put(plan.getName(), plan.getStartTime());
-							plansResult.add(planMap);
-
-						}
-
-						if (!plansResult.isEmpty()) {
-							planListView = (ListView) findViewById(R.id.viewPlanHistoryList);
-							adapter = new PlanListAdapter(this, plansResult);
-							planListView.setAdapter(adapter);
-							planListView.setOnItemClickListener(this);
-						}
-
-					}
-
-				}
-			}
-		} catch (InterruptedException e) {
-			
-
-		} catch (ExecutionException e) {
-			
-
-		}
-
+		WebServiceClient restClient = new WebServiceClient(this);
+		planListView = (ListView) findViewById(R.id.viewPlanHistoryList);
+		planListView.setOnItemClickListener(this);
+		adapter = new PlanListAdapter(this);
+		restClient.execute(new String[] { searchQuery });
 	}
 	
 	@Override
@@ -116,5 +87,89 @@ public class PlanHistoryActivity extends Activity implements OnItemClickListener
 	public void onBackPressed() {
 	    Intent intent = new Intent(this, ViewMyGroupActivity.class);
 	    startActivity(intent);
+	}
+	
+	public class WebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			if (response != null) {
+				XStream xstream = new XStream();
+				xstream.alias("PlanList", PlanList.class);
+				xstream.alias("plans", Plan.class);
+				xstream.addImplicitCollection(PlanList.class, "plans");
+				xstream.alias("memberNames", String.class);
+				xstream.addImplicitCollection(Plan.class, "memberNames");
+				PlanList planList = (PlanList) xstream.fromXML(response);
+				if (planList != null && planList.getPlans() != null) {
+
+					List<Plan> plans = planList.getPlans();
+
+					if (plans != null && !plans.isEmpty()) {
+					    plansResult = new ArrayList<Map<String, String>>();
+						for (Plan plan : plans) {
+							Map<String, String> planMap = new HashMap<String, String>();
+							planMap.put(plan.getName(), plan.getStartTime());
+							plansResult.add(planMap);
+
+						}
+
+						if (!plansResult.isEmpty()) {
+							adapter.setData(plansResult);
+							planListView.setAdapter(adapter);
+						}
+
+					}
+
+				}
+			}
+			pDlg.dismiss();
+		}
+
 	}
 }

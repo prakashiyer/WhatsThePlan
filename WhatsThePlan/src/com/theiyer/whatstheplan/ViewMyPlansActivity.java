@@ -1,17 +1,26 @@
 package com.theiyer.whatstheplan;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +29,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Plan;
+import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewMyPlansActivity extends Activity {
@@ -51,79 +61,12 @@ public class ViewMyPlansActivity extends Activity {
 		TextView selectedPlanValue = (TextView) findViewById(R.id.viewPlanTitle);
 		selectedPlanValue.setText(" " + selectedPlan);
 
-		TextView errorFieldValue = (TextView) findViewById(R.id.viewPlanErrorField);
 		String searchQuery = "/fetchPlan?planName="
 				+ selectedPlan.replace(" ", "%20");
+		String phone = prefs.getString("phone", "");
 
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			String response = restClient.execute(new String[] { searchQuery })
-					.get();
-
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("Plan", Plan.class);
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
-				Plan plan = (Plan) xstream.fromXML(response);
-				if (plan != null && selectedPlan.equals(plan.getName())) {
-
-					String phone = prefs.getString("phone", "");
-					if (phone.equals(plan.getCreator())) {
-						isCreator = true;
-					}
-					TextView planGroupValue = (TextView) findViewById(R.id.viewPlanGroup);
-					planGroupValue.setText(" " + plan.getGroupName());
-
-					TextView planTimeValue = (TextView) findViewById(R.id.viewPlanTime);
-
-					String date = plan.getStartTime().substring(0, 10);
-	            	String time = plan.getStartTime().substring(11, 16);
-	            	String hour = time.substring(0, 2);
-	            	String min = time.substring(3);
-					int hourInt = Integer.valueOf(hour);
-					String ampm = "AM";
-					if (hourInt > 12) {
-						hour = String.valueOf(hourInt-12);
-						if (Integer.valueOf(hour) < 10) {
-							hour = "0" + hour;
-						}
-						ampm = "PM";
-					}
-					planTimeValue.setText(" " +date+" "+ hour + ":" + min + " " + ampm);
-
-					TextView planLocationValue = (TextView) findViewById(R.id.viewPlanLocation);
-					planLocationValue.setText(" " + plan.getLocation());
-
-					List<String> members = plan.getMemberNames();
-
-					if (members != null && !members.isEmpty()) {
-
-						Button membersAttending = (Button) findViewById(R.id.seeMembersButton);
-						membersAttending.setText("Members Attending ("+String.valueOf(members.size())+") >>");
-						TextView rsvpLabel = (TextView) findViewById(R.id.rsvpLabel);
-						Button rsvpPlanButton = (Button) findViewById(R.id.rsvpPlanButton);
-						if (members.contains(phone)) {
-							rsvpLabel.setText("You are going, Click here to");
-							rsvpPlanButton.setText("Say No");
-						} else {
-							rsvpLabel.setText("Are you attending? Click here to");
-							rsvpPlanButton.setText("Say Yes");
-						}
-						rsvpPlanButton.setVisibility(Button.VISIBLE);
-					}
-
-				}
-			}
-		} catch (InterruptedException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		} catch (ExecutionException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		}
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(new String[] { searchQuery, phone });
 	}
 
 	/** Called when the user clicks the see members button */
@@ -133,7 +76,6 @@ public class ViewMyPlansActivity extends Activity {
 		Intent intent = new Intent(this, ViewPlanMembersActivity.class);
 		startActivity(intent);
 	}
-
 
 	/** Called when the user clicks the rsvp plan button */
 	public void rsvpPlan(View view) {
@@ -154,47 +96,8 @@ public class ViewMyPlansActivity extends Activity {
 				+ selectedPlan.replace(" ", "%20") + "&phone=" + phone
 				+ "&rsvp=" + rsvp;
 
-		TextView errorFieldValue = (TextView) findViewById(R.id.viewPlanErrorField);
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			String response = restClient.execute(new String[] { updateQuery })
-					.get();
-
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("Plan", Plan.class);
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
-				Plan plan = (Plan) xstream.fromXML(response);
-				if (plan != null && selectedPlan.equals(plan.getName())) {
-					List<String> members = plan.getMemberNames();
-
-					if (members != null && !members.isEmpty()) {
-
-						Button membersAttending = (Button) findViewById(R.id.seeMembersButton);
-						membersAttending.setText("Members Attending ("+String.valueOf(members.size())+") >>");
-						TextView rsvpLabel = (TextView) findViewById(R.id.rsvpLabel);
-						if (members.contains(phone)) {
-							rsvpLabel.setText("You are going, Click here to");
-							rsvpPlanButton.setText("Say No");
-						} else {
-							rsvpLabel.setText("Are you attending? Click here to");
-							rsvpPlanButton.setText("Say Yes");
-						}
-						rsvpPlanButton.setTextColor(getResources().getColor(
-								R.color.button_text));
-					}
-				}
-			}
-		} catch (InterruptedException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		} catch (ExecutionException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		}
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(new String[] { updateQuery, phone });
 
 	}
 
@@ -251,33 +154,11 @@ public class ViewMyPlansActivity extends Activity {
 					String updateQuery = "/deletePlan?planName="
 							+ selectedPlan.replace(" ", "%20") + "&groupName="
 							+ selectedGroup.replace(" ", "%20");
-					RestWebServiceClient restClient = new RestWebServiceClient(
-							context);
-					try {
-						String response = restClient.execute(
-								new String[] { updateQuery }).get();
-
-						if (response != null) {
-							XStream xstream = new XStream();
-							xstream.alias("Plan", Plan.class);
-							xstream.alias("memberNames", String.class);
-							xstream.addImplicitCollection(Plan.class,
-									"memberNames");
-							Plan plan = (Plan) xstream.fromXML(response);
-							if (plan != null) {
-								Intent homeIntent = new Intent(context,
-										HomePlanActivity.class);
-
-								startActivity(homeIntent);
-							}
-						}
-					} catch (InterruptedException e) {
-						
-
-					} catch (ExecutionException e) {
-						
-
-					}
+					WebServiceClient restClient = new WebServiceClient(context);
+					restClient.execute(new String[] { updateQuery });
+					Intent homeIntent = new Intent(context,
+							HomePlanActivity.class);
+					startActivity(homeIntent);
 				}
 			});
 			ad.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -296,11 +177,159 @@ public class ViewMyPlansActivity extends Activity {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public void onBackPressed() {
-	    Intent intent = new Intent(this, HomePlanActivity.class);
-	    startActivity(intent);
+		Intent intent = new Intent(this, HomePlanActivity.class);
+		startActivity(intent);
+	}
+
+	public class WebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+		private String phone;
+		private String query;
+
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+
+			showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			query = params[0];
+			String path = WTPConstants.SERVICE_PATH + query;
+			if (query.contains("fetchPlan") || query.contains("rsvpPlan")) {
+				phone = params[1];
+			}
+
+			// HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity();
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			Button rsvpPlanButton = (Button) findViewById(R.id.rsvpPlanButton);
+			if (response != null && query.contains("fetchPlan")) {
+				XStream xstream = new XStream();
+				xstream.alias("Plan", Plan.class);
+				xstream.alias("memberNames", String.class);
+				xstream.addImplicitCollection(Plan.class, "memberNames");
+				Plan plan = (Plan) xstream.fromXML(response);
+				if (plan != null) {
+
+					if (phone.equals(plan.getCreator())) {
+						isCreator = true;
+					}
+
+					TextView planGroupValue = (TextView) findViewById(R.id.viewPlanGroup);
+					planGroupValue.setText(" " + plan.getGroupName());
+
+					TextView planTimeValue = (TextView) findViewById(R.id.viewPlanTime);
+
+					String date = plan.getStartTime().substring(0, 10);
+					String time = plan.getStartTime().substring(11, 16);
+					String hour = time.substring(0, 2);
+					String min = time.substring(3);
+					int hourInt = Integer.valueOf(hour);
+					String ampm = "AM";
+					if (hourInt > 12) {
+						hour = String.valueOf(hourInt - 12);
+						if (Integer.valueOf(hour) < 10) {
+							hour = "0" + hour;
+						}
+						ampm = "PM";
+					}
+					planTimeValue.setText(" " + date + " " + hour + ":" + min
+							+ " " + ampm);
+
+					TextView planLocationValue = (TextView) findViewById(R.id.viewPlanLocation);
+					planLocationValue.setText(" " + plan.getLocation());
+
+					List<String> members = plan.getMemberNames();
+
+					if (members != null && !members.isEmpty()) {
+
+						Button membersAttending = (Button) findViewById(R.id.seeMembersButton);
+						membersAttending.setText("Members Attending ("
+								+ String.valueOf(members.size()) + ") >>");
+						TextView rsvpLabel = (TextView) findViewById(R.id.rsvpLabel);
+
+						if (members.contains(phone)) {
+							rsvpLabel.setText("You are going, Click here to");
+							rsvpPlanButton.setText("Say No");
+						} else {
+							rsvpLabel
+									.setText("Are you attending? Click here to");
+							rsvpPlanButton.setText("Say Yes");
+						}
+						rsvpPlanButton.setVisibility(Button.VISIBLE);
+					}
+
+				}
+			}
+
+			if (response != null && query.contains("rsvpPlan")) {
+				XStream xstream = new XStream();
+				xstream.alias("Plan", Plan.class);
+				xstream.alias("memberNames", String.class);
+				xstream.addImplicitCollection(Plan.class, "memberNames");
+				Plan plan = (Plan) xstream.fromXML(response);
+				if (plan != null) {
+					List<String> members = plan.getMemberNames();
+
+					if (members != null && !members.isEmpty()) {
+
+						Button membersAttending = (Button) findViewById(R.id.seeMembersButton);
+						membersAttending.setText("Members Attending ("
+								+ String.valueOf(members.size()) + ") >>");
+						TextView rsvpLabel = (TextView) findViewById(R.id.rsvpLabel);
+						if (members.contains(phone)) {
+							rsvpLabel.setText("You are going, Click here to");
+							rsvpPlanButton.setText("Say No");
+						} else {
+							rsvpLabel
+									.setText("Are you attending? Click here to");
+							rsvpPlanButton.setText("Say Yes");
+						}
+						rsvpPlanButton.setTextColor(getResources().getColor(
+								R.color.button_text));
+					}
+				}
+			}
+			pDlg.dismiss();
+		}
+
 	}
 
 }

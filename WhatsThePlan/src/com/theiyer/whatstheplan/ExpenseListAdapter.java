@@ -29,6 +29,21 @@ public class ExpenseListAdapter extends BaseAdapter {
 		inflater = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
+	
+	public ExpenseListAdapter(Context context, Activity a) {
+		this.context = context;
+		activity = a;
+		inflater = (LayoutInflater) activity
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
+	
+	public List<ExpenseRow> getData() {
+		return data;
+	}
+
+	public void setData(List<ExpenseRow> data) {
+		this.data = data;
+	}
 
 	@Override
 	public int getCount() {

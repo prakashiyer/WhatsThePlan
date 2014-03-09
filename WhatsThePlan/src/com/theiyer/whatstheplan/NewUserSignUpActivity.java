@@ -1,17 +1,20 @@
 package com.theiyer.whatstheplan;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -125,64 +128,23 @@ public class NewUserSignUpActivity extends Activity {
 			String insertQuery = "/addUser?name="
 					+ userName.replace(" ", "%20") + "&phone=" + phone;
 
-			RestWebServiceClient restClient = new RestWebServiceClient(this);
-			try {
-				String response = restClient.execute(new String[] { insertQuery })
-						.get();
-
-				if (response != null) {
-					XStream xstream = new XStream();
-					xstream.alias(WTPConstants.XS_USER, User.class);
-					xstream.alias(WTPConstants.XS_GROUP_NAMES, String.class);
-					xstream.addImplicitCollection(User.class,
-							WTPConstants.XS_GROUP_NAMES, WTPConstants.XS_GROUP_NAMES, String.class);
-					xstream.alias(WTPConstants.XS_PENDING_GROUP_NAMES, String.class);
-					xstream.addImplicitCollection(User.class,
-							WTPConstants.XS_PENDING_GROUP_NAMES, WTPConstants.XS_PENDING_GROUP_NAMES, String.class);
-					User user = (User) xstream
-							.fromXML(response);
-					if (user != null && phone.equals(user.getPhone())) {
-						
-						SharedPreferences prefs = getSharedPreferences("Prefs",
-								Activity.MODE_PRIVATE);
-						SharedPreferences.Editor editor = prefs.edit();
-						editor.putString("phone", user.getPhone());
-						editor.putString("userName", user.getName());
-						editor.apply();
-
-						AccountManager am = AccountManager.get(this);
-						final Account account = new Account(user.getPhone(),
-								WTPConstants.ACCOUNT_ADDRESS);
-						final Bundle bundle = new Bundle();
-						bundle.putString("userName", user.getName());
-						bundle.putString("phone", user.getPhone());
-						bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
-								account.name);
-						am.addAccountExplicitly(account, user.getPhone(), bundle);
-						am.setAuthToken(account, "Full Access", user.getPhone());
-
-						button.setTextColor(getResources().getColor(
-								R.color.button_text));
-						Intent intent = new Intent(this,
-								ProfileImageUploadActivity.class);
-						startActivity(intent);
-					} else {
-						Toast.makeText(getApplicationContext(),
-								"Something's wrong. Try later.",
-								Toast.LENGTH_LONG).show();
-					}
-				} else {
-					Toast.makeText(getApplicationContext(),
-							"Something's wrong. Try later.",
-							Toast.LENGTH_LONG).show();
-				}
-			} catch (InterruptedException e) {
-				Toast.makeText(getApplicationContext(),
-						"Something's wrong. Try later.", Toast.LENGTH_LONG).show();
-			} catch (ExecutionException e) {
-				Toast.makeText(getApplicationContext(),
-						"Something's wrong. Try later.", Toast.LENGTH_LONG).show();
-			}
+			WebServiceClient restClient = new WebServiceClient(this);
+			restClient.execute(new String[] { insertQuery });
+			AccountManager am = AccountManager.get(this);
+			final Account account = new Account(phone,
+					WTPConstants.ACCOUNT_ADDRESS);
+			final Bundle bundle = new Bundle();
+			bundle.putString("userName", userName);
+			bundle.putString("phone", phone);
+			bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
+					account.name);
+			am.addAccountExplicitly(account, phone, bundle);
+			am.setAuthToken(account, "Full Access", phone);
+			Intent intent = new Intent(this,
+					ProfileImageUploadActivity.class);
+			button.setTextColor(getResources().getColor(
+					R.color.button_text));
+			startActivity(intent);
 		}
 	}
 
@@ -291,5 +253,82 @@ public class NewUserSignUpActivity extends Activity {
 		editor.apply();		
 	}
 	
+	public class WebServiceClient extends AsyncTask<String, Integer, String> {
 
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			if (response != null) {
+				XStream xstream = new XStream();
+				xstream.alias(WTPConstants.XS_USER, User.class);
+				xstream.alias(WTPConstants.XS_GROUP_NAMES, String.class);
+				xstream.addImplicitCollection(User.class,
+						WTPConstants.XS_GROUP_NAMES, WTPConstants.XS_GROUP_NAMES, String.class);
+				xstream.alias(WTPConstants.XS_PENDING_GROUP_NAMES, String.class);
+				xstream.addImplicitCollection(User.class,
+						WTPConstants.XS_PENDING_GROUP_NAMES, WTPConstants.XS_PENDING_GROUP_NAMES, String.class);
+				User user = (User) xstream
+						.fromXML(response);
+				if (user != null) {
+					
+					SharedPreferences prefs = getSharedPreferences("Prefs",
+							Activity.MODE_PRIVATE);
+					SharedPreferences.Editor editor = prefs.edit();
+					editor.putString("phone", user.getPhone());
+					editor.putString("userName", user.getName());
+					editor.apply();
+
+					
+
+					
+				} 
+			} 
+			pDlg.dismiss();
+		}
+
+	}
 }

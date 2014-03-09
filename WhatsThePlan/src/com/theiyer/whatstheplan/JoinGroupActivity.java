@@ -4,10 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
@@ -15,21 +23,27 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.theiyer.whatstheplan.entity.Group;
+import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class JoinGroupActivity extends Activity {
 
-	ListView list;
-	GroupListAdapter adapter;
-	List<Map<String, byte[]>> groupsList;
+	private ListView list;
+	private GroupListAdapter adapter;
+	private List<Map<String, byte[]>> groupsList;
+	private String phone ;
+	private List<String> members;
+	private List<String> pendingMembers;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,84 +75,12 @@ public class JoinGroupActivity extends Activity {
 			String groupName = intent.getStringExtra(SearchManager.QUERY);
 			// Search Group Names and add to a list
 			String searchQuery = "/searchGroup?groupName=" + groupName.replace(" ", "%20");
-			RestWebServiceClient restClient = new RestWebServiceClient(this);
+		    WebServiceClient restClient = new WebServiceClient(this);
 			TextView groupNameLabel= (TextView) findViewById(R.id.groupSearchResultsLabel);
-			TextView errorFieldValue = (TextView) findViewById(R.id.joinGroupErrorField);
-			errorFieldValue.setText("");
 			groupNameLabel.setVisibility(TextView.INVISIBLE);
-			try {
-				String response = restClient.execute(
-						new String[] { searchQuery }).get();
-				SharedPreferences prefs = getSharedPreferences("Prefs",
-						Activity.MODE_PRIVATE);
-				if (response != null) {
-					XStream xstream = new XStream();
-					xstream.alias("Group", Group.class);
-					
-					xstream.alias("members", String.class);
-					xstream.addImplicitCollection(Group.class, "members","members",String.class);
-					xstream.alias("planNames", String.class);
-					xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
-					xstream.alias("pendingMembers", String.class);
-					xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
-					Group group = (Group) xstream.fromXML(response);
-					if (group != null && groupName.equals(group.getName())) {
-
-						groupsList = new ArrayList<Map<String, byte[]>>();
-
-						ImageRetrieveRestWebServiceClient imageClient = new ImageRetrieveRestWebServiceClient(
-								this);
-						Map<String, byte[]> groupDetails = new HashMap<String, byte[]>();
-						byte[] image = imageClient.execute(
-								new String[] { "fetchGroupImage", groupName.replace(" ", "%20") })
-								.get();
-						groupDetails.put(groupName, image);
-						groupsList.add(groupDetails);
-						
-						if(!groupsList.isEmpty()){
-							list = (ListView) findViewById(R.id.joingroupList);
-
-							// Getting adapter by passing xml data ArrayList
-							adapter = new GroupListAdapter(this, groupsList);
-							list.setAdapter(adapter);
-						}
-						
-						
-						groupNameLabel.setVisibility(TextView.VISIBLE);
-						TextView groupNameValue = (TextView) findViewById(R.id.groupSearchResultValue);
-						groupNameValue.setText(groupName);
-
-						String phone = prefs.getString("phone","");
-						List<String> members = group.getMembers();
-						List<String> pendingMembers = group.getPendingMembers();
-						if(pendingMembers == null || (!pendingMembers.contains(phone) && !members.contains(phone))){
-							Button joinButton = (Button) findViewById(R.id.joinGroupButton);
-							joinButton.setVisibility(Button.VISIBLE);
-						} else {
-							errorFieldValue
-									.setText("You are either already a part of this group or have applied for membership!");
-						}
-						
-					} else {
-						
-						errorFieldValue
-								.setText("This name is not available. Enter a unique valid group name!");
-					}
-				} else {
-					setContentView(R.layout.join_group);
-					errorFieldValue
-							.setText("This name is not available. Enter a unique valid group name!");
-				}
-
-			} catch (InterruptedException e) {
-				
-				errorFieldValue
-						.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-			} catch (ExecutionException e) {
-				
-				errorFieldValue
-						.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-			}
+			adapter = new GroupListAdapter(this);
+			restClient.execute(
+					new String[] { searchQuery });			
 		}
 	}
 
@@ -154,37 +96,190 @@ public class JoinGroupActivity extends Activity {
 
 		String joinQuery = "/joinGroup?groupName=" + groupName.replace(" ", "%20")
 				+ "&phone=" + phone;
-		TextView errorFieldValue = (TextView) findViewById(R.id.joinGroupErrorField);
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			String response = restClient.execute(
-					new String[] { joinQuery }).get();
-			XStream xstream = new XStream();
-			xstream.alias("Group", Group.class);
-			
-			xstream.alias("members", String.class);
-			xstream.addImplicitCollection(Group.class, "members","members",String.class);
-			xstream.alias("planNames", String.class);
-			xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
-			Group group = (Group) xstream.fromXML(response);
-			if (group != null && groupName.equals(group.getName())) {
-				Intent intent = new Intent(this, GroupsListActivity.class);
-				startActivity(intent);
-			} else {
-				setContentView(R.layout.join_group);
-				errorFieldValue
-						.setText("The join request failed. Try again later!");
-			}
-		} catch (InterruptedException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		} catch (ExecutionException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		}
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(
+				new String[] { joinQuery });
+		Intent intent = new Intent(this, GroupsListActivity.class);
+		startActivity(intent);
 		
 	}
+	
+	private class WebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+		private boolean isSearchCall;
+
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+
+			if(params[0].contains("searchGroup")){
+				isSearchCall = true;
+			}
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			if (response != null && isSearchCall) {
+				XStream xstream = new XStream();
+				xstream.alias("Group", Group.class);
+				
+				xstream.alias("members", String.class);
+				xstream.addImplicitCollection(Group.class, "members","members",String.class);
+				xstream.alias("planNames", String.class);
+				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
+				xstream.alias("pendingMembers", String.class);
+				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
+				Group group = (Group) xstream.fromXML(response);
+				if (group != null) {
+
+					String groupName = group.getName();
+					groupsList = new ArrayList<Map<String, byte[]>>();
+
+					WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
+							mContext);
+					list = (ListView) findViewById(R.id.joingroupList);
+					phone = prefs.getString("phone","");
+					members = group.getMembers();
+				    pendingMembers = group.getPendingMembers();
+					imageClient.execute(
+							new String[] { "fetchGroupImage", groupName.replace(" ", "%20") });
+					
+				} else {
+					Toast.makeText(mContext,
+							"Seems like an invalid group name", Toast.LENGTH_LONG)
+							.show();
+				}
+					 
+			} else {
+				setContentView(R.layout.join_group);
+				Toast.makeText(mContext,
+						"Seems like an invalid group name", Toast.LENGTH_LONG)
+						.show();
+			}
+			pDlg.dismiss();
+		}
+
+	}
+	
+	public class WebImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+		private String groupName;
+
+		public WebImageRetrieveRestWebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			showProgressDialog();
+
+		}
+
+		@Override
+		protected byte[] doInBackground(String... params) {
+			String method = params[0];
+			groupName = params[1].replace("%20", " ");
+			String path = WTPConstants.SERVICE_PATH+"/"+method;
+
+			if("fetchUserImage".equals(method)){
+	        	path = path+"?phone="+params[1];
+	        } else {
+	        	path = path+"?groupName="+params[1];
+	        }
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				byte[] byteresult = EntityUtils.toByteArray(results);
+				return byteresult;
+			} catch (Exception e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(byte[] response) {
+			TextView groupNameLabel= (TextView) findViewById(R.id.groupSearchResultsLabel);
+			TextView groupNameValue = (TextView) findViewById(R.id.groupSearchResultValue);
+			
+			if(response != null){
+				Map<String, byte[]> groupDetails = new HashMap<String, byte[]>();
+				groupDetails.put(groupName, response);
+				groupsList.add(groupDetails);
+				adapter.setData(groupsList);
+				list.setAdapter(adapter);
+				groupNameLabel.setVisibility(TextView.VISIBLE);
+				groupNameValue.setText(groupName);
+				
+				if(pendingMembers == null || (!pendingMembers.contains(phone) && !members.contains(phone))){
+					Button joinButton = (Button) findViewById(R.id.joinGroupButton);
+					joinButton.setVisibility(Button.VISIBLE);
+				}
+			}
+			
+			pDlg.dismiss();
+		}
+
+	}
+
 
 }

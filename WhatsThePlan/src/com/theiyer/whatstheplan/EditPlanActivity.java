@@ -1,13 +1,22 @@
 package com.theiyer.whatstheplan;
 
-import java.util.concurrent.ExecutionException;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -17,6 +26,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Plan;
+import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class EditPlanActivity  extends FragmentActivity {
@@ -44,59 +54,11 @@ public class EditPlanActivity  extends FragmentActivity {
 		selectedPlanValue.setText(selectedPlan);
 		oldName = selectedPlan;
 
-		TextView errorFieldValue = (TextView) findViewById(R.id.viewPlanErrorField);
 		String searchQuery = "/fetchPlan?planName="
 				+ selectedPlan.replace(" ", "%20");
 
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			String response = restClient.execute(new String[] { searchQuery })
-					.get();
-
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("Plan", Plan.class);
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
-				Plan plan = (Plan) xstream.fromXML(response);
-				if (plan != null && selectedPlan.equals(plan.getName())) {
-					
-					TextView planDateValue = (TextView) findViewById(R.id.newPlanDateValue);
-					planDateValue
-							.setText(plan.getStartTime().substring(0,10));
-					
-					TextView planTimeValue = (TextView) findViewById(R.id.newPlanTimeValue);
-					String time = plan.getStartTime().substring(11,16);
-					String hour = time.substring(0, 2);
-	            	String min = time.substring(3);
-	            	int hourInt = Integer.valueOf(hour);
-	            	String ampm = "AM";
-	            	if(hourInt > 12){
-	            		hour = String.valueOf(hourInt - 12);
-	            		if(Integer.valueOf(hour) < 10){
-	            			hour = "0"+hour;
-	            		}
-	            		ampm = "PM";
-	            	}
-	            	
-					planTimeValue
-							.setText(hour+":"+min+" "+ampm);
-
-					EditText planLocationValue = (EditText) findViewById(R.id.editPlanLocationValue);
-					planLocationValue
-							.setText(plan.getLocation());
-
-				}
-			}
-		} catch (InterruptedException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		} catch (ExecutionException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		}
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(new String[] { searchQuery });
 	}
 	
 	/** Called when the user clicks the Edit Plan button */
@@ -138,42 +100,13 @@ public class EditPlanActivity  extends FragmentActivity {
 
 		TextView errorFieldValue = (TextView) findViewById(R.id.editPlanErrorField);
 		errorFieldValue.setText("");
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			String response = restClient.execute(new String[] { insertQuery })
-					.get();
-
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("Plan", Plan.class);
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
-				Plan plan = (Plan) xstream.fromXML(response);
-				if (plan != null && planName.equals(plan.getName())) {
-
-					SharedPreferences.Editor editor = prefs.edit();
-					editor.putString("selectedPlan", planName);
-					editor.apply();
-					Intent intent = new Intent(this, ViewMyPlansActivity.class);
-					startActivity(intent);
-				} else {
-					
-					errorFieldValue.setText("Plan Edit Failed");
-				}
-			} else {
-				errorFieldValue.setText("Plan Edit Failed");
-			}
-
-		} catch (InterruptedException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		} catch (ExecutionException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		}
-
+		WebServiceClient restClient = new WebServiceClient(this);
+		 restClient.execute(new String[] { insertQuery });
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString("selectedPlan", planName);
+		editor.apply();
+		Intent intent = new Intent(this, ViewMyPlansActivity.class);
+		startActivity(intent);
 	}
 	
 	public void setTime(View v) {
@@ -196,6 +129,99 @@ public class EditPlanActivity  extends FragmentActivity {
 	public void onBackPressed() {
 	    Intent intent = new Intent(this, ViewMyPlansActivity.class);
 	    startActivity(intent);
+	}
+	
+	public class WebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+		private boolean isFetchPlan;
+
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+
+			if(params[0].contains("fetchPlan")){
+				isFetchPlan = true;
+			}
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			if (response != null && isFetchPlan) {
+				XStream xstream = new XStream();
+				xstream.alias("Plan", Plan.class);
+				xstream.alias("memberNames", String.class);
+				xstream.addImplicitCollection(Plan.class, "memberNames");
+				Plan plan = (Plan) xstream.fromXML(response);
+				if (plan != null) {
+					
+					TextView planDateValue = (TextView) findViewById(R.id.newPlanDateValue);
+					planDateValue
+							.setText(plan.getStartTime().substring(0,10));
+					
+					TextView planTimeValue = (TextView) findViewById(R.id.newPlanTimeValue);
+					String time = plan.getStartTime().substring(11,16);
+					String hour = time.substring(0, 2);
+	            	String min = time.substring(3);
+	            	int hourInt = Integer.valueOf(hour);
+	            	String ampm = "AM";
+	            	if(hourInt > 12){
+	            		hour = String.valueOf(hourInt - 12);
+	            		if(Integer.valueOf(hour) < 10){
+	            			hour = "0"+hour;
+	            		}
+	            		ampm = "PM";
+	            	}
+	            	
+					planTimeValue
+							.setText(hour+":"+min+" "+ampm);
+
+					EditText planLocationValue = (EditText) findViewById(R.id.editPlanLocationValue);
+					planLocationValue
+							.setText(plan.getLocation());
+
+				}
+			}
+			pDlg.dismiss();
+		}
+
 	}
 
 }

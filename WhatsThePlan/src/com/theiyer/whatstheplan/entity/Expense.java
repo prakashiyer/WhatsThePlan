@@ -3,7 +3,7 @@ package com.theiyer.whatstheplan.entity;
 public class Expense {
 
 	private int id;
-	private String emailId;
+	private String phone;
 	private String plan;
 	private String group;
 	private String title;
@@ -24,12 +24,12 @@ public class Expense {
 	}
 
 
-	public String getEmailId() {
-		return emailId;
+	public String getPhone() {
+		return phone;
 	}
 
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public String getPlan() {

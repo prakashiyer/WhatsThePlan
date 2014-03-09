@@ -1,5 +1,6 @@
 package com.theiyer.whatstheplan;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -72,11 +73,13 @@ public class GCMIntentService extends GCMBaseIntentService {
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
-        .setSmallIcon(R.drawable.ic_stat_name)
+        .setSmallIcon(R.drawable.ic_launcher)
         .setContentTitle("GCM Notification")
         .setStyle(new NotificationCompat.BigTextStyle()
         .bigText(msg))
+        .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
         .setContentText(msg);
+       
 
         System.out.println("Print notification !!!!");
         mBuilder.setContentIntent(contentIntent);

@@ -1,20 +1,28 @@
 package com.theiyer.whatstheplan;
 
-import java.util.concurrent.ExecutionException;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.theiyer.whatstheplan.entity.Group;
-import com.thoughtworks.xstream.XStream;
+import com.theiyer.whatstheplan.util.WTPConstants;
 
 public class LeaveGroupActivity extends Activity {
 
@@ -52,42 +60,67 @@ public class LeaveGroupActivity extends Activity {
 		String selectedGroup = prefs.getString("selectedGroup", "New User");
 		String searchQuery = "/leaveGroup?phone=" + phone
 				+ "&groupName=" + selectedGroup.replace(" ", "%20");
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(
+				new String[] { searchQuery });
+		Intent intent = new Intent(this, HomePlanActivity.class);
+		
+	     startActivity(intent);
+	}
+	
+	private class WebServiceClient extends AsyncTask<String, Integer, String> {
 
-		TextView errorFieldValue = (TextView) findViewById(R.id.leaveGroupErrorField);
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			String response = restClient.execute(
-					new String[] { searchQuery }).get();
+		private Context mContext;
+		private ProgressDialog pDlg;
 
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("Group", Group.class);
-				xstream.alias("members", String.class);
-				xstream.addImplicitCollection(Group.class, "members","members",String.class);
-				xstream.alias("planNames", String.class);
-				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
-				xstream.alias("pendingMembers", String.class);
-				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
-				Group group = (Group) xstream.fromXML(response);
-				if (group != null && selectedGroup.equals(group.getName())) {
-					Intent intent = new Intent(this, HomePlanActivity.class);
-				     startActivity(intent);
-				} else {
-					errorFieldValue
-							.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-				}
-			} else {
-				errorFieldValue
-						.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-			}
-		} catch (InterruptedException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		} catch (ExecutionException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
 		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			
+			
+			pDlg.dismiss();
+		}
+
 	}
 }

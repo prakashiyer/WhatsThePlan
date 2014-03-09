@@ -1,6 +1,12 @@
 package com.theiyer.whatstheplan;
 
-import java.util.concurrent.ExecutionException;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -8,16 +14,20 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.theiyer.whatstheplan.util.WTPConstants;
 
 public class DeactivateAccountActivity extends Activity {
 
@@ -61,31 +71,21 @@ public class DeactivateAccountActivity extends Activity {
 
 		String searchQuery = "/deleteAccount?phone=" + phone;
 
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			restClient.execute(
-					new String[] { searchQuery }).get();
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(
+				new String[] { searchQuery });
+		
+		 AccountManager am = AccountManager.get(this);
+		 Account[] accounts = am.getAccountsByType("com.theiyer.whatstheplan");
+			if(accounts != null && accounts.length > 0){
+				Account account = accounts[0];
+				am.removeAccount(account, new OnTokenAcquired(),          // Callback called when a token is successfully acquired
+					    new Handler());
+			}
 			
-			 AccountManager am = AccountManager.get(this);
-			 Account[] accounts = am.getAccountsByType("com.theiyer.whatstheplan");
-				if(accounts != null && accounts.length > 0){
-					Account account = accounts[0];
-					am.removeAccount(account, new OnTokenAcquired(),          // Callback called when a token is successfully acquired
-						    new Handler());
-				}
-				
-			changePassButton.setTextColor(getResources().getColor(R.color.button_text));
-			Intent intent = new Intent(this, MainActivity.class);
-			startActivity(intent);
-		} catch (InterruptedException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		} catch (ExecutionException e) {
-			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		}
+		changePassButton.setTextColor(getResources().getColor(R.color.button_text));
+		Intent intent = new Intent(this, MainActivity.class);
+		startActivity(intent);
 	}
 	
 	private class OnTokenAcquired implements AccountManagerCallback<Boolean> {
@@ -96,4 +96,59 @@ public class DeactivateAccountActivity extends Activity {
 			startActivity(intent);
 	    }
 	}
+	
+	public class WebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			pDlg.dismiss();
+		}
+
+	}
+
 }

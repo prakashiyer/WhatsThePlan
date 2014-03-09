@@ -19,13 +19,28 @@ public class MemberListAdapter extends BaseAdapter {
 		 
 	    private Activity activity;
 	    private List<Map<String, byte[]>> data; 
-	    private static LayoutInflater inflater=null;
+	   
+
+		private static LayoutInflater inflater=null;
 	 
 	    public MemberListAdapter(Activity a, List<Map<String, byte[]>> d) {
 	        activity = a;
 	        data=d;
 	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	    }
+	    
+	    public MemberListAdapter(Activity a) {
+	        activity = a;
+	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    }
+	    
+	    public List<Map<String, byte[]>> getData() {
+			return data;
+		}
+
+		public void setData(List<Map<String, byte[]>> data) {
+			this.data = data;
+		}
 
 		@Override
 		public int getCount() {

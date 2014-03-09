@@ -1,9 +1,26 @@
 package com.theiyer.whatstheplan;
 
+import java.io.File;
 import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
+import com.theiyer.whatstheplan.util.WTPConstants;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -12,6 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -41,29 +59,13 @@ public class GroupImageChangeActivity extends Activity {
 
 		imgView = (ImageView) findViewById(R.id.changeGroupPicView);
 		
-        ImageRetrieveRestWebServiceClient imageRetrieveClient = new ImageRetrieveRestWebServiceClient(this);
+        WebImageRetrieveRestWebServiceClient imageRetrieveClient = new WebImageRetrieveRestWebServiceClient(this);
 		
-		try {
-			SharedPreferences prefs = getSharedPreferences("Prefs",
-					Activity.MODE_PRIVATE);
-			String selectedGroup = prefs.getString("selectedGroup", "");
-			byte[] response = imageRetrieveClient.execute(
-					new String[] { "fetchGroupImage", selectedGroup}).get();
-			if (response != null) {
-				Bitmap img = BitmapFactory.decodeByteArray(response, 0,
-						response.length);
-
-				imgView.setImageBitmap(img);
-			} else {
-				imgView.setImageResource(R.drawable.ic_launcher);
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			
-		}
+        SharedPreferences prefs = getSharedPreferences("Prefs",
+				Activity.MODE_PRIVATE);
+		String selectedGroup = prefs.getString("selectedGroup", "");
+		imageRetrieveClient.execute(
+				new String[] { "fetchGroupImage", selectedGroup});
 
 	}
 
@@ -73,35 +75,19 @@ public class GroupImageChangeActivity extends Activity {
 		if (bitmap == null) {
 			Toast.makeText(getApplicationContext(), "Please select image",
 					Toast.LENGTH_SHORT).show();
+			button.setTextColor(getResources().getColor(R.color.button_text));
 		} else {
 
-			try {
-				SharedPreferences prefs = getSharedPreferences("Prefs",
-						Activity.MODE_PRIVATE);
-				String selectedGroup = prefs.getString("selectedGroup", "");
-				
-				ImageRestWebServiceClient restClient = new ImageRestWebServiceClient(
-						this);
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			String selectedGroup = prefs.getString("selectedGroup", "");
+			Log.i("GROUP SELECTED", selectedGroup);
+			
+			WebImageRestWebServiceClient restClient = new WebImageRestWebServiceClient(
+					this);
 
-				byte[] response = restClient.execute(
-						new String[] { "uploadGroupImage", selectedGroup, filePath }).get();
-				if (response != null) {
-					Bitmap img = BitmapFactory.decodeByteArray(response, 0,
-							response.length);
-
-					imgView.setImageBitmap(img);
-					Toast.makeText(getApplicationContext(),
-							"Selected Photo has been set", Toast.LENGTH_LONG)
-							.show();
-				}
-
-			} catch (InterruptedException e) {
-				
-
-			} catch (ExecutionException e) {
-				
-
-			}
+			restClient.execute(
+					new String[] { "uploadGroupImage", selectedGroup, filePath });
 		}
 		
 	}
@@ -216,4 +202,161 @@ public class GroupImageChangeActivity extends Activity {
 		imgView.setImageBitmap(bitmap);
 
 	}
+	
+	private class WebImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public WebImageRetrieveRestWebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			showProgressDialog();
+
+		}
+
+		@Override
+		protected byte[] doInBackground(String... params) {
+			String method = params[0];
+			String path = WTPConstants.SERVICE_PATH+"/"+method;
+
+			if("fetchUserImage".equals(method)){
+	        	path = path+"?phone="+params[1];
+	        } else {
+	        	path = path+"?groupName="+params[1];
+	        }
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				byte[] byteresult = EntityUtils.toByteArray(results);
+				return byteresult;
+			} catch (Exception e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(byte[] response) {
+			
+			if (response != null) {
+				Bitmap img = BitmapFactory.decodeByteArray(response, 0,
+						response.length);
+
+				if(img!=null){
+					imgView.setImageBitmap(img);
+				}
+				
+			} else {
+				imgView.setImageResource(R.drawable.ic_launcher);
+			}
+			
+			pDlg.dismiss();
+		}
+
+	}
+	
+	private class WebImageRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public WebImageRestWebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			showProgressDialog();
+
+		}
+
+		@Override
+		protected byte[] doInBackground(String... params) {
+			
+			String method = params[0];
+			String path = WTPConstants.SERVICE_PATH+"/"+method;
+
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpPost post = new HttpPost(path);
+			HttpEntity results = null;
+			try {
+		        MultipartEntity entity = new MultipartEntity();
+		       
+		        if("uploadUserImage".equals(method)){
+		        	entity.addPart("phone", new StringBody(params[1]));
+		        } else {
+		        	entity.addPart("groupName", new StringBody(params[1]));
+		        }
+		        
+		        entity.addPart("image", new FileBody(new File(params[2])));
+		        post.setEntity(entity);
+
+		        HttpResponse response = client.execute(target, post);
+		        results = response.getEntity(); 
+				byte[] byteresult = EntityUtils.toByteArray(results);
+				return byteresult;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(byte[] response) {
+			
+			
+			Button button = (Button) findViewById(R.id.uploadChangeGroupImageButton);
+			
+			if (response != null) {
+				Bitmap img = BitmapFactory.decodeByteArray(response, 0,
+						response.length);
+
+				imgView.setImageBitmap(img);
+				Toast.makeText(getApplicationContext(),
+						"Selected Photo has been set", Toast.LENGTH_LONG)
+						.show();
+				
+			} else {
+				Toast.makeText(getApplicationContext(),
+						"Photo upload failed. Please try again later.", Toast.LENGTH_LONG)
+						.show();
+			}
+			button.setTextColor(getResources().getColor(R.color.button_text));
+			pDlg.dismiss();
+		}
+
+	}
+
 }

@@ -1,15 +1,24 @@
 package com.theiyer.whatstheplan;
 
-import java.util.concurrent.ExecutionException;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -21,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Plan;
+import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class CreatePlanActivity extends FragmentActivity {
@@ -47,23 +57,11 @@ public class CreatePlanActivity extends FragmentActivity {
 		TextView selectedGroupValue = (TextView) findViewById(R.id.selectedgroupNameField);
 		selectedGroupValue.setText(" " + selectedGroup);
 
-		ImageRetrieveRestWebServiceClient imageClient = new ImageRetrieveRestWebServiceClient(
+		WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
 				this);
-		try {
-
-			byte[] image = imageClient.execute(
-					new String[] { "fetchGroupImage",
-							selectedGroup.replace(" ", "%20") }).get();
-			Bitmap img = BitmapFactory.decodeByteArray(image, 0, image.length);
-
-			ImageView imgView = (ImageView) findViewById(R.id.selectedgroupPicThumbnail);
-			imgView.setImageBitmap(img);
-
-		} catch (InterruptedException e) {
-			
-		} catch (ExecutionException e) {
-			
-		}
+		imageClient.execute(
+				new String[] { "fetchGroupImage",
+						selectedGroup.replace(" ", "%20") });
 	}
 
 	/** Called when the user clicks the Register Plan button */
@@ -105,47 +103,16 @@ public class CreatePlanActivity extends FragmentActivity {
 
 		TextView errorFieldValue = (TextView) findViewById(R.id.createPlanErrorField);
 		errorFieldValue.setText("");
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			String response = restClient.execute(new String[] { insertQuery })
-					.get();
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(new String[] { insertQuery, phone });
 
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("Plan", Plan.class);
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
-				Plan plan = (Plan) xstream.fromXML(response);
-				if (plan != null && planName.equals(plan.getName())) {
-
-					SharedPreferences.Editor editor = prefs.edit();
-					editor.putString("selectedPlan", planName);
-					editor.apply();
-
-					CalendarHelper calendarHelper = new CalendarHelper(this);
-					calendarHelper.execute(new String[] { plan.getStartTime(),
-							plan.getName(), plan.getLocation(),
-							String.valueOf(plan.getId()), phone });
-					Intent intent = new Intent(this, ViewMyPlansActivity.class);
-					startActivity(intent);
-				} else {
-
-					errorFieldValue.setText("Plan Addition Failed");
-				}
-			} else {
-				errorFieldValue.setText("Plan Addition Failed");
-			}
-
-		} catch (InterruptedException e) {
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString("selectedPlan", planName);
+		editor.apply();
 			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		} catch (ExecutionException e) {
 			
-			errorFieldValue
-					.setText("Apologies for any inconvenience caused. There is a problem with the service!");
-		}
 
+		
 	}
 
 	public void setTime(View v) {
@@ -176,5 +143,143 @@ public class CreatePlanActivity extends FragmentActivity {
 	    Intent intent = new Intent(this, ViewMyGroupActivity.class);
 	    startActivity(intent);
 	}
+	
+	public class WebImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
 
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public WebImageRetrieveRestWebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			showProgressDialog();
+
+		}
+
+		@Override
+		protected byte[] doInBackground(String... params) {
+			String method = params[0];
+			String path = WTPConstants.SERVICE_PATH+"/"+method;
+
+			if("fetchUserImage".equals(method)){
+	        	path = path+"?phone="+params[1];
+	        } else {
+	        	path = path+"?groupName="+params[1];
+	        }
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				byte[] byteresult = EntityUtils.toByteArray(results);
+				return byteresult;
+			} catch (Exception e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(byte[] response) {
+			
+			
+			if(response != null){
+				Bitmap img = BitmapFactory.decodeByteArray(response, 0, response.length);
+
+				ImageView imgView = (ImageView) findViewById(R.id.selectedgroupPicThumbnail);
+				imgView.setImageBitmap(img);
+				
+			}
+			
+			pDlg.dismiss();
+		}
+	}
+	
+	public class WebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+		private String phone;
+
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+			phone = params[1];
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			
+			if (response != null) {
+				XStream xstream = new XStream();
+				xstream.alias("Plan", Plan.class);
+				xstream.alias("memberNames", String.class);
+				xstream.addImplicitCollection(Plan.class, "memberNames");
+				Plan plan = (Plan) xstream.fromXML(response);
+				if (plan != null) {
+					CalendarHelper calendarHelper = new CalendarHelper(mContext);
+					calendarHelper.execute(new String[] { plan.getStartTime(),
+							plan.getName(), plan.getLocation(),
+							String.valueOf(plan.getId()), phone });
+					Intent intent = new Intent(mContext, ViewMyPlansActivity.class);
+					startActivity(intent);
+				} 
+			}
+			pDlg.dismiss();
+		}
+
+	}
 }

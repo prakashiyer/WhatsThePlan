@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -16,6 +24,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -32,17 +41,19 @@ import android.widget.TextView;
 import com.theiyer.whatstheplan.entity.Group;
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.entity.PlanList;
+import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewMyGroupActivity extends Activity implements
-		OnItemSelectedListener/*,LoaderCallbacks<RESTLoader.RESTResponse>*/ {
+		OnItemSelectedListener {
 	private static final String TAG = "ViewMyGroupActivity";
 	private boolean isAdmin;
 	private Context context;
 	private String selectedGroup;
 	private String phone;
-	private ProgressDialog pDlg;
-	
+	private String operation;
+	private Spinner plansListSpinner;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,107 +71,32 @@ public class ViewMyGroupActivity extends Activity implements
 
 		selectedGroup = prefs.getString("selectedGroup", "");
 		phone = prefs.getString("phone", "");
-		
 
 		TextView selectedGroupValue = (TextView) findViewById(R.id.selectedGroupValue);
 		selectedGroupValue.setText(" " + selectedGroup);
-		
-		String searchGrpQuery = "/searchGroup?groupName=" + selectedGroup.replace(" ", "%20");
 
-		RestWebServiceClient groupRestClient = new RestWebServiceClient(this);
-		try {
-			
-			pDlg = new ProgressDialog(this);
-			pDlg.setMessage("Processing ....");
-			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDlg.setCancelable(false);
-			pDlg.show();
-			
-			groupRestClient.execute(new String[] { searchGrpQuery });
-			
-			String response = groupRestClient
-					.get();
+		String searchGrpQuery = "/searchGroup?groupName="
+				+ selectedGroup.replace(" ", "%20");
 
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("Group", Group.class);
-				
-				xstream.alias("members", String.class);
-				xstream.addImplicitCollection(Group.class, "members","members",String.class);
-				xstream.alias("planNames", String.class);
-				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
-				xstream.alias("pendingMembers", String.class);
-				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
-				Group group = (Group) xstream.fromXML(response);
-                if (group != null && selectedGroup.equals(group.getName())) {
-                	if(phone.equals(group.getAdmin())){
-                		isAdmin = true;
-                	} else {
-                		isAdmin = false;
-                	}
-                		
-                }
-			}
-		} catch (InterruptedException e) {
-			
-		} catch (ExecutionException e) {
-			
-		}
+		WebServiceClient groupRestClient = new WebServiceClient(this);
+		operation = "grpSearch";
+		groupRestClient.execute(new String[] { searchGrpQuery });
 
-		ImageRetrieveRestWebServiceClient imageClient = new ImageRetrieveRestWebServiceClient(
+		WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
 				this);
-		
-		try {
-			imageClient.execute(
-					new String[] { "fetchGroupImage",
-							selectedGroup.replace(" ", "%20") });
-						
-			RestWebServiceClient restClient = new RestWebServiceClient(this);
-			String searchQuery = "/fetchGroupPlans?groupName="
-					+ selectedGroup.replace(" ", "%20");
 
-			restClient.execute(new String[] { searchQuery });
-			String response = restClient
-					.get();
+		imageClient.execute(new String[] { "fetchGroupImage",
+				selectedGroup.replace(" ", "%20") });
 
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("PlanList", PlanList.class);
-				xstream.alias("plans", Plan.class);
-				xstream.addImplicitCollection(PlanList.class, "plans");
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
-				PlanList planList = (PlanList) xstream.fromXML(response);
-				if (planList != null && planList.getPlans() != null) {
+		WebServiceClient restClient = new WebServiceClient(this);
+		String searchQuery = "/fetchGroupPlans?groupName="
+				+ selectedGroup.replace(" ", "%20");
 
-					Spinner plansListSpinner = (Spinner) findViewById(R.id.viewGroupPlansListSpinner);
-					List<Plan> plans = planList.getPlans();
+		operation = "planSearch";
+		restClient.execute(new String[] { searchQuery });
 
-					if (plans != null && !plans.isEmpty()) {
-						List<String> planTitles = new ArrayList<String>();
-						for (Plan plan : plans) {
-							planTitles.add(plan.getName());
-						}
-						ArrayAdapter<String> plansAdapter = new ArrayAdapter<String>(
-								this,
-								android.R.layout.simple_spinner_dropdown_item,
-								planTitles);
-						plansListSpinner.setAdapter(plansAdapter);
-						plansListSpinner.setOnItemSelectedListener(this);
-						TextView planListLabel = (TextView) findViewById(R.id.groupPlanListLabel);
-						planListLabel.setVisibility(TextView.VISIBLE);
-						plansListSpinner.setVisibility(Spinner.VISIBLE);
-					}
-
-				}
-			}
-		} catch (InterruptedException e) {
-			
-		} catch (ExecutionException e) {
-			
-		}
-		pDlg.dismiss();
-
+		plansListSpinner = (Spinner) findViewById(R.id.viewGroupPlansListSpinner);
+		plansListSpinner.setOnItemSelectedListener(this);
 	}
 
 	@Override
@@ -234,8 +170,8 @@ public class ViewMyGroupActivity extends Activity implements
 
 		MenuItem leaveGroupItem = menu.findItem(R.id.leaveGroup);
 		leaveGroupItem.setVisible(true);
-		
-		if(isAdmin){
+
+		if (isAdmin) {
 			MenuItem inviteMembersItem = menu.findItem(R.id.inviteMembers);
 			inviteMembersItem.setVisible(true);
 		}
@@ -266,13 +202,11 @@ public class ViewMyGroupActivity extends Activity implements
 			startActivity(changeGroupPicIntent);
 			return true;
 		case (R.id.inviteMembers):
-			Intent inviteIntent = new Intent(this,
-					InviteListActivity.class);
+			Intent inviteIntent = new Intent(this, InviteListActivity.class);
 			startActivity(inviteIntent);
 			return true;
 		case (R.id.leaveGroup):
-			Intent leaveGroupIntent = new Intent(this,
-					LeaveGroupActivity.class);
+			Intent leaveGroupIntent = new Intent(this, LeaveGroupActivity.class);
 			startActivity(leaveGroupIntent);
 			return true;
 		case (R.id.deactivateAccount):
@@ -289,63 +223,92 @@ public class ViewMyGroupActivity extends Activity implements
 		}
 	}
 
-/*	@Override
-	public Loader<RESTLoader.RESTResponse> onCreateLoader(int arg0, Bundle args) {
-		if (args != null){
-			Log.i(TAG,"INVOKED"+args.getString("code"));
-			return new RESTLoader(context, args.getString("query"), args.getString("code"), args.getString("method"));
-		}
-		return null;
-	}
+	private class WebServiceClient extends AsyncTask<String, Integer, String> {
 
-	@Override
-	public void onLoadFinished(Loader<RESTLoader.RESTResponse> loader, RESTLoader.RESTResponse response) {
-		
-			Log.i(TAG,"INVOKED");
-			if (response != null && "group".equals(response.getCode())) {
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+
+			showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH + params[0];
+
+			// HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity();
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			
+			if (response != null && response.contains("<Group>")) {
+				Log.i(TAG, response);
 				XStream xstream = new XStream();
 				xstream.alias("Group", Group.class);
-				
-				xstream.alias("members", String.class);
-				xstream.addImplicitCollection(Group.class, "members","members",String.class);
-				xstream.alias("planNames", String.class);
-				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
-				xstream.alias("pendingMembers", String.class);
-				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
-				Group group = (Group) xstream.fromXML(response.getData());
-	            if (group != null && selectedGroup.equals(group.getName())) {
-	            	if(phone.equals(group.getAdmin())){
-	            		isAdmin = true;
-	            	} else {
-	            		isAdmin = false;
-	            	}
-	            		
-	            }
-			}
-			
-			if (response != null && "image".equals(response.getCode())) {
-				Log.i(TAG,"IN HERE");
-				byte[] image = response.getImage();
-				if(image != null){
-					Log.i(TAG,"IN HERE 1");
-					Bitmap img = BitmapFactory.decodeByteArray(image, 0, image.length);
 
-					ImageView imgView = (ImageView) findViewById(R.id.selectedGroupPicThumbnail);
-					imgView.setImageBitmap(img);
+				xstream.alias("members", String.class);
+				xstream.addImplicitCollection(Group.class, "members",
+						"members", String.class);
+				xstream.alias("planNames", String.class);
+				xstream.addImplicitCollection(Group.class, "planNames",
+						"planNames", String.class);
+				xstream.alias("pendingMembers", String.class);
+				xstream.addImplicitCollection(Group.class, "pendingMembers",
+						"pendingMembers", String.class);
+				Group group = (Group) xstream.fromXML(response);
+				if (group != null && selectedGroup.equals(group.getName())) {
+					if (phone.equals(group.getAdmin())) {
+						isAdmin = true;
+					} else {
+						isAdmin = false;
+					}
+
 				}
 			}
-			
-			if (response != null && "plans".equals(response.getCode())) {
+
+			if (response != null && response.contains("<PlanList>")) {
+				Log.i(TAG, response);
 				XStream xstream = new XStream();
 				xstream.alias("PlanList", PlanList.class);
 				xstream.alias("plans", Plan.class);
 				xstream.addImplicitCollection(PlanList.class, "plans");
 				xstream.alias("memberNames", String.class);
 				xstream.addImplicitCollection(Plan.class, "memberNames");
-				PlanList planList = (PlanList) xstream.fromXML(response.getData());
+				PlanList planList = (PlanList) xstream.fromXML(response);
 				if (planList != null && planList.getPlans() != null) {
 
-					Spinner plansListSpinner = (Spinner) findViewById(R.id.viewGroupPlansListSpinner);
 					List<Plan> plans = planList.getPlans();
 
 					if (plans != null && !plans.isEmpty()) {
@@ -354,11 +317,10 @@ public class ViewMyGroupActivity extends Activity implements
 							planTitles.add(plan.getName());
 						}
 						ArrayAdapter<String> plansAdapter = new ArrayAdapter<String>(
-								this,
+								context,
 								android.R.layout.simple_spinner_dropdown_item,
 								planTitles);
 						plansListSpinner.setAdapter(plansAdapter);
-						plansListSpinner.setOnItemSelectedListener(this);
 						TextView planListLabel = (TextView) findViewById(R.id.groupPlanListLabel);
 						planListLabel.setVisibility(TextView.VISIBLE);
 						plansListSpinner.setVisibility(Spinner.VISIBLE);
@@ -366,14 +328,86 @@ public class ViewMyGroupActivity extends Activity implements
 
 				}
 			}
-		
-		
+
+			pDlg.dismiss();
+		}
+
 	}
 
-	@Override
-	public void onLoaderReset(Loader<RESTLoader.RESTResponse> loader) {
-		// TODO Auto-generated method stub
-		
-	}*/
+	public class WebImageRetrieveRestWebServiceClient extends
+			AsyncTask<String, Integer, byte[]> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public WebImageRetrieveRestWebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			showProgressDialog();
+
+		}
+
+		@Override
+		protected byte[] doInBackground(String... params) {
+			String method = params[0];
+			String path = WTPConstants.SERVICE_PATH + "/" + method;
+
+			if ("fetchUserImage".equals(method)) {
+				path = path + "?phone=" + params[1];
+			} else {
+				path = path + "?groupName=" + params[1];
+			}
+			// HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity();
+				byte[] byteresult = EntityUtils.toByteArray(results);
+				return byteresult;
+			} catch (Exception e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(byte[] response) {
+
+			if (response != null) {
+				Bitmap img = BitmapFactory.decodeByteArray(response, 0,
+						response.length);
+
+				Activity activity = (Activity) mContext;
+
+				// For ViewMyGroupActivity
+				ImageView imgView = (ImageView) activity
+						.findViewById(R.id.selectedGroupPicThumbnail);
+				if (imgView != null) {
+					imgView.setImageBitmap(img);
+				}
+
+			}
+
+			pDlg.dismiss();
+		}
+
+	}
 
 }

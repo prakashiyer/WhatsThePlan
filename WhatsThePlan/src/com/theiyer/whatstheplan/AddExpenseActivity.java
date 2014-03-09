@@ -1,14 +1,24 @@
 package com.theiyer.whatstheplan;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +27,7 @@ import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Expense;
 import com.theiyer.whatstheplan.entity.ExpenseList;
+import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class AddExpenseActivity extends Activity {
@@ -52,90 +63,9 @@ public class AddExpenseActivity extends Activity {
 				+ selectedPlan.replace(" ", "%20") + "&groupName="
 				+ selectedGroup.replace(" ", "%20");
 
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
+	    WebServiceClient restClient = new WebServiceClient(this);
 
-		try {
-			String response = restClient.execute(new String[] { searchQuery })
-					.get();
-
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("ExpenseList", ExpenseList.class);
-				xstream.alias("expenses", Expense.class);
-				xstream.addImplicitCollection(ExpenseList.class, "expenses");
-				ExpenseList expenseList = (ExpenseList) xstream
-						.fromXML(response);
-				if (expenseList != null && expenseList.getExpenses() != null) {
-
-					List<Expense> expenses = expenseList.getExpenses();
-
-					if (expenses != null && !expenses.isEmpty()) {
-						int size = expenses.size();
-						Expense expense1 = expenses.get(0);
-						if (expense1 != null) {
-							EditText expenseTitle = (EditText) findViewById(R.id.addexpense1Title);
-							EditText expenseValue = (EditText) findViewById(R.id.addexpense1Value);
-							expenseTitle.setText(expense1.getTitle());
-							expenseValue.setText(String.valueOf(expense1
-									.getValue()));
-							edit1 = true;
-						}
-
-						if (size > 1) {
-							Expense expense2 = expenses.get(1);
-							if (expense2 != null) {
-								EditText expenseTitle = (EditText) findViewById(R.id.addexpense2Title);
-								EditText expenseValue = (EditText) findViewById(R.id.addexpense2Value);
-								expenseTitle.setText(expense2.getTitle());
-								expenseValue.setText(String.valueOf(expense2
-										.getValue()));
-								edit2 = true;
-							}
-						}
-
-						if (size > 2) {
-							Expense expense3 = expenses.get(2);
-							if (expense3 != null) {
-								EditText expenseTitle = (EditText) findViewById(R.id.addexpense3Title);
-								EditText expenseValue = (EditText) findViewById(R.id.addexpense3Value);
-								expenseTitle.setText(expense3.getTitle());
-								expenseValue.setText(String.valueOf(expense3
-										.getValue()));
-								edit3 = true;
-							}
-						}
-
-						if (size > 3) {
-							Expense expense4 = expenses.get(3);
-							if (expense4 != null) {
-								EditText expenseTitle = (EditText) findViewById(R.id.addexpense4Title);
-								EditText expenseValue = (EditText) findViewById(R.id.addexpense4Value);
-								expenseTitle.setText(expense4.getTitle());
-								expenseValue.setText(String.valueOf(expense4
-										.getValue()));
-								edit4 = true;
-							}
-						}
-						if (size > 4) {
-							Expense expense5 = expenses.get(4);
-							if (expense5 != null) {
-								EditText expenseTitle = (EditText) findViewById(R.id.addexpense5Title);
-								EditText expenseValue = (EditText) findViewById(R.id.addexpense5Value);
-								expenseTitle.setText(expense5.getTitle());
-								expenseValue.setText(String.valueOf(expense5
-										.getValue()));
-								edit5 = true;
-							}
-						}
-					}
-
-				}
-			}
-		} catch (InterruptedException e) {
-
-		} catch (ExecutionException e) {
-
-		}
+	    restClient.execute(new String[] { searchQuery });
 	}
 
 	/** Called when the user clicks the Submit Expense button */
@@ -225,20 +155,145 @@ public class AddExpenseActivity extends Activity {
 					+ "&value=" + exp;
 		}
 
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			restClient.execute(new String[] { query }).get();
-			
-		} catch (InterruptedException e) {
-			
-		} catch (ExecutionException e) {
-			
-		}
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(new String[] { query });
 	}
 	
 	@Override
 	public void onBackPressed() {
 	    Intent intent = new Intent(this, ExpenseReportActivity.class);
 	    startActivity(intent);
+	}
+	
+	public class WebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+		private boolean isFetchExpense = false;
+
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+
+			if(params[0].contains("fetchExpense")){
+				isFetchExpense = true;
+			}
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			
+			if (response != null && isFetchExpense) {
+				XStream xstream = new XStream();
+				xstream.alias("ExpenseList", ExpenseList.class);
+				xstream.alias("expenses", Expense.class);
+				xstream.addImplicitCollection(ExpenseList.class, "expenses");
+				ExpenseList expenseList = (ExpenseList) xstream
+						.fromXML(response);
+				if (expenseList != null && expenseList.getExpenses() != null) {
+
+					List<Expense> expenses = expenseList.getExpenses();
+
+					if (expenses != null && !expenses.isEmpty()) {
+						int size = expenses.size();
+						Expense expense1 = expenses.get(0);
+						if (expense1 != null) {
+							EditText expenseTitle = (EditText) findViewById(R.id.addexpense1Title);
+							EditText expenseValue = (EditText) findViewById(R.id.addexpense1Value);
+							expenseTitle.setText(expense1.getTitle());
+							expenseValue.setText(String.valueOf(expense1
+									.getValue()));
+							edit1 = true;
+						}
+
+						if (size > 1) {
+							Expense expense2 = expenses.get(1);
+							if (expense2 != null) {
+								EditText expenseTitle = (EditText) findViewById(R.id.addexpense2Title);
+								EditText expenseValue = (EditText) findViewById(R.id.addexpense2Value);
+								expenseTitle.setText(expense2.getTitle());
+								expenseValue.setText(String.valueOf(expense2
+										.getValue()));
+								edit2 = true;
+							}
+						}
+
+						if (size > 2) {
+							Expense expense3 = expenses.get(2);
+							if (expense3 != null) {
+								EditText expenseTitle = (EditText) findViewById(R.id.addexpense3Title);
+								EditText expenseValue = (EditText) findViewById(R.id.addexpense3Value);
+								expenseTitle.setText(expense3.getTitle());
+								expenseValue.setText(String.valueOf(expense3
+										.getValue()));
+								edit3 = true;
+							}
+						}
+
+						if (size > 3) {
+							Expense expense4 = expenses.get(3);
+							if (expense4 != null) {
+								EditText expenseTitle = (EditText) findViewById(R.id.addexpense4Title);
+								EditText expenseValue = (EditText) findViewById(R.id.addexpense4Value);
+								expenseTitle.setText(expense4.getTitle());
+								expenseValue.setText(String.valueOf(expense4
+										.getValue()));
+								edit4 = true;
+							}
+						}
+						if (size > 4) {
+							Expense expense5 = expenses.get(4);
+							if (expense5 != null) {
+								EditText expenseTitle = (EditText) findViewById(R.id.addexpense5Title);
+								EditText expenseValue = (EditText) findViewById(R.id.addexpense5Value);
+								expenseTitle.setText(expense5.getTitle());
+								expenseValue.setText(String.valueOf(expense5
+										.getValue()));
+								edit5 = true;
+							}
+						}
+					}
+
+				}
+			}
+			pDlg.dismiss();
+		}
+
 	}
 }

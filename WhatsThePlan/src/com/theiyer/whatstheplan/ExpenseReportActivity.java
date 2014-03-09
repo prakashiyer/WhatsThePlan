@@ -1,14 +1,24 @@
 package com.theiyer.whatstheplan;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,6 +28,7 @@ import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.ExpenseReport;
 import com.theiyer.whatstheplan.entity.ExpenseRow;
+import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class ExpenseReportActivity extends Activity implements OnItemClickListener {
@@ -44,46 +55,15 @@ public class ExpenseReportActivity extends Activity implements OnItemClickListen
 		String searchQuery = "/generateReport?planName="
 				+ selectedPlan.replace(" ", "%20");
 
-		RestWebServiceClient restClient = new RestWebServiceClient(this);
-		try {
-			String response = restClient.execute(new String[] { searchQuery })
-					.get();
-
-			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias("ExpenseReport", ExpenseReport.class);
-				xstream.alias("expenseRows", ExpenseRow.class);
-				xstream.addImplicitCollection(ExpenseReport.class, "expenseRows");
-				ExpenseReport expenseReport = (ExpenseReport) xstream
-						.fromXML(response);
-				if (expenseReport != null) {
-
-					expenseRows = expenseReport
-							.getExpenseRows();
-
-					if (expenseRows != null && !expenseRows.isEmpty()) {
-
-						expenseReportListView = (ListView) findViewById(R.id.viewexpensereport);
-
-						adapter = new ExpenseListAdapter(this, this, expenseRows);
-						expenseReportListView.setAdapter(adapter);
-						expenseReportListView.setOnItemClickListener(this);
-						TextView expListLabel = (TextView) findViewById(R.id.expenseLabel);
-						String selectedGroup = prefs.getString("selectedGroup",
-								"New User");
-						expListLabel.setText("Group: " + selectedGroup);
-
-					}
-
-				}
-			}
-		} catch (InterruptedException e) {
-			
-
-		} catch (ExecutionException e) {
-			
-
-		}
+		adapter = new ExpenseListAdapter(this, this);
+		expenseReportListView = (ListView) findViewById(R.id.viewexpensereport);
+		expenseReportListView.setOnItemClickListener(this);
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(new String[] { searchQuery });
+		TextView expListLabel = (TextView) findViewById(R.id.expenseLabel);
+		String selectedGroup = prefs.getString("selectedGroup",
+				"New User");
+		expListLabel.setText("Group: " + selectedGroup);
 	}
 	
 	@Override
@@ -111,6 +91,79 @@ public class ExpenseReportActivity extends Activity implements OnItemClickListen
 	    startActivity(intent);
 	}
 	
-	
+	public class WebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public WebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			if (response != null) {
+				XStream xstream = new XStream();
+				xstream.alias("ExpenseReport", ExpenseReport.class);
+				xstream.alias("expenseRows", ExpenseRow.class);
+				xstream.addImplicitCollection(ExpenseReport.class, "expenseRows");
+				ExpenseReport expenseReport = (ExpenseReport) xstream
+						.fromXML(response);
+				if (expenseReport != null) {
+
+					expenseRows = expenseReport
+							.getExpenseRows();
+
+					if (expenseRows != null && !expenseRows.isEmpty()) {
+
+						
+						adapter.setData(expenseRows);
+						expenseReportListView.setAdapter(adapter);
+					}
+
+				}
+			}
+			pDlg.dismiss();
+		}
+
+	}
 
 }
