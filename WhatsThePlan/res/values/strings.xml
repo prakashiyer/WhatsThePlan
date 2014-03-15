@@ -43,6 +43,7 @@
     <string name="new_plan_location_label">Type Location address</string>
     <string name="date_button_text">Set Date</string>
      <string name="time_button_text">Set Time</string>
+     <string name="end_time_button_text">Set End Time</string>
     <string name="register_plan_button_text">Register Plan</string>
     <string name="edit_plan_button_text">Edit Plan</string>
     <string name="delete_plan_button_text">Delete Plan</string>
