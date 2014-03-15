@@ -79,6 +79,7 @@ public class ViewMyPlansActivity extends Activity {
 
 	/** Called when the user clicks the rsvp plan button */
 	public void rsvpPlan(View view) {
+		TextView rsvpLabel = (TextView) findViewById(R.id.rsvpLabel);
 		Button rsvpPlanButton = (Button) findViewById(R.id.rsvpPlanButton);
 		rsvpPlanButton.setTextColor(getResources().getColor(
 				R.color.click_button_2));
@@ -95,7 +96,18 @@ public class ViewMyPlansActivity extends Activity {
 		String updateQuery = "/rsvpPlan?planName="
 				+ selectedPlan.replace(" ", "%20") + "&phone=" + phone
 				+ "&rsvp=" + rsvp;
-
+		if (rsvp == "no") { 
+		CalendarHelper calendarHelper = new CalendarHelper(context);
+		calendarHelper.execute(new String[] { "",
+				selectedPlan, "", "", "", "delete"});
+		System.out.println("Plan deleted.....");
+		rsvpPlanButton.setVisibility(1);
+		rsvpLabel.setVisibility(1);
+		Intent intent = new Intent(this, HomePlanActivity.class);
+		startActivity(intent);
+		} else {
+			
+		}
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(new String[] { updateQuery, phone });
 
@@ -154,6 +166,9 @@ public class ViewMyPlansActivity extends Activity {
 							+ selectedGroup.replace(" ", "%20");
 					WebServiceClient restClient = new WebServiceClient(context);
 					restClient.execute(new String[] { updateQuery });
+					CalendarHelper calendarHelper = new CalendarHelper(context);
+					calendarHelper.execute(new String[] { "",
+							selectedPlan, "", "", "", "delete"});
 					Intent homeIntent = new Intent(context,
 							HomePlanActivity.class);
 					startActivity(homeIntent);
