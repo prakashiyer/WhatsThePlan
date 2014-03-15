@@ -34,10 +34,10 @@ import com.thoughtworks.xstream.XStream;
 
 public class ViewMyPlansActivity extends Activity {
 
-	private boolean isCreator;
 	private String selectedPlan;
 	private String selectedGroup;
 	private Context context = this;
+	private Menu menu;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +103,7 @@ public class ViewMyPlansActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menu = menu;
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		MenuItem viewProfileItem = menu.findItem(R.id.viewProfile);
@@ -114,10 +115,7 @@ public class ViewMyPlansActivity extends Activity {
 		MenuItem editPlanItem = menu.findItem(R.id.editPlan);
 		editPlanItem.setVisible(true);
 
-		if (isCreator) {
-			MenuItem deletePlanItem = menu.findItem(R.id.deletePlan);
-			deletePlanItem.setVisible(true);
-		}
+		
 
 		MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
 		deactivateAccountItem.setVisible(true);
@@ -249,7 +247,8 @@ public class ViewMyPlansActivity extends Activity {
 				if (plan != null) {
 
 					if (phone.equals(plan.getCreator())) {
-						isCreator = true;
+						MenuItem deletePlanItem = menu.findItem(R.id.deletePlan);
+						deletePlanItem.setVisible(true);
 					}
 
 					TextView planGroupValue = (TextView) findViewById(R.id.viewPlanGroup);
