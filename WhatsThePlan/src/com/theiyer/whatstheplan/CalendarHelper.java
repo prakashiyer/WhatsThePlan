@@ -5,13 +5,16 @@ import java.util.TimeZone;
 
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.AsyncTask;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
+import android.provider.CalendarContract.Reminders;
 import android.util.Log;
 
 public class CalendarHelper extends AsyncTask<String, String, String> {
@@ -26,13 +29,21 @@ public class CalendarHelper extends AsyncTask<String, String, String> {
 	};
 	  
 	
-	
+	public String name;
+	public String id;
 	private Context mContext;
+	private ContentResolver cr;
 	private ProgressDialog pDlg;
 	private static final String DEBUG_TAG = "CalendarActivity";
-
+	
 	public CalendarHelper(Context mContext) {
 		this.mContext = mContext;
+		cr = mContext.getContentResolver();
+	}
+	
+    public CalendarHelper (String _name, String _id) {
+    	name = _name;
+		id = _id;
 	}
 
 	private void showProgressDialog() {
@@ -51,67 +62,107 @@ public class CalendarHelper extends AsyncTask<String, String, String> {
 
 	}
 
+	private CalendarHelper m_calendars[];
+    /**
+     * Method to return all calendars in your android device.
+     * @return
+     */
+    private CalendarHelper getCalendars() {
+    	String[] l_projection = new String[]{"_id", "calendar_displayName"};
+    	Uri l_calendars;
+    	if (Build.VERSION.SDK_INT >= 8) {
+    		Log.i(DEBUG_TAG, "Android greater than 8");
+    		l_calendars = Uri.parse("content://com.android.calendar/calendars");
+    	} else {
+    		Log.i(DEBUG_TAG, "Android less than 8");
+    		l_calendars = Uri.parse("content://calendar/calendars");
+    	}
+    	Cursor cursor = cr.query(l_calendars, l_projection, null, null, null);	//all calendars
+    	if (cursor.moveToFirst()) {
+    		m_calendars = new CalendarHelper[cursor.getCount()];
+    		String l_calName;
+    		String l_calId;
+    		int l_cnt = 0;
+    		int l_nameCol = cursor.getColumnIndex(l_projection[1]);
+    		int l_idCol = cursor.getColumnIndex(l_projection[0]);
+    		do {
+    			l_calName = cursor.getString(l_nameCol);
+    			l_calId = cursor.getString(l_idCol);
+    			m_calendars[l_cnt] = new CalendarHelper (l_calName, l_calId);
+    			++l_cnt;
+    			System.out.println("Cal_Name : " + l_calName);
+    		} while (cursor.moveToNext());    	
+    }
+    	cursor.close();
+    	return m_calendars[0];
+    }
+
 	@Override
 	protected String doInBackground(String... params) {
-		
-		// Run query
-		Cursor cur = null;
-		ContentResolver cr = mContext.getContentResolver();
-		Uri uri = Events.CONTENT_URI;   
-		/*String selection = "((" + Calendars.ACCOUNT_NAME + " = ?) AND (" 
-		                        + Calendars.ACCOUNT_TYPE + " = ?) AND ("
-		                        + Calendars.OWNER_ACCOUNT + " = ?))";*/
-		/*String[] selectionArgs = new String[] {params[1], "com.google",
-				params[1]}; */
-		// Submit the query and get a Cursor object back. 
-		//cur = cr.query(uri, EVENT_PROJECTION, selection, selectionArgs, null);
-		
-		uri = asSyncAdapter(uri, params[4],"com.google");
-		
-		
-		
-		
-		
-		
-		
-		
-		
-        ContentValues values = new ContentValues();
-        String date = params[0];
+		Log.i(DEBUG_TAG, "In doInBackground : ");
+		getCalendars();
+		String date = params[0];
         Calendar calendar = Calendar.getInstance();
+        long eventID = 0;
+        if (params[5] == "create") {
         calendar.set(Integer.valueOf(date.substring(0,4)),
         		(Integer.valueOf(date.substring(5,7)) - 1), 
         		Integer.valueOf(date.substring(8,10)), 
         		Integer.valueOf(date.substring(11,13)), 
         		Integer.valueOf(date.substring(14,16)));
         long setDate = calendar.getTimeInMillis();
+        Log.i(DEBUG_TAG, "DATE: " + setDate);
         calendar.add(Calendar.HOUR, 5);
         long end = calendar.getTimeInMillis();
-        
-        values.put(Events.DTSTART, setDate);
-        values.put(Events.DTEND, end);
-        //values.put(Events.DURATION, "PT1H");
-        values.put(Events.TITLE, params[1]);
-        values.put(Events.DESCRIPTION, params[2]);
-        values.put(Events.CALENDAR_ID, Integer.valueOf(params[3]));
-
-        values.put(Events.ALL_DAY, false);
-
-        //values.put(Events.HAS_ALARM, true);
-
-        //Get current timezone
-        values.put(Events.EVENT_TIMEZONE,TimeZone.getDefault().getID());
-        Log.i(DEBUG_TAG, "Timezone retrieved=>"+TimeZone.getDefault().getID());
-        uri = cr.insert(uri, values);
-        Log.i(DEBUG_TAG, "Uri returned=>"+uri.toString());
-        // get the event ID that is the last element in the Uri
-        long eventID = Long.parseLong(uri.getLastPathSegment());
-
-        /*ContentValues reminders = new ContentValues();
+        Log.i(DEBUG_TAG, "In addEvent()");
+    	ContentValues l_event = new ContentValues();
+    	l_event.put(Events.CALENDAR_ID, getCalendars().id);
+    	Log.i(DEBUG_TAG, "Calendar ID :" + getCalendars().id);
+    	l_event.put(Events.TITLE, params[1]);
+    	l_event.put(Events.DESCRIPTION, params[2]);
+    	l_event.put(Events.DTSTART, setDate);
+    	l_event.put(Events.DTEND, end);
+    	l_event.put("allDay", 0);
+    	l_event.put("eventStatus", 1);
+    	l_event.put(Events.EVENT_TIMEZONE,TimeZone.getDefault().getID());
+    	Uri l_eventUri;
+    	if (Build.VERSION.SDK_INT >= 8) {
+    		l_eventUri = Uri.parse("content://com.android.calendar/events");
+    	} else {
+    		l_eventUri = Uri.parse("content://calendar/events");
+    	}
+    	Uri l_uri = cr.insert(l_eventUri, l_event);
+    	Log.i(DEBUG_TAG,"URI to setCalendar : " + l_uri.toString());
+    	eventID = Long.parseLong(l_uri.getLastPathSegment());
+        ContentValues reminders = new ContentValues();
         reminders.put(Reminders.EVENT_ID, eventID);
         reminders.put(Reminders.METHOD, Reminders.METHOD_ALERT);
         reminders.put(Reminders.MINUTES, 15);
-        cr.insert(Reminders.CONTENT_URI, reminders);*/
+        cr.insert(Reminders.CONTENT_URI, reminders);
+        } else if (params[5] == "delete") {
+        	Uri CALENDAR_URI = Uri.parse("content://com.android.calendar/events");
+        	
+        	int row = cr.delete(CALENDAR_URI,  Events.TITLE+"=?", new String[]{params[1]});
+        	System.out.println("********* NO of ROWS DELETED: "+row);
+        } else if (params[5] == "update") {
+        	Uri CALENDAR_URI = Uri.parse("content://com.android.calendar/events");
+        	ContentValues newValues = new ContentValues();
+        	String newDate = params[6];
+        	String newTime = params[0];
+        	calendar.set(Integer.valueOf(newDate.substring(0,4)),
+            		(Integer.valueOf(newDate.substring(5,7)) - 1), 
+            		Integer.valueOf(newDate.substring(8,10)), 
+            		Integer.valueOf(newTime.substring(0,2)), 
+            		Integer.valueOf(newTime.substring(3,5)));
+            long setDate = calendar.getTimeInMillis();
+            long end = calendar.getTimeInMillis();
+        	newValues.put(Events.TITLE, params[1]);
+        	newValues.put(Events.DESCRIPTION, params[2]);
+        	newValues.put(Events.DTSTART, setDate);
+        	newValues.put(Events.DTEND, end);
+        	int row = cr.update(CALENDAR_URI, newValues, Events.TITLE+"=?", new String[]{params[7]});
+        	System.out.println("********* NO of ROWS updated : "+row);
+        }
         return String.valueOf(eventID);
 	}
 	
@@ -119,12 +170,4 @@ public class CalendarHelper extends AsyncTask<String, String, String> {
 	protected void onPostExecute(String response) {
 		pDlg.dismiss();
 	}
-	
-	private static Uri asSyncAdapter(Uri uri, String account, String accountType) {
-	    return uri.buildUpon()
-	        .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER,"true")
-	        .appendQueryParameter(Calendars.ACCOUNT_NAME, account)
-	        .appendQueryParameter(Calendars.ACCOUNT_TYPE, accountType).build();
-	 }
-
 }

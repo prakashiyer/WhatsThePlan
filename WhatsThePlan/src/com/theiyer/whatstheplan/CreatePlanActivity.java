@@ -273,7 +273,7 @@ public class CreatePlanActivity extends FragmentActivity {
 					CalendarHelper calendarHelper = new CalendarHelper(mContext);
 					calendarHelper.execute(new String[] { plan.getStartTime(),
 							plan.getName(), plan.getLocation(),
-							String.valueOf(plan.getId()), phone });
+							String.valueOf(plan.getId()), phone, "create" });
 					Intent intent = new Intent(mContext, ViewMyPlansActivity.class);
 					startActivity(intent);
 				} 

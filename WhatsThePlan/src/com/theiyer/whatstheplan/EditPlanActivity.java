@@ -105,6 +105,10 @@ public class EditPlanActivity  extends FragmentActivity {
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString("selectedPlan", planName);
 		editor.apply();
+		CalendarHelper calendarHelper = new CalendarHelper(this);
+		calendarHelper.execute(new String[] { planTime,
+				planName, planLocation,
+				"", "", "update",planDate, oldName});
 		Intent intent = new Intent(this, ViewMyPlansActivity.class);
 		startActivity(intent);
 	}
@@ -216,7 +220,6 @@ public class EditPlanActivity  extends FragmentActivity {
 					EditText planLocationValue = (EditText) findViewById(R.id.editPlanLocationValue);
 					planLocationValue
 							.setText(plan.getLocation());
-
 				}
 			}
 			pDlg.dismiss();
