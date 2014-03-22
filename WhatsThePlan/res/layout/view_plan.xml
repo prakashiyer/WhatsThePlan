@@ -140,7 +140,7 @@
         <TextView
             android:id="@+id/viewPlanTimeLabel"
             android:layout_width="100dp"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/left_margin"
             android:background="@drawable/image_border"
             android:gravity="center"
@@ -153,13 +153,14 @@
         <TextView
             android:id="@+id/viewPlanTime"
             android:layout_width="240dp"
-            android:layout_height="50dp"
+            android:layout_height="52dp"
             android:background="@drawable/image_border"
             android:gravity="left|center_vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="@dimen/standard_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
+        
     </LinearLayout>
 
     <LinearLayout
