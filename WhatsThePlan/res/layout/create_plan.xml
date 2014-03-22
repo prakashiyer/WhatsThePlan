@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_column="0"
         android:layout_gravity="left|top"
         android:layout_row="0"
@@ -16,7 +16,7 @@
         <TextView
             android:id="@+id/welcomeCreatePlanLabel"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_margin"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -33,6 +33,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#FF0000"
             android:typeface="sans" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -145,13 +146,79 @@
             android:textStyle="bold"
             android:typeface="sans" />
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="left|top"
         android:layout_row="5"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/newPlanEndDateValue"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/top_no_margin"
+            android:ems="10"
+            android:hint="@string/new_plan_date_hint"
+            android:textSize="@dimen/standard_text_size"
+            android:typeface="sans" >
+        </TextView>
+
+        <Button
+            android:id="@+id/setEndDateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="31dp"
+            android:layout_marginTop="@dimen/top_no_margin"
+            android:background="@drawable/create"
+            android:onClick="setEndDate"
+            android:text="@string/end_date_button_text"
+            android:textColor="@color/button_text"
+            android:textSize="@dimen/top_less_margin"
+            android:textStyle="bold"
+            android:typeface="sans" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="6"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/newPlanEndTimeValue"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/top_no_margin"
+            android:ems="10"
+            android:hint="@string/new_plan_time_hint"
+            android:textSize="@dimen/standard_text_size"
+            android:typeface="sans" >
+        </TextView>
+
+        <Button
+            android:id="@+id/setEndTimeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="31dp"
+            android:layout_marginTop="@dimen/top_no_margin"
+            android:background="@drawable/create"
+            android:onClick="setEndTime"
+            android:text="@string/end_time_button_text"
+            android:textColor="@color/button_text"
+            android:textSize="@dimen/top_less_margin"
+            android:textStyle="bold"
+            android:typeface="sans" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="7"
         android:gravity="center"
         android:orientation="vertical" >
 
@@ -172,7 +239,7 @@
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="left|top"
-        android:layout_row="6"
+        android:layout_row="8"
         android:gravity="center"
         android:orientation="horizontal" >
 
@@ -205,7 +272,7 @@
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="center_horizontal|top"
-        android:layout_row="7"
+        android:layout_row="9"
         android:gravity="center"
         android:orientation="vertical" >
 
