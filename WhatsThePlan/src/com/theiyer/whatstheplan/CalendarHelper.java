@@ -101,19 +101,30 @@ public class CalendarHelper extends AsyncTask<String, String, String> {
 	protected String doInBackground(String... params) {
 		Log.i(DEBUG_TAG, "In doInBackground : ");
 		getCalendars();
-		String date = params[0];
-        Calendar calendar = Calendar.getInstance();
         long eventID = 0;
+        Calendar calendar = Calendar.getInstance();
+        Calendar endCalendar = Calendar.getInstance();
         if (params[5] == "create") {
+        	String date = params[0];
+    		String endTime = params[6];
+    		String endDate = params[7];
+            
         calendar.set(Integer.valueOf(date.substring(0,4)),
         		(Integer.valueOf(date.substring(5,7)) - 1), 
         		Integer.valueOf(date.substring(8,10)), 
         		Integer.valueOf(date.substring(11,13)), 
         		Integer.valueOf(date.substring(14,16)));
+        endCalendar.set(Integer.valueOf(endDate.substring(0,4)),
+        		(Integer.valueOf(endDate.substring(5,7)) - 1), 
+        		Integer.valueOf(endDate.substring(8,10)), 
+        		Integer.valueOf(endTime.substring(0,2)), 
+        		Integer.valueOf(endTime.substring(3,5)));
+        System.out.println("******* endTime " + endTime);
+        System.out.println("******* endDate " + endDate);
         long setDate = calendar.getTimeInMillis();
         Log.i(DEBUG_TAG, "DATE: " + setDate);
         calendar.add(Calendar.HOUR, 5);
-        long end = calendar.getTimeInMillis();
+        long end = endCalendar.getTimeInMillis();
         Log.i(DEBUG_TAG, "In addEvent()");
     	ContentValues l_event = new ContentValues();
     	l_event.put(Events.CALENDAR_ID, getCalendars().id);
@@ -141,7 +152,7 @@ public class CalendarHelper extends AsyncTask<String, String, String> {
         cr.insert(Reminders.CONTENT_URI, reminders);
         } else if (params[5] == "delete") {
         	Uri CALENDAR_URI = Uri.parse("content://com.android.calendar/events");
-        	
+        	System.out.println("********* params passes : " + params.toString());
         	int row = cr.delete(CALENDAR_URI,  Events.TITLE+"=?", new String[]{params[1]});
         	System.out.println("********* NO of ROWS DELETED: "+row);
         } else if (params[5] == "update") {
@@ -149,13 +160,21 @@ public class CalendarHelper extends AsyncTask<String, String, String> {
         	ContentValues newValues = new ContentValues();
         	String newDate = params[6];
         	String newTime = params[0];
+        	String newEndDate = params[8];
+        	String newEndTime = params[9];
         	calendar.set(Integer.valueOf(newDate.substring(0,4)),
             		(Integer.valueOf(newDate.substring(5,7)) - 1), 
             		Integer.valueOf(newDate.substring(8,10)), 
             		Integer.valueOf(newTime.substring(0,2)), 
             		Integer.valueOf(newTime.substring(3,5)));
+        	
+        	endCalendar.set(Integer.valueOf(newEndDate.substring(0,4)),
+            		(Integer.valueOf(newEndDate.substring(5,7)) - 1), 
+            		Integer.valueOf(newEndDate.substring(8,10)), 
+            		Integer.valueOf(newEndTime.substring(0,2)), 
+            		Integer.valueOf(newEndTime.substring(3,5)));
             long setDate = calendar.getTimeInMillis();
-            long end = calendar.getTimeInMillis();
+            long end = endCalendar.getTimeInMillis();
         	newValues.put(Events.TITLE, params[1]);
         	newValues.put(Events.DESCRIPTION, params[2]);
         	newValues.put(Events.DTSTART, setDate);
