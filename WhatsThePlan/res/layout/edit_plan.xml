@@ -145,13 +145,81 @@
             android:textStyle="bold"
             android:typeface="sans" />
     </LinearLayout>
-
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="left|top"
         android:layout_row="5"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/newPlanEndDateValue"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/top_no_margin"
+            android:ems="10"
+            android:hint="@string/new_plan_date_hint"
+            android:textSize="@dimen/standard_text_size"
+            android:typeface="sans" >
+        </TextView>
+
+        <Button
+            android:id="@+id/editEndDateButton"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="@dimen/top_no_margin"
+            android:background="@drawable/create"
+            android:onClick="setEndDate"
+            android:text="@string/end_date_button_text"
+            android:textColor="@color/button_text"
+            android:textSize="@dimen/top_less_margin"
+            android:textStyle="bold"
+            android:typeface="sans" />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="6"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/newPlanEndTimeValue"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/top_no_margin"
+            android:ems="10"
+            android:hint="@string/new_plan_time_hint"
+            android:textSize="@dimen/standard_text_size"
+            android:typeface="sans" >
+        </TextView>
+
+        <Button
+            android:id="@+id/editEndTimeButton"
+            android:layout_width="100dp"
+            android:layout_height="31dp"
+            android:layout_marginTop="@dimen/top_no_margin"
+            android:background="@drawable/create"
+            android:onClick="setTime"
+            android:text="@string/end_time_button_text"
+            android:textColor="@color/button_text"
+            android:textSize="@dimen/top_less_margin"
+            android:textStyle="bold"
+            android:typeface="sans" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="7"
         android:gravity="center"
         android:orientation="vertical" >
 
@@ -174,7 +242,7 @@
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="center_horizontal|top"
-        android:layout_row="6"
+        android:layout_row="8"
         android:gravity="center"
         android:orientation="vertical" >
 
