@@ -77,7 +77,7 @@
             android:gravity="center"
             android:text="@string/view_plan_title_label"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
+            android:textSize="@dimen/small_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
 
@@ -89,7 +89,7 @@
             android:background="@drawable/image_border"
             android:gravity="left|center_vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
+            android:textSize="@dimen/small_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
     </LinearLayout>
@@ -112,7 +112,7 @@
             android:gravity="center"
             android:text="@string/view_plan_group_label"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
+            android:textSize="@dimen/small_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
 
@@ -123,7 +123,7 @@
             android:background="@drawable/image_border"
             android:gravity="left|center_vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
+            android:textSize="@dimen/small_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
     </LinearLayout>
@@ -146,7 +146,7 @@
             android:gravity="center"
             android:text="@string/view_plan_date_label"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
+            android:textSize="@dimen/small_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
 
@@ -157,7 +157,42 @@
             android:background="@drawable/image_border"
             android:gravity="left|center_vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
+            android:textSize="@dimen/small_text_size"
+            android:textStyle="bold"
+            android:typeface="sans" />
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="5"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/viewPlanEndTimeLabel"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/left_margin"
+            android:background="@drawable/image_border"
+            android:gravity="center"
+            android:text="@string/view_plan_date_label_till"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="@dimen/small_text_size"
+            android:textStyle="bold"
+            android:typeface="sans" />
+
+        <TextView
+            android:id="@+id/viewPlanEndTime"
+            android:layout_width="240dp"
+            android:layout_height="52dp"
+            android:background="@drawable/image_border"
+            android:gravity="left|center_vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="@dimen/small_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
         
@@ -168,7 +203,7 @@
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="left|top"
-        android:layout_row="5"
+        android:layout_row="6"
         android:gravity="center"
         android:orientation="horizontal" >
 
@@ -181,7 +216,7 @@
             android:gravity="center"
             android:text="@string/view_plan_location_label"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
+            android:textSize="@dimen/small_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
 
@@ -192,7 +227,7 @@
             android:background="@drawable/image_border"
             android:gravity="left|center_vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
+            android:textSize="@dimen/small_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
     </LinearLayout>
@@ -204,7 +239,7 @@
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="left|top"
-        android:layout_row="6"
+        android:layout_row="7"
         android:gravity="top|center"
         android:orientation="horizontal" >
 
@@ -225,7 +260,7 @@
             android:background="@drawable/create"
             android:onClick="rsvpPlan"
             android:textColor="@color/button_text"
-            android:textSize="@dimen/standard_text_size"
+            android:textSize="@dimen/small_text_size"
             android:textStyle="bold"
             android:typeface="sans"
             android:visibility="invisible" />
