@@ -94,6 +94,19 @@ public class EditPlanActivity  extends FragmentActivity {
     	}
     	planTime = hour+":"+min;
     	
+    	TextView planEndDateEditText = (TextView) findViewById(R.id.newPlanEndDateValue);
+		String planEndDate = planEndDateEditText.getText().toString();
+
+		TextView planEndTimeEditText = (TextView) findViewById(R.id.newPlanEndTimeValue);
+		String planEndTime = planEndTimeEditText.getText().toString();
+
+		String endHour = planTime.substring(0, 2);
+    	String endMin = planTime.substring(3,5);
+    	if(planEndTime.contains("PM")){
+    		endHour = String.valueOf((Integer.valueOf(endHour) +12));
+    	}
+    	planEndTime = endHour+":"+endMin;
+    	
 		EditText planLocationEditText = (EditText) findViewById(R.id.editPlanLocationValue);
 		String planLocation = planLocationEditText.getText().toString();
 		
@@ -116,7 +129,7 @@ public class EditPlanActivity  extends FragmentActivity {
 		CalendarHelper calendarHelper = new CalendarHelper(this);
 		calendarHelper.execute(new String[] { planTime,
 				planName, planLocation,
-				"", "", "update",planDate, oldName});
+				"", "", "update",planDate, oldName,planEndDate,planEndTime});
 		Intent intent = new Intent(this, ViewMyPlansActivity.class);
 		startActivity(intent);
 	}
@@ -124,7 +137,7 @@ public class EditPlanActivity  extends FragmentActivity {
 	public void setTime(View v) {
 		Button button = (Button) findViewById(R.id.editTimeButton);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		DialogFragment newFragment = new TimePickerFragment();
+		DialogFragment newFragment = new TimePickerFragment("start");
 		newFragment.show(getSupportFragmentManager(), "timePicker");
 		button.setTextColor(getResources().getColor(R.color.button_text));
 	}
@@ -132,7 +145,23 @@ public class EditPlanActivity  extends FragmentActivity {
 	public void setDate(View v) {
 		Button button = (Button) findViewById(R.id.editDateButton);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		DialogFragment newFragment = new DatePickerFragment();
+		DialogFragment newFragment = new DatePickerFragment("start");
+		newFragment.show(getSupportFragmentManager(), "datePicker");
+		button.setTextColor(getResources().getColor(R.color.button_text));
+	}
+	
+	public void setEndTime(View v) {
+		Button button = (Button) findViewById(R.id.editEndTimeButton);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		DialogFragment newFragment = new TimePickerFragment("end");
+		newFragment.show(getSupportFragmentManager(), "timePicker");
+		button.setTextColor(getResources().getColor(R.color.button_text));
+	}
+
+	public void setEndDate(View v) {
+		Button button = (Button) findViewById(R.id.editEndDateButton);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		DialogFragment newFragment = new DatePickerFragment("end");
 		newFragment.show(getSupportFragmentManager(), "datePicker");
 		button.setTextColor(getResources().getColor(R.color.button_text));
 	}
@@ -208,6 +237,10 @@ public class EditPlanActivity  extends FragmentActivity {
 					planDateValue
 							.setText(plan.getStartTime().substring(0,10));
 					
+					TextView planEndDateValue = (TextView) findViewById(R.id.newPlanEndDateValue);
+					planEndDateValue
+							.setText(plan.getEndTime().substring(0,10));
+					
 					TextView planTimeValue = (TextView) findViewById(R.id.newPlanTimeValue);
 					String time = plan.getStartTime().substring(11,16);
 					String hour = time.substring(0, 2);
@@ -224,6 +257,23 @@ public class EditPlanActivity  extends FragmentActivity {
 	            	
 					planTimeValue
 							.setText(hour+":"+min+" "+ampm);
+					
+					TextView planEndTimeValue = (TextView) findViewById(R.id.newPlanEndTimeValue);
+					String endTime = plan.getEndTime().substring(11,16);
+					String endHour = endTime.substring(0, 2);
+	            	String endMin = endTime.substring(3);
+	            	int endHourInt = Integer.valueOf(endHour);
+	            	String endAmPm = "AM";
+	            	if(endHourInt > 12){
+	            		endHour = String.valueOf(endHourInt - 12);
+	            		if(Integer.valueOf(endHour) < 10){
+	            			endHour = "0"+endHour;
+	            		}
+	            		endAmPm = "PM";
+	            	}
+	            	
+	            	planEndTimeValue
+							.setText(endHour+":"+endMin+" "+endAmPm);
 
 					EditText planLocationValue = (EditText) findViewById(R.id.editPlanLocationValue);
 					planLocationValue

@@ -36,7 +36,8 @@ import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class CreatePlanActivity extends FragmentActivity {
-
+	String planEndTime = null;
+	String planEndDate = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -87,6 +88,9 @@ public class CreatePlanActivity extends FragmentActivity {
 
 		TextView planDateEditText = (TextView) findViewById(R.id.newPlanDateValue);
 		String planDate = planDateEditText.getText().toString();
+		
+		TextView planEndDateEditText = (TextView) findViewById(R.id.newPlanEndDateValue);
+		planEndDate = planEndDateEditText.getText().toString();
 
 		TextView planTimeEditText = (TextView) findViewById(R.id.newPlanTimeValue);
 		String planTime = planTimeEditText.getText().toString();
@@ -98,6 +102,19 @@ public class CreatePlanActivity extends FragmentActivity {
     	}
     	planTime = hour+":"+min;
     	
+    	TextView planEndTimeEditText = (TextView) findViewById(R.id.newPlanEndTimeValue);
+		planEndTime = planEndTimeEditText.getText().toString();
+		System.out.println("****** end Time " + planEndTime);
+
+		String endHour = planEndTime.substring(0, 2);
+    	String endMin = planEndTime.substring(3,5);
+    	if(planEndTime.contains("PM")){
+    		endHour = String.valueOf((Integer.valueOf(endHour) +12));
+    	}
+    	planEndTime = endHour+":"+endMin;
+    	
+    	System.out.println("planEndTime ***** " + planEndTime);
+    	
 		EditText planLocationEditText = (EditText) findViewById(R.id.planLocationValue);
 		String planLocation = planLocationEditText.getText().toString();
 
@@ -107,7 +124,8 @@ public class CreatePlanActivity extends FragmentActivity {
 				+ "&phone=" + phone + "&date=" + planDate + "&time="
 				+ planTime+":00" + "&location=" + planLocation.replace(" ", "%20")
 				+ "&groupName=" + selectedGroup.replace(" ", "%20")
-				+ "&creator=" + phone;
+				+ "&creator=" + phone+ "&endDate=" + planEndDate + "&endTime="
+						+ planEndTime+":00" ;
 
 		TextView errorFieldValue = (TextView) findViewById(R.id.createPlanErrorField);
 		errorFieldValue.setText("");
@@ -126,7 +144,14 @@ public class CreatePlanActivity extends FragmentActivity {
 	public void setTime(View v) {
 		Button button = (Button) findViewById(R.id.setTimeButton);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		DialogFragment newFragment = new TimePickerFragment();
+		DialogFragment newFragment = new TimePickerFragment("start");
+		newFragment.show(getSupportFragmentManager(), "timePicker");
+		button.setTextColor(getResources().getColor(R.color.button_text));
+	}
+	public void setEndTime(View v) {
+		Button button = (Button) findViewById(R.id.setEndTimeButton);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		DialogFragment newFragment = new TimePickerFragment("end");
 		newFragment.show(getSupportFragmentManager(), "timePicker");
 		button.setTextColor(getResources().getColor(R.color.button_text));
 	}
@@ -134,7 +159,14 @@ public class CreatePlanActivity extends FragmentActivity {
 	public void setDate(View v) {
 		Button button = (Button) findViewById(R.id.setDateButton);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		DialogFragment newFragment = new DatePickerFragment();
+		DialogFragment newFragment = new DatePickerFragment("start");
+		newFragment.show(getSupportFragmentManager(), "datePicker");
+		button.setTextColor(getResources().getColor(R.color.button_text));
+	}
+	public void setEndDate(View v) {
+		Button button = (Button) findViewById(R.id.setEndDateButton);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		DialogFragment newFragment = new DatePickerFragment("end");
 		newFragment.show(getSupportFragmentManager(), "datePicker");
 		button.setTextColor(getResources().getColor(R.color.button_text));
 	}
@@ -281,7 +313,7 @@ public class CreatePlanActivity extends FragmentActivity {
 					CalendarHelper calendarHelper = new CalendarHelper(mContext);
 					calendarHelper.execute(new String[] { plan.getStartTime(),
 							plan.getName(), plan.getLocation(),
-							String.valueOf(plan.getId()), phone, "create" });
+							String.valueOf(plan.getId()), phone, "create", planEndTime, planEndDate});
 					Intent intent = new Intent(mContext, ViewMyPlansActivity.class);
 					startActivity(intent);
 				} 

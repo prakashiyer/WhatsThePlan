@@ -1,10 +1,16 @@
 package com.theiyer.whatstheplan;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -32,9 +38,6 @@ public class GCMIntentService extends GCMBaseIntentService {
  
     @Override
     protected void onMessage(Context ctx, Intent intent) {
-         
-       
-         
         String message = intent.getStringExtra("message");
         Log.d(TAG, "Message Received: "+message);
         sendNotification(message); 
@@ -68,18 +71,79 @@ public class GCMIntentService extends GCMBaseIntentService {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
         System.out.println("Got Notification!!!!");
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
+        /*PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class), 0);*/
+        PendingIntent contentIntent = null;
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
         .setSmallIcon(R.drawable.ic_launcher)
-        .setContentTitle("GCM Notification")
+        .setContentTitle("Just Meet")
         .setStyle(new NotificationCompat.BigTextStyle()
         .bigText(msg))
         .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
         .setContentText(msg);
-       
+        SharedPreferences prefs = getSharedPreferences("Prefs",
+				Activity.MODE_PRIVATE);
+        
+        if (msg.contains("A new plan has been added")) {
+        	String planName = null;
+        	String temp[] = msg.split("'");
+        	planName = temp[1];
+        	System.out.println("***** Plan Name in GCM (Added): " + planName);
+        	SharedPreferences.Editor editor = prefs.edit();
+    		editor.putString("selectedPlan", planName);
+    		editor.apply();
+        	contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, ViewMyPlansActivity.class), 0);
+        } else if(msg.contains("deleted")) {
+        	contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, HomePlanActivity.class), 0);
+        } else if(msg.contains("attending")) {
+        	String planName = null;
+        	String temp[] = msg.split("'");
+        	planName = temp[1];
+        	System.out.println("***** Plan Name in GCM (RSVP): " + planName);
+        	SharedPreferences.Editor editor = prefs.edit();
+    		editor.putString("selectedPlan", planName);
+    		editor.apply();
+        	contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, ViewMyPlansActivity.class), 0);
+        } else if (msg.contains("edited")) {
+        	String planName = null;
+        	String temp[] = msg.split("'");
+        	planName = temp[1];
+        	System.out.println("***** Plan Name in GCM (edited): " + planName);
+        	SharedPreferences.Editor editor = prefs.edit();
+    		editor.putString("selectedPlan", planName);
+    		editor.apply();
+        	contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, ViewMyPlansActivity.class), 0);
+        } else if (msg.contains("left the group")) {
+        	String groupName = null;
+        	String temp[] = msg.split("'");
+        	groupName = temp[1];
+        	System.out.println("***** Group Name in GCM (left): " + groupName);
+        	SharedPreferences.Editor editor = prefs.edit();
+    		editor.putString("selectedGroup", groupName);
+    		editor.apply();
+    		contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, ViewGroupMembersActivity.class), 0);
+        } else if (msg.contains("expense")) {
+        	String groupName = null;
+        	String planName = null;
+        	String temp[] = msg.split("'");
+        	planName = temp[1];
+        	groupName = temp[3];
+        	System.out.println("***** Plan Name in GCM (expense): " + planName);
+        	System.out.println("***** Group Name in GCM (expense): " + groupName);
+        	SharedPreferences.Editor editor = prefs.edit();
+    		editor.putString("selectedGroup", groupName);
+    		editor.putString("selectedPlan", planName);
+    		editor.apply();
+    		contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, ExpenseReportActivity.class), 0);
+        }
 
         System.out.println("Print notification !!!!");
         mBuilder.setContentIntent(contentIntent);

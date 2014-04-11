@@ -11,6 +11,11 @@ import android.widget.TimePicker;
 
 public class TimePickerFragment extends DialogFragment implements
 		TimePickerDialog.OnTimeSetListener {
+	private String time;
+	
+	public TimePickerFragment (String time) {
+		this.time = time;
+	}
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -25,6 +30,7 @@ public class TimePickerFragment extends DialogFragment implements
 	}
 
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+		if (time == "start") {
 		TextView planTimeEditText = (TextView) getActivity().findViewById(R.id.newPlanTimeValue);
 		String hour = String.valueOf(hourOfDay);
 		String min = String.valueOf(minute);
@@ -46,5 +52,29 @@ public class TimePickerFragment extends DialogFragment implements
     		ampm = "PM";
     	}
 		planTimeEditText.setText(hour+":"+min+" "+ampm);
+		
+		} else if (time == "end") {
+		TextView planEndTimeEditText = (TextView) getActivity().findViewById(R.id.newPlanEndTimeValue);
+		String hour = String.valueOf(hourOfDay);
+		String min = String.valueOf(minute);
+		
+		if(hourOfDay<10){
+			hour = "0"+hour;
+		}
+		if(minute<10){
+			min = "0"+min;
+		}
+		int hourInt = Integer.valueOf(hour);
+    	String ampm = "AM";
+    	if(hourInt > 12){
+    		hour = String.valueOf(hourInt - 12);
+    		if(Integer.valueOf(hour) < 10){
+    			hour = "0"+hour;
+    		}
+    		
+    		ampm = "PM";
+    	}
+    	planEndTimeEditText.setText(hour+":"+min+" "+ampm);
+		}
 	}
 }

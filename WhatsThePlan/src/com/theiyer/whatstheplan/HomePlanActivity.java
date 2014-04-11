@@ -253,7 +253,8 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 
 		@Override
 		public void onBackPressed() {
-		    // do nothing.
+		    Intent intent = new Intent(this, MainActivity.class);
+			startActivity(intent);
 		}
 		
 		/**

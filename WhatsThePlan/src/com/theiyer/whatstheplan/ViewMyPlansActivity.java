@@ -40,6 +40,7 @@ public class ViewMyPlansActivity extends Activity {
 	private String selectedGroup;
 	private Context context = this;
 	private Menu menu;
+	public static Plan plan;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,7 @@ public class ViewMyPlansActivity extends Activity {
 
 	/** Called when the user clicks the rsvp plan button */
 	public void rsvpPlan(View view) {
+		TextView rsvpLabel = (TextView) findViewById(R.id.rsvpLabel);
 		Button rsvpPlanButton = (Button) findViewById(R.id.rsvpPlanButton);
 		rsvpPlanButton.setTextColor(getResources().getColor(
 				R.color.click_button_2));
@@ -94,6 +96,7 @@ public class ViewMyPlansActivity extends Activity {
 				Activity.MODE_PRIVATE);
 		String phone = prefs.getString("phone", "");
 		String selectedPlan = prefs.getString("selectedPlan", "");
+		System.out.println("*********** Prefs : " + prefs.getAll().toString());
 		String rsvp = "no";
 
 		if (rsvpPlanButton.getText().equals("Say Yes")) {
@@ -103,7 +106,23 @@ public class ViewMyPlansActivity extends Activity {
 		String updateQuery = "/rsvpPlan?planName="
 				+ selectedPlan.replace(" ", "%20") + "&phone=" + phone
 				+ "&rsvp=" + rsvp;
-
+		if (rsvp == "no") { 
+		CalendarHelper calendarHelper = new CalendarHelper(context);
+		calendarHelper.execute(new String[] { "",
+				selectedPlan, "", "", "", "delete"});
+		System.out.println("Plan deleted.....");
+		rsvpPlanButton.setVisibility(1);
+		rsvpLabel.setVisibility(1);
+		Intent intent = new Intent(this, HomePlanActivity.class);
+		startActivity(intent);
+		} else {
+			System.out.println("Selected plan : " + selectedPlan);
+			System.out.println("******** Plan : " +plan.getStartTime().toString());
+			CalendarHelper calendarHelper = new CalendarHelper(context);
+			calendarHelper.execute(new String[] { plan.getStartTime(),
+					selectedPlan, plan.getLocation(),
+					String.valueOf(plan.getId()), phone, "create", "01:20", "2014-04-02" });
+		}
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(new String[] { updateQuery, phone });
 
@@ -162,6 +181,9 @@ public class ViewMyPlansActivity extends Activity {
 							+ selectedGroup.replace(" ", "%20");
 					WebServiceClient restClient = new WebServiceClient(context);
 					restClient.execute(new String[] { updateQuery });
+					CalendarHelper calendarHelper = new CalendarHelper(context);
+					calendarHelper.execute(new String[] { "",
+							selectedPlan, "", "", "", "delete"});
 					Intent homeIntent = new Intent(context,
 							HomePlanActivity.class);
 					startActivity(homeIntent);
@@ -252,6 +274,7 @@ public class ViewMyPlansActivity extends Activity {
 				xstream.alias("memberNames", String.class);
 				xstream.addImplicitCollection(Plan.class, "memberNames");
 				Plan plan = (Plan) xstream.fromXML(response);
+				ViewMyPlansActivity.plan = plan;
 				if (plan != null) {
 
 					if (phone.equals(plan.getCreator())) {
@@ -263,11 +286,16 @@ public class ViewMyPlansActivity extends Activity {
 					planGroupValue.setText(" " + plan.getGroupName());
 
 					TextView planTimeValue = (TextView) findViewById(R.id.viewPlanTime);
+					TextView planEndTimeValue = (TextView) findViewById(R.id.viewPlanEndTime);
 
 					String date = plan.getStartTime().substring(0, 10);
 					String time = plan.getStartTime().substring(11, 16);
 					String hour = time.substring(0, 2);
 					String min = time.substring(3);
+					String endDate = plan.getEndTime().substring(0, 10);
+					String endTime = plan.getEndTime().substring(11, 16);
+					String endHour = endTime.substring(0, 2);
+					String endMin = endTime.substring(3);
 					int hourInt = Integer.valueOf(hour);
 					String ampm = "AM";
 					if (hourInt > 12) {
@@ -277,8 +305,20 @@ public class ViewMyPlansActivity extends Activity {
 						}
 						ampm = "PM";
 					}
+					int endHourInt = Integer.valueOf(endHour);
+					String endAmPm = "AM";
+					if (endHourInt > 12) {
+						endHour = String.valueOf(endHourInt - 12);
+						if (Integer.valueOf(endHour) < 10) {
+							endHour = "0" + endHour;
+						}
+						endAmPm = "PM";
+					}
 					planTimeValue.setText(" " + date + " " + hour + ":" + min
 							+ " " + ampm);
+					
+					planEndTimeValue.setText(" "+ endDate + " " + endHour + ":" + endMin
+					+ " " + endAmPm);
 
 					TextView planLocationValue = (TextView) findViewById(R.id.viewPlanLocation);
 					planLocationValue.setText(" " + plan.getLocation());

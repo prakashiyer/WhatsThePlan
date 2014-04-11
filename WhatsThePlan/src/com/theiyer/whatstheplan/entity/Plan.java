@@ -8,6 +8,7 @@ public class Plan {
 	private String name;
 	private String groupName;
 	private String startTime;
+	private String endTime;
 	private String location;
 	private List<String> memberNames;
 	private String creator;
@@ -46,6 +47,14 @@ public class Plan {
 
 	public void setStartTime(String startTime) {
 		this.startTime = startTime;
+	}
+	
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
 	}
 
 	public String getLocation() {
