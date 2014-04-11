@@ -20,6 +20,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -66,7 +67,19 @@
             android:name="com.theiyer.whatstheplan.HomePlanActivity"
             android:label="@string/app_name" >
         </activity>
+        
+         <!-- Retry page -->
+        <activity
+            android:name="com.theiyer.whatstheplan.RetryActivity"
+            android:label="@string/app_name" >
+        </activity>
 
+        <!-- View Members page -->
+        <activity
+            android:name="com.theiyer.whatstheplan.ViewExistingMembersActivity"
+            android:label="@string/app_name" >
+        </activity>
+        
         <!-- Create Group page -->
         <activity
             android:name="com.theiyer.whatstheplan.CreateGroupActivity"
