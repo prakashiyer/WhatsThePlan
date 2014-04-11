@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 /**
  * About us
+ * working
  *
  */
 public class AboutUsActivity extends Activity {
