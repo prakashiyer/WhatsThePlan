@@ -9,6 +9,7 @@ public class User {
 	private String phone;
 	private List<String> groupNames;
 	private List<String> pendingGroupNames;
+	private byte[] image;
 	
 	public User(){
 		
@@ -52,6 +53,14 @@ public class User {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public byte[] getImage() {
+		return image;
+	}
+
+	public void setImage(byte[] image) {
+		this.image = image;
 	}
 	
 	
