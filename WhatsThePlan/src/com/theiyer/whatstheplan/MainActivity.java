@@ -1,12 +1,9 @@
 package com.theiyer.whatstheplan;
 
-import com.theiyer.whatstheplan.util.WTPConstants;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +13,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import com.theiyer.whatstheplan.util.WTPConstants;
+
 public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity";
@@ -24,6 +23,7 @@ public class MainActivity extends Activity {
 	private Context context;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
 
 		setTheme(R.style.AppTheme);
@@ -59,6 +59,9 @@ public class MainActivity extends Activity {
                    editor.apply();
                    setTheme(R.style.AppTheme);
                    Log.i(TAG, "Logging as an existing user: "+account.name);
+                   
+                   
+                   
                    Intent intent = new Intent(context, HomePlanActivity.class);
                    startActivity(intent);
            	} else {
@@ -71,12 +74,5 @@ public class MainActivity extends Activity {
        }, SPLASH_TIME_OUT);
 
 	}
-	/*public void onBackPressed()
-	{
-	    if ( ! getIntent().getExtras().getBoolean(FROM_SETTINGS_KEY))
-	        moveTaskToBack(true); // exist app
-	    else
-	        finish();
-	}*/
 
 }

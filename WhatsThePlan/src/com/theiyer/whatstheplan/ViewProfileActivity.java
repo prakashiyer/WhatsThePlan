@@ -12,11 +12,14 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -29,29 +32,36 @@ public class ViewProfileActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.view_profile);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Profile Details");
-
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		String userName = prefs.getString("userName", "New User");
-		TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeViewProfileLabel);
-		welcomeStmnt.setText(userName + ", Your profile details!");
-
-		TextView userNameValue = (TextView) findViewById(R.id.viewProfileName);
-		userNameValue.setText(userName);
 		
-		String phone = prefs.getString("phone", "");
-		TextView phoneValue = (TextView) findViewById(R.id.viewProfilePhone);
-		phoneValue.setText("Phone: " + phone);
+		if(haveInternet(this)){
+			setContentView(R.layout.view_profile);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Profile Details");
 
-		WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
-				this);
-		userImageClient.execute(new String[] { "fetchUserImage", phone });
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			String userName = prefs.getString("userName", "New User");
+			TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeViewProfileLabel);
+			welcomeStmnt.setText(userName + ", Your profile details!");
+
+			TextView userNameValue = (TextView) findViewById(R.id.viewProfileName);
+			userNameValue.setText(userName);
+			
+			String phone = prefs.getString("phone", "");
+			TextView phoneValue = (TextView) findViewById(R.id.viewProfilePhone);
+			phoneValue.setText("Phone: " + phone);
+
+			WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
+					this);
+			userImageClient.execute(new String[] { "fetchUserImage", phone });
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 
 	}
 
@@ -126,5 +136,25 @@ public class ViewProfileActivity extends Activity {
 		}
 	}
 
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * 
+	 * @param ctx
+	 * @return True if device has internet
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
+	}
 	
 }

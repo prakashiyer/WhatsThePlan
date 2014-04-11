@@ -25,6 +25,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -51,20 +53,26 @@ public class CreateGroupActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.create_group);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Group Creation Form");
+		if(haveInternet(this)){
+			setContentView(R.layout.create_group);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Group Creation Form");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		String userName = prefs.getString("userName", "New User");
-		TextView userNameValue = (TextView) findViewById(R.id.welcomeCreateGroupLabel);
-		userNameValue.setText(userName + ", Create a new group here!");
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			String userName = prefs.getString("userName", "New User");
+			TextView userNameValue = (TextView) findViewById(R.id.welcomeCreateGroupLabel);
+			userNameValue.setText(userName + ", Create a new group here!");
+			
+			imgView = (ImageView) findViewById(R.id.groupPicView);
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
 		
-		imgView = (ImageView) findViewById(R.id.groupPicView);
 
 	}
 
@@ -348,6 +356,25 @@ public class CreateGroupActivity extends Activity {
 			pDlg.dismiss();
 		}
 
+	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * @param ctx
+	 * @return True if device has internet
+	 *
+	 * Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+	    NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+	            .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+
+	    if (info == null || !info.isConnected()) {
+	        return false;
+	    }
+	    
+	    return true;
 	}
 
 }

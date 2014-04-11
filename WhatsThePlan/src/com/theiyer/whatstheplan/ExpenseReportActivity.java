@@ -18,6 +18,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -41,29 +43,35 @@ public class ExpenseReportActivity extends Activity implements OnItemClickListen
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.expense_report);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Expense Report");
+		if(haveInternet(this)){
+			setContentView(R.layout.expense_report);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Expense Report");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
 
-		String selectedPlan = prefs.getString("selectedPlan", "New User");
-		String searchQuery = "/generateReport?planName="
-				+ selectedPlan.replace(" ", "%20");
+			String selectedPlan = prefs.getString("selectedPlan", "New User");
+			String searchQuery = "/generateReport?planName="
+					+ selectedPlan.replace(" ", "%20");
 
-		adapter = new ExpenseListAdapter(this, this);
-		expenseReportListView = (ListView) findViewById(R.id.viewexpensereport);
-		expenseReportListView.setOnItemClickListener(this);
-		WebServiceClient restClient = new WebServiceClient(this);
-		restClient.execute(new String[] { searchQuery });
-		TextView expListLabel = (TextView) findViewById(R.id.expenseLabel);
-		String selectedGroup = prefs.getString("selectedGroup",
-				"New User");
-		expListLabel.setText("Group: " + selectedGroup);
+			adapter = new ExpenseListAdapter(this, this);
+			expenseReportListView = (ListView) findViewById(R.id.viewexpensereport);
+			expenseReportListView.setOnItemClickListener(this);
+			WebServiceClient restClient = new WebServiceClient(this);
+			restClient.execute(new String[] { searchQuery });
+			TextView expListLabel = (TextView) findViewById(R.id.expenseLabel);
+			String selectedGroup = prefs.getString("selectedGroup",
+					"New User");
+			expListLabel.setText("Group: " + selectedGroup);
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 	}
 	
 	@Override
@@ -164,6 +172,25 @@ public class ExpenseReportActivity extends Activity implements OnItemClickListen
 			pDlg.dismiss();
 		}
 
+	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * @param ctx
+	 * @return True if device has internet
+	 *
+	 * Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+	    NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+	            .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+
+	    if (info == null || !info.isConnected()) {
+	        return false;
+	    }
+	    
+	    return true;
 	}
 
 }

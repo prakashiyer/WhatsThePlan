@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -42,24 +44,31 @@ public class PlanHistoryActivity extends Activity implements OnItemClickListener
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.plan_history);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Plan History");
+		
+		if(haveInternet(this)){
+			setContentView(R.layout.plan_history);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Plan History");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
 
-		String selectedGroup = prefs.getString("selectedGroup", "");
-		String searchQuery = "/fetchPlanHistory?groupName="+selectedGroup.replace(" ", "%20");
+			String selectedGroup = prefs.getString("selectedGroup", "");
+			String searchQuery = "/fetchPlanHistory?groupName="+selectedGroup.replace(" ", "%20");
 
-		WebServiceClient restClient = new WebServiceClient(this);
-		planListView = (ListView) findViewById(R.id.viewPlanHistoryList);
-		planListView.setOnItemClickListener(this);
-		adapter = new PlanListAdapter(this);
-		restClient.execute(new String[] { searchQuery });
+			WebServiceClient restClient = new WebServiceClient(this);
+			planListView = (ListView) findViewById(R.id.viewPlanHistoryList);
+			planListView.setOnItemClickListener(this);
+			adapter = new PlanListAdapter(this);
+			restClient.execute(new String[] { searchQuery });
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 	}
 	
 	@Override
@@ -171,5 +180,26 @@ public class PlanHistoryActivity extends Activity implements OnItemClickListener
 			pDlg.dismiss();
 		}
 
+	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * 
+	 * @param ctx
+	 * @return True if device has internet
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
 	}
 }

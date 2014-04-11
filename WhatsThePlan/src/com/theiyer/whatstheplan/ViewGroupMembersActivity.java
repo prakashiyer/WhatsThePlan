@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,27 +46,33 @@ public class ViewGroupMembersActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.group_member_list);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Group Members");
+		if(haveInternet(this)){
+			setContentView(R.layout.group_member_list);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Group Members");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			
 
-		String selectedGroup = prefs.getString("selectedGroup", "");
-		String searchQuery = "/searchGroup?groupName=" + selectedGroup.replace(" ", "%20");
+			String selectedGroup = prefs.getString("selectedGroup", "");
+			String searchQuery = "/searchGroup?groupName=" + selectedGroup.replace(" ", "%20");
 
+			
+			membersList = new ArrayList<Map<String, byte[]>>();
+			memberListView = (ListView) findViewById(R.id.viewgroupMemberList);
+			adapter = new MemberListAdapter(this);
+			
+			WebServiceClient restClient = new WebServiceClient(this);
+			restClient.execute(new String[] { searchQuery });
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
 		
-		membersList = new ArrayList<Map<String, byte[]>>();
-		memberListView = (ListView) findViewById(R.id.viewgroupMemberList);
-		adapter = new MemberListAdapter(this);
-		
-		WebServiceClient restClient = new WebServiceClient(this);
-		restClient.execute(new String[] { searchQuery });
 	}
 	
 	@Override
@@ -310,5 +318,25 @@ public class ViewGroupMembersActivity extends Activity {
 
 	}
 
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * 
+	 * @param ctx
+	 * @return True if device has internet
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
+	}
 
 }

@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -25,6 +26,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -54,24 +57,31 @@ public class ProfileImageUploadActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.upload_image);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Profile Photo Selection");
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		String phone = prefs.getString("phone", "");
-		context = getApplicationContext();
 		
+		if(haveInternet(this)){
+			setContentView(R.layout.upload_image);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Profile Photo Selection");
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			String phone = prefs.getString("phone", "");
+			context = getApplicationContext();
+			
 
-		imgView = (ImageView) findViewById(R.id.profilePicView);
+			imgView = (ImageView) findViewById(R.id.profilePicView);
+			
+	        WebImageRetrieveRestWebServiceClient imageRetrieveClient = new WebImageRetrieveRestWebServiceClient(this);
+			
+	        imageRetrieveClient.execute(
+					new String[] { "fetchUserImage", phone});
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
 		
-        WebImageRetrieveRestWebServiceClient imageRetrieveClient = new WebImageRetrieveRestWebServiceClient(this);
-		
-        imageRetrieveClient.execute(
-				new String[] { "fetchUserImage", phone});
 
 	}
 
@@ -318,6 +328,7 @@ public class ProfileImageUploadActivity extends Activity {
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(path);
+			
 			HttpEntity results = null;
 			try {
 		        MultipartEntity entity = new MultipartEntity();
@@ -364,5 +375,26 @@ public class ProfileImageUploadActivity extends Activity {
 			pDlg.dismiss();
 		}
 
+	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * 
+	 * @param ctx
+	 * @return True if device has internet
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
 	}
 }

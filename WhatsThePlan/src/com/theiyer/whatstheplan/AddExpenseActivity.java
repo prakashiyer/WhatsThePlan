@@ -18,6 +18,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -41,31 +43,38 @@ public class AddExpenseActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.add_expense);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" My Expense List");
+		
+		if(haveInternet(this)){
+			setContentView(R.layout.add_expense);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" My Expense List");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
 
-		String userName = prefs.getString("userName", "");
-		String phone = prefs.getString("phone", "");
-		String selectedPlan = prefs.getString("selectedPlan", "");
-		String selectedGroup = prefs.getString("selectedGroup", "");
+			String userName = prefs.getString("userName", "");
+			String phone = prefs.getString("phone", "");
+			String selectedPlan = prefs.getString("selectedPlan", "");
+			String selectedGroup = prefs.getString("selectedGroup", "");
 
-		TextView addLabel = (TextView) findViewById(R.id.addexpenseLabel);
-		addLabel.setText(userName + "'s Expenses:");
+			TextView addLabel = (TextView) findViewById(R.id.addexpenseLabel);
+			addLabel.setText(userName + "'s Expenses:");
 
-		String searchQuery = "/fetchExpense?phone=" + phone + "&planName="
-				+ selectedPlan.replace(" ", "%20") + "&groupName="
-				+ selectedGroup.replace(" ", "%20");
+			String searchQuery = "/fetchExpense?phone=" + phone + "&planName="
+					+ selectedPlan.replace(" ", "%20") + "&groupName="
+					+ selectedGroup.replace(" ", "%20");
 
-	    WebServiceClient restClient = new WebServiceClient(this);
+		    WebServiceClient restClient = new WebServiceClient(this);
 
-	    restClient.execute(new String[] { searchQuery });
+		    restClient.execute(new String[] { searchQuery });
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 	}
 
 	/** Called when the user clicks the Submit Expense button */
@@ -295,5 +304,24 @@ public class AddExpenseActivity extends Activity {
 			pDlg.dismiss();
 		}
 
+	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * @param ctx
+	 * @return True if device has internet
+	 *
+	 * Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+	    NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+	            .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+
+	    if (info == null || !info.isConnected()) {
+	        return false;
+	    }
+	    
+	    return true;
 	}
 }

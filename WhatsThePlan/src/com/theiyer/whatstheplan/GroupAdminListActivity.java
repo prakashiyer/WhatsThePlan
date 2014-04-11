@@ -26,6 +26,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -53,41 +55,47 @@ public class GroupAdminListActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.group_admin_list);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Group Admin To-Do List");
+        if(haveInternet(this)){
+        	setContentView(R.layout.group_admin_list);
+    		ActionBar aBar = getActionBar();
+    		Resources res = getResources();
+    		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+    		aBar.setBackgroundDrawable(actionBckGrnd);
+    		aBar.setTitle(" Group Admin To-Do List");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		String userName = prefs.getString("userName", "New User");
-		TextView userNameValue = (TextView) findViewById(R.id.welcomeGroupAdminLabel);
-		userNameValue.setText(userName
-				+ ", new member requests are listed below:");
+    		SharedPreferences prefs = getSharedPreferences("Prefs",
+    				Activity.MODE_PRIVATE);
+    		String userName = prefs.getString("userName", "New User");
+    		TextView userNameValue = (TextView) findViewById(R.id.welcomeGroupAdminLabel);
+    		userNameValue.setText(userName
+    				+ ", new member requests are listed below:");
 
-		String selectedGroup = prefs.getString("selectedGroup", "");
+    		String selectedGroup = prefs.getString("selectedGroup", "");
 
-		TextView selectedGroupValue = (TextView) findViewById(R.id.selectedGroupAdminValue);
-		selectedGroupValue.setText(" " + selectedGroup);
+    		TextView selectedGroupValue = (TextView) findViewById(R.id.selectedGroupAdminValue);
+    		selectedGroupValue.setText(" " + selectedGroup);
 
-		String searchQuery = "/searchGroup?groupName="
-				+ selectedGroup.replace(" ", "%20");
+    		String searchQuery = "/searchGroup?groupName="
+    				+ selectedGroup.replace(" ", "%20");
 
-		WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
-				this);
-		WebServiceClient restClient = new WebServiceClient(this);
-		membersList = new ArrayList<Map<String, byte[]>>();
-		userMap = new HashMap<String, String>();
-		list = (ListView) findViewById(R.id.memberListAdmin);
-		// Click event for single list row
-		list.setOnItemClickListener(this);
-		adapter = new MemberListAdapter(this);
-		imageClient.execute(new String[] { "fetchGroupImage",
-				selectedGroup.replace(" ", "%20") });
+    		WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
+    				this);
+    		WebServiceClient restClient = new WebServiceClient(this);
+    		membersList = new ArrayList<Map<String, byte[]>>();
+    		userMap = new HashMap<String, String>();
+    		list = (ListView) findViewById(R.id.memberListAdmin);
+    		// Click event for single list row
+    		list.setOnItemClickListener(this);
+    		adapter = new MemberListAdapter(this);
+    		imageClient.execute(new String[] { "fetchGroupImage",
+    				selectedGroup.replace(" ", "%20") });
 
-		restClient.execute(new String[] { searchQuery });
+    		restClient.execute(new String[] { searchQuery });
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 
 	}
 
@@ -386,5 +394,24 @@ public class GroupAdminListActivity extends Activity implements
 			pDlg.dismiss();
 		}
 
+	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * @param ctx
+	 * @return True if device has internet
+	 *
+	 * Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+	    NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+	            .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+
+	    if (info == null || !info.isConnected()) {
+	        return false;
+	    }
+	    
+	    return true;
 	}
 }

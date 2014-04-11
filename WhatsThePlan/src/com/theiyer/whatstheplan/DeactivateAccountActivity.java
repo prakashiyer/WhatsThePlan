@@ -20,6 +20,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,26 +37,33 @@ public class DeactivateAccountActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		context = this;
-		setContentView(R.layout.delete_profile);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" De-activate Account Form");
+		
+		if(haveInternet(this)){
+			context = this;
+			setContentView(R.layout.delete_profile);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" De-activate Account Form");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		String userName = prefs.getString("userName", "New User");
-		TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeDeleteProfileLabel);
-		welcomeStmnt.setText(userName + ", manage your profile here!");
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			String userName = prefs.getString("userName", "New User");
+			TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeDeleteProfileLabel);
+			welcomeStmnt.setText(userName + ", manage your profile here!");
 
-		TextView userNameValue = (TextView) findViewById(R.id.deleteProfileName);
-		userNameValue.setText("Name: " + userName);
+			TextView userNameValue = (TextView) findViewById(R.id.deleteProfileName);
+			userNameValue.setText("Name: " + userName);
 
-		String phone = prefs.getString("phone", "");
-		TextView phoneValue = (TextView) findViewById(R.id.deleteProfilePhone);
-		phoneValue.setText("Phone: " + phone);
+			String phone = prefs.getString("phone", "");
+			TextView phoneValue = (TextView) findViewById(R.id.deleteProfilePhone);
+			phoneValue.setText("Phone: " + phone);
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 
 	}
 
@@ -149,6 +158,25 @@ public class DeactivateAccountActivity extends Activity {
 			pDlg.dismiss();
 		}
 
+	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * @param ctx
+	 * @return True if device has internet
+	 *
+	 * Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+	    NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+	            .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+
+	    if (info == null || !info.isConnected()) {
+	        return false;
+	    }
+	    
+	    return true;
 	}
 
 }

@@ -23,6 +23,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -48,23 +50,29 @@ public class JoinGroupActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.join_group);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Group Membership");
-
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		String userName = prefs.getString("userName", "New User");
-		TextView userNameValue = (TextView) findViewById(R.id.welcomeJoinGroupLabel);
-		userNameValue.setText(userName + ", Search and join your group!");
 		
-		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		final SearchView searchView = (SearchView) findViewById(R.id.groupSearchView);
-		SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-		searchView.setSearchableInfo(searchableInfo);
+		if(haveInternet(this)){
+			setContentView(R.layout.join_group);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Group Membership");
+
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			String userName = prefs.getString("userName", "New User");
+			TextView userNameValue = (TextView) findViewById(R.id.welcomeJoinGroupLabel);
+			userNameValue.setText(userName + ", Search and join your group!");
+			
+			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+			final SearchView searchView = (SearchView) findViewById(R.id.groupSearchView);
+			SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+			searchView.setSearchableInfo(searchableInfo);
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}	
 		
 	}
 	
@@ -281,5 +289,24 @@ public class JoinGroupActivity extends Activity {
 
 	}
 
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * 
+	 * @param ctx
+	 * @return True if device has internet
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
 
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
+	}
 }

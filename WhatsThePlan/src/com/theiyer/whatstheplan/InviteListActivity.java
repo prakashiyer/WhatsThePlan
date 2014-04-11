@@ -183,7 +183,7 @@ public class InviteListActivity extends Activity implements MultiChoiceModeListe
 			for(String phone: selectedList){
 				String joinQuery = "/invite?groupName=" + groupName.replace(" ", "%20")
 						+ "&phone=" + phone;
-				RestWebServiceClient restClient = new RestWebServiceClient(this);
+				/*RestWebServiceClient restClient = new RestWebServiceClient(this);
 				try {
 					String response = restClient.execute(
 							new String[] { joinQuery }).get();
@@ -206,7 +206,7 @@ public class InviteListActivity extends Activity implements MultiChoiceModeListe
 					
 				} catch (ExecutionException e) {
 					
-				}
+				}*/
 			}
 		}
 	}

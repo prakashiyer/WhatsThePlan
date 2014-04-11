@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -23,6 +22,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -46,25 +47,35 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.home_plans);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Home");
-
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-
-		String phone = prefs.getString("phone", "");
-		String searchQuery = "/fetchUpcomingPlans?phone=" + phone;
-
-		adapter = new PlanListAdapter(this);
-		planListView = (ListView) findViewById(R.id.viewupcomingplansList);
-		planListView.setOnItemClickListener(this);
 		
-		WebServiceClient restClient = new WebServiceClient(this);
-		restClient.execute(new String[] { searchQuery });
+		
+		if(haveInternet(this)){
+			setContentView(R.layout.home_plans);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Home");
+
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+
+			String phone = prefs.getString("phone", "");
+			String searchQuery = "/fetchUpcomingPlans?phone=" + phone;
+
+			adapter = new PlanListAdapter(this);
+			planListView = (ListView) findViewById(R.id.viewupcomingplansList);
+			planListView.setOnItemClickListener(this);
+			
+			WebServiceClient restClient = new WebServiceClient(this);
+			restClient.execute(new String[] { searchQuery });
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
+		
+		
 	}
 
 	
@@ -143,6 +154,10 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 			case (R.id.aboutUs):
 				Intent aboutUsIntent = new Intent(this, AboutUsActivity.class);
 	            startActivity(aboutUsIntent);
+				return true;
+			case (R.id.viewUserList):
+				Intent viewUsers = new Intent(this, ViewExistingMembersActivity.class);
+	            startActivity(viewUsers);
 				return true;
 			default:
 				return false;
@@ -239,5 +254,24 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 		@Override
 		public void onBackPressed() {
 		    // do nothing.
+		}
+		
+		/**
+		 * Checks if we have a valid Internet Connection on the device.
+		 * @param ctx
+		 * @return True if device has internet
+		 *
+		 * Code from: http://www.androidsnippets.org/snippets/131/
+		 */
+		public static boolean haveInternet(Context ctx) {
+
+		    NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+		            .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+
+		    if (info == null || !info.isConnected()) {
+		        return false;
+		    }
+		    
+		    return true;
 		}
 }

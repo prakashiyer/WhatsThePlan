@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -43,26 +45,32 @@ public class ViewPlanMembersActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.plan_member_list);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Plan Members");
+		if(haveInternet(this)){
+			setContentView(R.layout.plan_member_list);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Plan Members");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		membersList = new ArrayList<Map<String, byte[]>>();
-		memberListView = (ListView) findViewById(R.id.viewplanmemberList);
-		adapter = new MemberListAdapter(this);
-		memberListLabel = (TextView) findViewById(R.id.viewPlanMemberListLabel);
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			membersList = new ArrayList<Map<String, byte[]>>();
+			memberListView = (ListView) findViewById(R.id.viewplanmemberList);
+			adapter = new MemberListAdapter(this);
+			memberListLabel = (TextView) findViewById(R.id.viewPlanMemberListLabel);
 
-		String selectedPlan = prefs.getString("selectedPlan", "New User");
-		String searchQuery = "/fetchPlan?planName="
-				+ selectedPlan.replace(" ", "%20");
+			String selectedPlan = prefs.getString("selectedPlan", "New User");
+			String searchQuery = "/fetchPlan?planName="
+					+ selectedPlan.replace(" ", "%20");
 
-		WebServiceClient restClient = new WebServiceClient(this);
-		restClient.execute(new String[] { searchQuery });
+			WebServiceClient restClient = new WebServiceClient(this);
+			restClient.execute(new String[] { searchQuery });
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 	}
 	
 	
@@ -292,6 +300,27 @@ public class ViewPlanMembersActivity extends Activity {
 			pDlg.dismiss();
 		}
 
+	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * 
+	 * @param ctx
+	 * @return True if device has internet
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
 	}
 
 }

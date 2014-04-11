@@ -2,7 +2,6 @@ package com.theiyer.whatstheplan;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -15,15 +14,15 @@ import org.apache.http.util.EntityUtils;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -51,52 +50,55 @@ public class ViewMyGroupActivity extends Activity implements
 	private Context context;
 	private String selectedGroup;
 	private String phone;
-	private String operation;
 	private Spinner plansListSpinner;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.view_group);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Group Information");
-		context = this;
+		if(haveInternet(this)){
+			setContentView(R.layout.view_group);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Group Information");
+			context = this;
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
 
-		selectedGroup = prefs.getString("selectedGroup", "");
-		phone = prefs.getString("phone", "");
+			selectedGroup = prefs.getString("selectedGroup", "");
+			phone = prefs.getString("phone", "");
 
-		TextView selectedGroupValue = (TextView) findViewById(R.id.selectedGroupValue);
-		selectedGroupValue.setText(" " + selectedGroup);
+			TextView selectedGroupValue = (TextView) findViewById(R.id.selectedGroupValue);
+			selectedGroupValue.setText(" " + selectedGroup);
 
-		String searchGrpQuery = "/searchGroup?groupName="
-				+ selectedGroup.replace(" ", "%20");
+			String searchGrpQuery = "/searchGroup?groupName="
+					+ selectedGroup.replace(" ", "%20");
 
-		WebServiceClient groupRestClient = new WebServiceClient(this);
-		operation = "grpSearch";
-		groupRestClient.execute(new String[] { searchGrpQuery });
+			WebServiceClient groupRestClient = new WebServiceClient(this);
+			groupRestClient.execute(new String[] { searchGrpQuery });
 
-		WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
-				this);
+			WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
+					this);
 
-		imageClient.execute(new String[] { "fetchGroupImage",
-				selectedGroup.replace(" ", "%20") });
+			imageClient.execute(new String[] { "fetchGroupImage",
+					selectedGroup.replace(" ", "%20") });
 
-		WebServiceClient restClient = new WebServiceClient(this);
-		String searchQuery = "/fetchGroupPlans?groupName="
-				+ selectedGroup.replace(" ", "%20");
+			WebServiceClient restClient = new WebServiceClient(this);
+			String searchQuery = "/fetchGroupPlans?groupName="
+					+ selectedGroup.replace(" ", "%20");
 
-		operation = "planSearch";
-		restClient.execute(new String[] { searchQuery });
+			restClient.execute(new String[] { searchQuery });
 
-		plansListSpinner = (Spinner) findViewById(R.id.viewGroupPlansListSpinner);
-		plansListSpinner.setOnItemSelectedListener(this);
+			plansListSpinner = (Spinner) findViewById(R.id.viewGroupPlansListSpinner);
+			plansListSpinner.setOnItemSelectedListener(this);
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 	}
 
 	@Override
@@ -272,7 +274,7 @@ public class ViewMyGroupActivity extends Activity implements
 
 		@Override
 		protected void onPostExecute(String response) {
-			
+
 			if (response != null && response.contains("<Group>")) {
 				Log.i(TAG, response);
 				XStream xstream = new XStream();
@@ -408,6 +410,27 @@ public class ViewMyGroupActivity extends Activity implements
 			pDlg.dismiss();
 		}
 
+	}
+
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * 
+	 * @param ctx
+	 * @return True if device has internet
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
 	}
 
 }

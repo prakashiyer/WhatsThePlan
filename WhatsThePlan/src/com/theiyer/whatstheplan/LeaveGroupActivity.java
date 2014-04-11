@@ -16,6 +16,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -29,24 +31,29 @@ public class LeaveGroupActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.leave_group);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Group Exit Form");
+		
+		if(haveInternet(this)){
+			setContentView(R.layout.leave_group);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Group Exit Form");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		String userName = prefs.getString("userName", "New User");
-		String selectedGroup = prefs.getString("selectedGroup", "New User");
-		TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeLeaveGroupLabel);
-		welcomeStmnt.setText(userName + ", You can exit this group.");
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			String userName = prefs.getString("userName", "New User");
+			String selectedGroup = prefs.getString("selectedGroup", "New User");
+			TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeLeaveGroupLabel);
+			welcomeStmnt.setText(userName + ", You can exit this group.");
 
-		TextView groupNameValue = (TextView) findViewById(R.id.leaveGroupName);
-		groupNameValue.setText("Group Name: " + selectedGroup);
-
-
+			TextView groupNameValue = (TextView) findViewById(R.id.leaveGroupName);
+			groupNameValue.setText("Group Name: " + selectedGroup);
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 	}
 
 
@@ -122,5 +129,26 @@ public class LeaveGroupActivity extends Activity {
 			pDlg.dismiss();
 		}
 
+	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * 
+	 * @param ctx
+	 * @return True if device has internet
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
 	}
 }

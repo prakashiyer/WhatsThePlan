@@ -18,6 +18,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -39,29 +41,35 @@ public class CreatePlanActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.create_plan);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" New Plan");
+		if(haveInternet(this)){
+			setContentView(R.layout.create_plan);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" New Plan");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		String userName = prefs.getString("userName", "New User");
-		TextView userNameValue = (TextView) findViewById(R.id.welcomeCreatePlanLabel);
-		userNameValue.setText(userName + ", create a plan here!");
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			String userName = prefs.getString("userName", "New User");
+			TextView userNameValue = (TextView) findViewById(R.id.welcomeCreatePlanLabel);
+			userNameValue.setText(userName + ", create a plan here!");
 
-		String selectedGroup = prefs.getString("selectedGroup", "");
+			String selectedGroup = prefs.getString("selectedGroup", "");
 
-		TextView selectedGroupValue = (TextView) findViewById(R.id.selectedgroupNameField);
-		selectedGroupValue.setText(" " + selectedGroup);
+			TextView selectedGroupValue = (TextView) findViewById(R.id.selectedgroupNameField);
+			selectedGroupValue.setText(" " + selectedGroup);
 
-		WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
-				this);
-		imageClient.execute(
-				new String[] { "fetchGroupImage",
-						selectedGroup.replace(" ", "%20") });
+			WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
+					this);
+			imageClient.execute(
+					new String[] { "fetchGroupImage",
+							selectedGroup.replace(" ", "%20") });
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 	}
 
 	/** Called when the user clicks the Register Plan button */
@@ -281,5 +289,24 @@ public class CreatePlanActivity extends FragmentActivity {
 			pDlg.dismiss();
 		}
 
+	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * @param ctx
+	 * @return True if device has internet
+	 *
+	 * Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+	    NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+	            .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+
+	    if (info == null || !info.isConnected()) {
+	        return false;
+	    }
+	    
+	    return true;
 	}
 }
