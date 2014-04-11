@@ -8,7 +8,7 @@ import android.os.Bundle;
 /**
  * About us
  * working
- *
+ * is it ?
  */
 public class AboutUsActivity extends Activity {
 
