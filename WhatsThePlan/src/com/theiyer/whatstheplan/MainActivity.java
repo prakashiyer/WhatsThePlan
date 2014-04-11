@@ -6,6 +6,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,7 +24,6 @@ public class MainActivity extends Activity {
 	private Context context;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 
 		setTheme(R.style.AppTheme);
@@ -71,5 +71,12 @@ public class MainActivity extends Activity {
        }, SPLASH_TIME_OUT);
 
 	}
+	/*public void onBackPressed()
+	{
+	    if ( ! getIntent().getExtras().getBoolean(FROM_SETTINGS_KEY))
+	        moveTaskToBack(true); // exist app
+	    else
+	        finish();
+	}*/
 
 }
