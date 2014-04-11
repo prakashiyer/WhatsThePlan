@@ -5,7 +5,10 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
+/**
+ * About us
+ *
+ */
 public class AboutUsActivity extends Activity {
 
 	@Override
