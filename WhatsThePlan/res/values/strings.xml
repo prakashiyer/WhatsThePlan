@@ -36,9 +36,10 @@
     <string name="new_group_name_label">Enter a Group with unique name</string>
     <string name="register_group_button_text">Create this Group</string>
     <string name="group_search_hint">Enter a Group name</string>
+    <string name="user_search_hint">Enter Contact name</string>
     <string name="email_search_hint">Enter a Name or Email Id</string>
     <string name="group_search_results_label">Search Results:</string>
-    <string name="new_plan_title_label">Type a unique Plan title</string>
+    <string name="new_plan_title_label">Type a Plan title</string>
     <string name="new_plan_time_label">Date &amp; Time:</string>
     <string name="new_plan_location_label">Type Location address</string>
     <string name="date_button_text">Set Date</string>
@@ -49,6 +50,7 @@
     <string name="edit_plan_button_text">Edit Plan</string>
     <string name="delete_plan_button_text">Delete Plan</string>
     <string name="see_plan_members_button_text">Members Attending &gt;&gt;</string>
+    <string name="next_step_button_text">Go to Next Step &gt;&gt;</string>
     <string name="cancel_plan_button_text">X</string>
     <string name="new_plan_date_hint">yyyy-mm-dd</string>
     <string name="new_plan_time_hint">HH:MM AM/PM</string>
@@ -85,6 +87,8 @@
     <string name="action_deactivate_account">Deactivate Account</string>
     <string name="action_about_us">About Us</string>
     <string name="action_view_users">View Users</string>
+    <string name="action_view_groups_invited">Groups Invited</string>
+    <string name="action_view_members_invited">Members Invited</string>
     <string name="action_about_us_desc">About this application:\n\nWe are happy to present you with Just Meet - "Live for today, Plan for tomorrow, Party for tonight!"\n\nFeatures:\n # Create a group\n # Plan events with your friends\n # See upcoming Plans\n # View your group activity\n # Settle bills for recent plan history\n\nKeep exploring! We would love to hear from you. Email your feedback to prakashk16@gmail.com</string>
     <string name="old_password_label">Type existing password</string>
     <string name="new_password_label">Type new password</string>

@@ -22,6 +22,7 @@
     <color name="button_text">#FFFFFF</color>
     <color name="red">#FF0000</color>
     <color name="green">#1D951D</color>
+     <color name="orange">#C47451</color>
     <string name="bold_text">bold</string>
     <color name="blue_button_border">#4476cc</color>
     <color name="click_button_1">#FA8F2A</color>
