@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.ACCOUNT_MANAGER" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -77,6 +77,38 @@
         <!-- View Members page -->
         <activity
             android:name="com.theiyer.whatstheplan.ViewExistingMembersActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/user_searchable" />
+        </activity>
+        
+         <!-- View Groups page -->
+        <activity
+            android:name="com.theiyer.whatstheplan.ViewExistingGroupsActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/group_searchable" />
+        </activity>
+        
+         <!-- New Plan page -->
+        <activity
+            android:name="com.theiyer.whatstheplan.NewPlanActivity"
+            android:label="@string/app_name" >
+        </activity>
+        
+         <!-- New Plan page -->
+        <activity
+            android:name="com.theiyer.whatstheplan.ViewMyNewPlansActivity"
             android:label="@string/app_name" >
         </activity>
         
