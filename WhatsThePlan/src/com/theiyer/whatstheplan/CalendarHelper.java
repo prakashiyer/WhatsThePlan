@@ -104,7 +104,6 @@ public class CalendarHelper extends AsyncTask<String, String, String> {
         long eventID = 0;
         Calendar calendar = Calendar.getInstance();
         Calendar endCalendar = Calendar.getInstance();
-        System.out.println("Params in calendar helper : " + params[0] + " " +params[6]);
         if (params[5] == "create") {
         	String date = params[0];
     		String endTime = params[6];
