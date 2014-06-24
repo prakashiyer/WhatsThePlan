@@ -114,7 +114,7 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 				editor.apply();
 				break;
 			}
-			Intent intent = new Intent(this, ViewMyPlansActivity.class);
+			Intent intent = new Intent(this, ViewMyNewPlansActivity.class);
 			startActivity(intent);		
 		}
 	}
@@ -131,6 +131,9 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 			
 			MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
 			deactivateAccountItem.setVisible(true);		
+			
+			MenuItem viewUserListItem = menu.findItem(R.id.viewUserList);
+			viewUserListItem.setVisible(true);		
 			
 			return true;
 		}
@@ -220,6 +223,10 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 					xstream.addImplicitCollection(PlanList.class, "plans");
 					xstream.alias("memberNames", String.class);
 					xstream.addImplicitCollection(Plan.class, "memberNames");
+					xstream.alias("membersInvited", String.class);
+					xstream.addImplicitCollection(Plan.class, "membersInvited");
+					xstream.alias("groupsInvited", String.class);
+					xstream.addImplicitCollection(Plan.class, "groupsInvited");
 					PlanList planList = (PlanList) xstream.fromXML(response);
 					if (planList != null && planList.getPlans() != null) {
 

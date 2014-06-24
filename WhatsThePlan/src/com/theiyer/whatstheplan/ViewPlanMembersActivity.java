@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.theiyer.whatstheplan.entity.Group;
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
@@ -41,6 +42,7 @@ public class ViewPlanMembersActivity extends Activity {
 	MemberListAdapter adapter;
 	List<Map<String, byte[]>> membersList;
 	TextView memberListLabel;
+	String viewSelected ="";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,8 +63,11 @@ public class ViewPlanMembersActivity extends Activity {
 			memberListLabel = (TextView) findViewById(R.id.viewPlanMemberListLabel);
 
 			String selectedPlan = prefs.getString("selectedPlan", "New User");
+			System.out.println("View Selected: "  +selectedPlan);
 			String searchQuery = "/fetchPlan?planName="
 					+ selectedPlan.replace(" ", "%20");
+			viewSelected = prefs.getString("viewSelected", "members");
+			System.out.println("View Selected: "  +viewSelected);
 
 			WebServiceClient restClient = new WebServiceClient(this);
 			restClient.execute(new String[] { searchQuery });
@@ -118,7 +123,7 @@ public class ViewPlanMembersActivity extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-	    Intent intent = new Intent(this, ViewMyPlansActivity.class);
+	    Intent intent = new Intent(this, ViewMyNewPlansActivity.class);
 	    startActivity(intent);
 	}
 	
@@ -177,22 +182,42 @@ public class ViewPlanMembersActivity extends Activity {
 		@Override
 		protected void onPostExecute(String response) {
 			if (response != null && query.contains("fetchPlan")) {
+				System.out.println("PLAN RESPONSE: " +response);
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
 				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
+				xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
+				xstream.alias("membersInvited", String.class);
+				xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
+				xstream.alias("groupsInvited", String.class);
+				xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null) {
 
-					List<String> members = plan.getMemberNames();
+					System.out.println("Plan selected: " +plan.getName());
+					List<String> members = new ArrayList<String>();
+					if(viewSelected.equals("members")){
+						members = plan.getMemberNames();
+					} else if(viewSelected.equals("groupsInvited")){
+						members = plan.getGroupsInvited();
+					} else if(viewSelected.equals("membersInvited")){
+						members = plan.getMembersInvited();
+					}
 
 					if (members != null && !members.isEmpty()) {
 						String isLastMember = "false";
 						for(int i=0; i<members.size(); i++){
-							String userQuery = "/fetchUser?phone=" + members.get(i);
+							String userQuery = "";
+							if(viewSelected.equals("groupsInvited")){
+								userQuery = "/searchGroup?groupName=" + members.get(i).replace(" ", "%20");
+							} else {
+								userQuery = "/fetchUser?phone=" + members.get(i);
+							}
+							
 							if(i == members.size()-1){
 								isLastMember = "true";
 							}
+							System.out.println("USER QUERY: " +userQuery);
 							WebServiceClient userRestClient = new WebServiceClient(mContext);
 							userRestClient.execute(new String[] { userQuery, isLastMember });
 						}
@@ -202,6 +227,7 @@ public class ViewPlanMembersActivity extends Activity {
 			}
 			
 			if(response != null && query.contains("fetchUser")){
+				System.out.println("USER RESPONSE: " +response);
 				XStream userXstream = new XStream();
 				userXstream.alias("UserInformation", User.class);
 				userXstream.alias("groupNames", String.class);
@@ -217,6 +243,25 @@ public class ViewPlanMembersActivity extends Activity {
 					userImageClient.execute(new String[] { "fetchUserImage", user.getPhone(), user.getName(), isLastMember });
 					
 				}	
+			} else if (response != null && query.contains("searchGroup")) {
+				System.out.println("GRP RESPONSE: " +response);
+				XStream xstream = new XStream();
+				xstream.alias("Group", Group.class);
+				
+				xstream.alias("members", String.class);
+				xstream.addImplicitCollection(Group.class, "members","members",String.class);
+				xstream.alias("planNames", String.class);
+				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
+				xstream.alias("pendingMembers", String.class);
+				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
+				Group group = (Group) xstream.fromXML(response);
+				pDlg.dismiss();
+				if (group != null) {
+					String groupName = group.getName();
+					WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
+							mContext);
+					userImageClient.execute(new String[] { "fetchGroupImage",  groupName.replace(" ", "%20"),  groupName.replace(" ", "%20"), "true" });
+				}
 			}
 			pDlg.dismiss();
 		}
@@ -254,11 +299,12 @@ public class ViewPlanMembersActivity extends Activity {
 		protected byte[] doInBackground(String... params) {
 			String method = params[0];
 			String path = WTPConstants.SERVICE_PATH+"/"+method;
+			userName = params[2];
+        	isLastMember = params[3];
 
 			if("fetchUserImage".equals(method)){
 	        	path = path+"?phone="+params[1];
-	        	userName = params[2];
-	        	isLastMember = params[3];
+	        	
 	        } else {
 	        	path = path+"?groupName="+params[1];
 	        }

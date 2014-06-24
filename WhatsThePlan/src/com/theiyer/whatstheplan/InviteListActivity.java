@@ -26,9 +26,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
-import com.theiyer.whatstheplan.entity.Group;
-import com.thoughtworks.xstream.XStream;
-
 public class InviteListActivity extends Activity implements MultiChoiceModeListener {
 
 	ListView inviteListView;

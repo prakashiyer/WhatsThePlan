@@ -3,8 +3,11 @@ package com.theiyer.whatstheplan;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -16,8 +19,10 @@ import org.apache.http.util.EntityUtils;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -27,22 +32,28 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.entity.UserList;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
-public class ViewExistingMembersActivity extends Activity {
+public class ViewExistingMembersActivity extends Activity implements
+OnItemClickListener {
 
-	GridView memberListView;
+	GridView membersGridView;
 	MemberGridAdapter adapter;
-	List<Map<String, byte[]>> membersList;
-	//TextView memberListLabel;
+	List<Map<String, User>> membersList;
+	Context context;
+	List<Map<String, User>> filteredList;
+	String selectedIndividuals;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,41 +67,60 @@ public class ViewExistingMembersActivity extends Activity {
 			aBar.setBackgroundDrawable(actionBckGrnd);
 			aBar.setTitle(" Existing Members");
 
-			membersList = new ArrayList<Map<String, byte[]>>();
-			memberListView = (GridView) findViewById(R.id.viewexistingmemberGrid);
+			membersList = new ArrayList<Map<String, User>>();
+			filteredList = new ArrayList<Map<String, User>>();
+			membersGridView = (GridView) findViewById(R.id.viewexistingmemberGrid);
 			adapter = new MemberGridAdapter(this);
-			//memberListLabel = (TextView) findViewById(R.id.viewExistingMemberListLabel);
+			membersGridView.setOnItemClickListener(this);
+			selectedIndividuals = "";
+			context = this;
 
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putString("selectedIndividuals", selectedIndividuals);
+			editor.apply();
+			
 			Cursor phones = getContentResolver().query(
 					ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
 					null, null, null);
-			List<String> phoneList = new ArrayList<String>();
+			StringBuffer phoneBuffer = new StringBuffer();
+			
 			while (phones.moveToNext()) {
 				int phoneType = phones
 						.getInt(phones
 								.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-				String name = phones
-						.getString(phones
-								.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+				
 				String phoneNumber = phones
 						.getString(
 								phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-						.trim().replaceAll("[(|)|+|-|-| ]", "");
+						.trim();
+				String[] source = new String[]{"(",")","+","-","."," "};
+				String[] replace = new String[]{"","","","","",""};
+				phoneNumber = StringUtils.replaceEach(phoneNumber, source, replace);
 				int len = phoneNumber.length();
-				if (len >= 10) {
+				if (len >= 10 && StringUtils.isNumeric(phoneNumber)) {
 					phoneNumber = phoneNumber.substring(len - 10);
 					switch (phoneType) {
 					case Phone.TYPE_MOBILE:
-						phoneList.add(phoneNumber);
+						phoneBuffer.append(phoneNumber);
+						System.out.println("Phone: "+phoneNumber);
+						phoneBuffer.append(",");
 						break;
 					case Phone.TYPE_HOME:
-						phoneList.add(phoneNumber);
+						phoneBuffer.append(phoneNumber);
+						System.out.println("Phone: "+phoneNumber);
+						phoneBuffer.append(",");
 						break;
 					case Phone.TYPE_WORK:
-						phoneList.add(phoneNumber);
+						phoneBuffer.append(phoneNumber);
+						System.out.println("Phone: "+phoneNumber);
+						phoneBuffer.append(",");
 						break;
 					case Phone.TYPE_OTHER:
-						phoneList.add(phoneNumber);
+						phoneBuffer.append(phoneNumber);
+						System.out.println("Phone: "+phoneNumber);
+						phoneBuffer.append(",");
 						break;
 					default:
 						break;
@@ -100,19 +130,10 @@ public class ViewExistingMembersActivity extends Activity {
 			}
 			phones.close();
 			
-			List<String> phoneList1 = new ArrayList<String>();
-			phoneList1.add("9833599535");
-			phoneList1.add("7506039891");
+			phoneBuffer.deleteCharAt(phoneBuffer.lastIndexOf(","));
 			
-			XStream xstream = new XStream();
-			xstream.alias("phoneList", List.class);
-			xstream.alias("phone", String.class);
-			String listXml = xstream.toXML(phoneList1);
-			listXml = listXml.replaceAll("\n", "");
-			listXml = listXml.replaceAll("\t", "");
-			listXml = listXml.replaceAll(" ", "");
 			String searchQuery = "/fetchExistingUsers?phoneList="
-					+ "9833599535,7506039891";
+					+ phoneBuffer.toString();
 
 			WebServiceClient restClient = new WebServiceClient(this);
 			restClient.execute(new String[] { searchQuery });
@@ -121,9 +142,135 @@ public class ViewExistingMembersActivity extends Activity {
 			startActivity(intent);
 		}
 
+		
+		
+		SearchView searchView = (SearchView) findViewById(R.id.memSearchView);	
+		searchView.setOnQueryTextListener(new OnQueryTextListener() {
+			
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				if (!membersList.isEmpty()) {
+					
+				    filteredList = new ArrayList<Map<String,User>>();
+					for(Map<String, User> member: membersList){
+						for(Entry<String, User> entry : member.entrySet()){
+							User user = entry.getValue();
+							if(user.getName().toLowerCase(Locale.ENGLISH).contains(query.toLowerCase(Locale.ENGLISH))){
+								filteredList.add(member);
+							}
+						}
+					}
+					
+					adapter.setData(filteredList);
+					membersGridView.setAdapter(adapter);
+					//memberListLabel.setVisibility(TextView.VISIBLE);
+					membersGridView.setVisibility(GridView.VISIBLE);
+					
+					
+				}
+				return true;
+			}
+			
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				if (!membersList.isEmpty()) {
+					
+					filteredList = new ArrayList<Map<String,User>>();
+					for(Map<String, User> member: membersList){
+						for(Entry<String, User> entry : member.entrySet()){
+							User user = entry.getValue();
+							if(user.getName().toLowerCase(Locale.ENGLISH).contains(newText.toLowerCase(Locale.ENGLISH))){
+								filteredList.add(member);
+							}
+						}
+					}
+					
+					adapter.setData(filteredList);
+					membersGridView.setAdapter(adapter);
+					//memberListLabel.setVisibility(TextView.VISIBLE);
+					membersGridView.setVisibility(GridView.VISIBLE);
+					
+					
+				}
+				return true;
+			}
+		});
+		
+		
+		
 	}
+	
+	/** Called when the user clicks the see members button */
+	public void goToGroupsSelection(View view) {
+		Button button = (Button) findViewById(R.id.goToGroupsSelectionButton);
+		button.setTextColor(getResources().getColor(R.color.click_button_1));
+		Intent intent = new Intent(this, ViewExistingGroupsActivity.class);
+		startActivity(intent);
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		if (filteredList != null && !filteredList.isEmpty()) {
+			Map<String, User> selectedMap = filteredList.get(position);
 
-
+			for (Entry<String, User> entry : selectedMap.entrySet()) {
+				SharedPreferences prefs = getSharedPreferences("Prefs",
+						Activity.MODE_PRIVATE);
+				SharedPreferences.Editor editor = prefs.edit();
+				String selectedMember = entry.getKey();
+				User user = entry.getValue();
+				if(user.isSelected()){
+					user.setSelected(false);
+					selectedIndividuals = selectedIndividuals.replace(selectedMember+",", "");
+					editor.putString("selectedIndividuals", selectedIndividuals);
+					editor.apply();
+					adapter.setData(filteredList);
+					membersGridView.setAdapter(adapter);
+					membersGridView.setVisibility(GridView.VISIBLE);
+				} else {
+					user.setSelected(true);
+					selectedIndividuals = selectedIndividuals + selectedMember+",";
+					editor.putString("selectedIndividuals", selectedIndividuals);
+					System.out.println("selectedIndividuals "+selectedIndividuals);
+					editor.apply();
+					adapter.setData(filteredList);
+					membersGridView.setAdapter(adapter);
+					membersGridView.setVisibility(GridView.VISIBLE);
+				}
+				
+				break;
+			}
+		}
+	}
+	
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			String query = intent.getStringExtra(SearchManager.QUERY);
+			if (!membersList.isEmpty()) {
+				
+				List<Map<String, User>> filteredList = new ArrayList<Map<String,User>>();
+				for(Map<String, User> member: membersList){
+					for(Entry<String, User> entry : member.entrySet()){
+						User user = entry.getValue();
+						if(user.getName().toLowerCase(Locale.ENGLISH).contains(query.toLowerCase(Locale.ENGLISH))){
+							filteredList.add(member);
+						}
+					}
+				}
+				
+				adapter.setData(filteredList);
+				membersGridView.setAdapter(adapter);
+				//memberListLabel.setVisibility(TextView.VISIBLE);
+				membersGridView.setVisibility(GridView.VISIBLE);
+				
+				
+			}
+		}
+	}
+	
 	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent(this,HomePlanActivity.class);
@@ -200,18 +347,21 @@ public class ViewExistingMembersActivity extends Activity {
 					List<User> users = userList.getUsers();
 					if(users != null && !users.isEmpty()){
 						for(User user: users){
-							Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
-							memberMap.put(user.getName(), user.getImage());
+							Map<String, User> memberMap = new HashMap<String, User>();
+							memberMap.put(user.getPhone(), user);
 							membersList.add(memberMap);
 							
 						}
 						
 						if (!membersList.isEmpty()) {
-
-							adapter.setData(membersList);
-							memberListView.setAdapter(adapter);
+							filteredList = new ArrayList<Map<String,User>>();
+							filteredList.addAll(membersList);
+							adapter.setData(filteredList);
+							membersGridView.setAdapter(adapter);
 							//memberListLabel.setVisibility(TextView.VISIBLE);
-							memberListView.setVisibility(GridView.VISIBLE);
+							membersGridView.setVisibility(GridView.VISIBLE);
+							
+							
 						}
 					}
 					
@@ -243,5 +393,6 @@ public class ViewExistingMembersActivity extends Activity {
 
 		return true;
 	}
+
 
 }

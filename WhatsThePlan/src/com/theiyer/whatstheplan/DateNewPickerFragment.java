@@ -11,14 +11,13 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 @SuppressLint("ValidFragment")
-public class DatePickerFragment extends DialogFragment implements
+public class DateNewPickerFragment extends DialogFragment implements
 		DatePickerDialog.OnDateSetListener {
 
 	private String date;
-	public DatePickerFragment (String date) {
+	public DateNewPickerFragment (String date) {
 		this.date = date;
 	}
-	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// Use the current date as the default date in the picker
@@ -33,7 +32,7 @@ public class DatePickerFragment extends DialogFragment implements
 
 	public void onDateSet(DatePicker view, int year, int month, int day) {
 		if (date == "start") {
-		TextView planDateEditText = (TextView) getActivity().findViewById(R.id.newPlanDateValue);
+		TextView planDateEditText = (TextView) getActivity().findViewById(R.id.newPlanStartDate);
 		String mon = String.valueOf(month+1);
 		String date = String.valueOf(day);
 		if(month+1 < 10){
@@ -45,7 +44,7 @@ public class DatePickerFragment extends DialogFragment implements
 		planDateEditText.setText(year+"-"+mon+"-"+date);
 		}
 		else if (date == "end") {
-			TextView planEndDateEditText = (TextView) getActivity().findViewById(R.id.newPlanEndDateValue);
+			TextView planEndDateEditText = (TextView) getActivity().findViewById(R.id.newPlanEndDate);
 			String mon = String.valueOf(month+1);
 			String date = String.valueOf(day);
 			if(month+1 < 10){

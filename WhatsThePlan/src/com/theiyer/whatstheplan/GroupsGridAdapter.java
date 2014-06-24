@@ -15,33 +15,33 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.theiyer.whatstheplan.entity.User;
+import com.theiyer.whatstheplan.entity.Group;
 
-public class MemberGridAdapter extends BaseAdapter {
+public class GroupsGridAdapter extends BaseAdapter {
 
 	private Activity activity;
-	private List<Map<String, User>> data;
+	private List<Map<String, Group>> data;
 
 	private static LayoutInflater inflater = null;
 
-	public MemberGridAdapter(Activity a, List<Map<String, User>> d) {
+	public GroupsGridAdapter(Activity a, List<Map<String, Group>> d) {
 		activity = a;
 		data = d;
 		inflater = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	public MemberGridAdapter(Activity a) {
+	public GroupsGridAdapter(Activity a) {
 		activity = a;
 		inflater = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	public List<Map<String, User>> getData() {
+	public List<Map<String, Group>> getData() {
 		return data;
 	}
 
-	public void setData(List<Map<String, User>> data) {
+	public void setData(List<Map<String, Group>> data) {
 		this.data = data;
 	}
 
@@ -65,20 +65,20 @@ public class MemberGridAdapter extends BaseAdapter {
 		
 		View view = convertView;
 		if (view == null) {
-			view = inflater.inflate(R.layout.member_grid_row, null);
+			view = inflater.inflate(R.layout.groups_grid_row, null);
 		}
 		
 		ImageView imgView = (ImageView) view
-				.findViewById(R.id.memberGridPicThumbnail);
+				.findViewById(R.id.groupGridPicThumbnail);
 		TextView textView = (TextView) view
-				.findViewById(R.id.memberGridNameField);
+				.findViewById(R.id.groupGridNameField);
 
-		Map<String, User> selectedMap = data.get(position);
-		for (Entry<String, User> entry : selectedMap.entrySet()) {
+		Map<String, Group> selectedMap = data.get(position);
+		for (Entry<String, Group> entry : selectedMap.entrySet()) {
 			
-			User user = entry.getValue();
-			textView.setText(user.getName());
-			if(user.isSelected()){				
+			Group group = entry.getValue();
+			textView.setText(group.getName());
+			if(group.isSelected()){				
 				imgView.setBackgroundResource(R.drawable.selected_border);
 				textView.setBackgroundResource(R.drawable.selected_border);
 			} else {				
@@ -87,7 +87,7 @@ public class MemberGridAdapter extends BaseAdapter {
 			}
 			
 			
-			byte[] image = user.getImage();
+			byte[] image = group.getImage();
 			if (image != null) {
 				Bitmap img = BitmapFactory.decodeByteArray(image, 0,
 						image.length);
