@@ -10,6 +10,8 @@ public class Group {
 	private List<String> planNames;
 	private List<String> pendingMembers;
 	private String admin;
+	private byte[] image;
+	private boolean selected;
 	
 	public Group(){
 		
@@ -61,6 +63,22 @@ public class Group {
 
 	public void setAdmin(String admin) {
 		this.admin = admin;
+	}
+
+	public byte[] getImage() {
+		return image;
+	}
+
+	public void setImage(byte[] image) {
+		this.image = image;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 	
 	

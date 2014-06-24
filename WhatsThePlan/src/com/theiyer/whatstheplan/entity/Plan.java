@@ -11,6 +11,8 @@ public class Plan {
 	private String endTime;
 	private String location;
 	private List<String> memberNames;
+	private List<String> membersInvited;
+	private List<String> groupsInvited;
 	private String creator;
 	
 	public Plan(){
@@ -81,5 +83,19 @@ public class Plan {
 		this.creator = creator;
 	}
 	
-	
+	public List<String> getMembersInvited() {
+		return membersInvited;
+	}
+
+	public void setMembersInvited(List<String> membersInvited) {
+		this.membersInvited = membersInvited;
+	}
+
+	public List<String> getGroupsInvited() {
+		return groupsInvited;
+	}
+
+	public void setGroupsInvited(List<String> groupsInvited) {
+		this.groupsInvited = groupsInvited;
+	}
 }

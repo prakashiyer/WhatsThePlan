@@ -10,6 +10,7 @@ public class User {
 	private List<String> groupNames;
 	private List<String> pendingGroupNames;
 	private byte[] image;
+	private boolean selected;
 	
 	public User(){
 		
@@ -61,6 +62,14 @@ public class User {
 
 	public void setImage(byte[] image) {
 		this.image = image;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 	
 	
