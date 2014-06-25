@@ -64,7 +64,7 @@
         
         <!-- Home page -->
         <activity
-            android:name="com.theiyer.whatstheplan.HomePlanActivity"
+            android:name="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity"
             android:label="@string/app_name" >
         </activity>
         
@@ -109,17 +109,21 @@
          <!-- New Plan page -->
         <activity
             android:name="com.theiyer.whatstheplan.ViewMyNewPlansActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" />
         </activity>
         
         <!-- Create Group page -->
         <activity
             android:name="com.theiyer.whatstheplan.CreateGroupActivity"
             android:label="@string/app_name"
-            android:parentActivityName="com.theiyer.whatstheplan.HomePlanActivity" >
+            android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.theiyer.whatstheplan.HomePlanActivity" />
+                android:value="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" />
         </activity>
 
         <!-- Join Group page -->
@@ -164,7 +168,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.GroupsListActivity"
             android:label="@string/app_name"
-            android:parentActivityName="com.theiyer.whatstheplan.HomePlanActivity" >
+            android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.theiyer.whatstheplan.HomePlanActivity" />
@@ -246,7 +250,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.ViewMyPlansActivity"
             android:label="@string/app_name"
-            android:parentActivityName="com.theiyer.whatstheplan.HomePlanActivity" >
+            android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.theiyer.whatstheplan.HomePlanActivity" />
