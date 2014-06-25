@@ -109,5 +109,7 @@
     <string name="view_plan_date_label">  When - From</string>
     <string name="view_plan_date_label_till">  When - Till</string>
     <string name="view_plan_location_label">  Where</string>
+    <string name="home_plan_label"> Home Plan</string>
+    <string name="groups_list_label"> Group List</string>
 
 </resources>
