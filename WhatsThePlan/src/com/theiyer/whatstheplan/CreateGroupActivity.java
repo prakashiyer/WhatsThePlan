@@ -111,7 +111,7 @@ public class CreateGroupActivity extends Activity {
 					
 			}
 
-			Intent intent = new Intent(this, GroupsListActivity.class);
+			Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 			startActivity(intent);
 
 		} else {
@@ -224,7 +224,7 @@ public class CreateGroupActivity extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-	    Intent intent = new Intent(this, HomePlanActivity.class);
+	    Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 	    startActivity(intent);
 	}
 	

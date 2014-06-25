@@ -26,9 +26,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -39,55 +43,52 @@ import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
-public class GroupsListActivity extends Activity implements OnItemClickListener {
-
+public class GroupsListFragment extends Fragment implements OnItemClickListener {
+	
+	Activity activity;
+	
 	ListView list;
 	GroupListAdapter adapter;
 	List<Map<String, byte[]>> groupsList;
 	String phone;
+	View rootView;
 	
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		if(haveInternet(this)){
-			setContentView(R.layout.groups_list);
-			ActionBar aBar = getActionBar();
+		activity = this.getActivity();
+		if(activity != null && haveInternet(activity)){
+			ActionBar aBar = activity.getActionBar();
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
 			aBar.setTitle(" My Groups");
-			
 
-			SharedPreferences prefs = getSharedPreferences("Prefs",
+			SharedPreferences prefs = activity.getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String userName = prefs.getString("userName", "New User");
-			
-			TextView userNameValue = (TextView) findViewById(R.id.welcomeListGroupsLabel);
+			rootView = inflater.inflate(R.layout.groups_list, container, false);
+			TextView userNameValue = (TextView)rootView.findViewById(R.id.welcomeListGroupsLabel);
 			userNameValue.setText(userName + ", View all the groups here!");
 			
-			adapter = new GroupListAdapter(this);
-			list = (ListView) findViewById(R.id.groupList);
+			adapter = new GroupListAdapter(activity);
+			list = (ListView) rootView.findViewById(R.id.groupList);
 			list.setOnItemClickListener(this);
 
 			phone = prefs.getString("phone", "");
 
 			String searchQuery = "/fetchUser?phone=" + phone;
-
 			
-			
-			WebServiceClient restClient = new WebServiceClient(this);
+			WebServiceClient restClient = new WebServiceClient(activity);
 			restClient.execute(new String[] { searchQuery });
-		} else {
-			Intent intent = new Intent(this, RetryActivity.class);
-			startActivity(intent);
 		}
+        return rootView;
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		SharedPreferences prefs = getSharedPreferences(
+		SharedPreferences prefs = activity.getSharedPreferences(
 				"Prefs", Activity.MODE_PRIVATE);
 		String selectedGroup = "";
 		if(groupsList != null && !groupsList.isEmpty()){
@@ -102,16 +103,15 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 			}
 			
 			String searchQuery = "/searchGroup?groupName=" + selectedGroup.replace(" ", "%20");
-			WebServiceClient restClient = new WebServiceClient(this);
+			WebServiceClient restClient = new WebServiceClient(activity);
 			restClient.execute(new String[] { searchQuery });
-			
 		}
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		activity.getMenuInflater().inflate(R.menu.main, menu);
 		MenuItem viewProfileItem = menu.findItem(R.id.viewProfile);
 		viewProfileItem.setVisible(true);
 		
@@ -122,9 +122,8 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 		joinGroupItem.setVisible(true);
 		
 		MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
-		deactivateAccountItem.setVisible(true);		
-		
-		return true;
+		deactivateAccountItem.setVisible(true);	
+		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	@Override
@@ -132,23 +131,23 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 		super.onOptionsItemSelected(item);
 		switch (item.getItemId()) {
 		case (R.id.viewProfile):
-			Intent viewProfileIntent = new Intent(this, ViewProfileActivity.class);
+			Intent viewProfileIntent = new Intent(activity, ViewProfileActivity.class);
             startActivity(viewProfileIntent);
 			return true;
 		case (R.id.changeProfilePic):
-			Intent changeProfilePicIntent = new Intent(this, ProfileImageUploadActivity.class);
+			Intent changeProfilePicIntent = new Intent(activity, ProfileImageUploadActivity.class);
             startActivity(changeProfilePicIntent);
 			return true;
 		case (R.id.joinGroup):
-			Intent joinGroupIntent = new Intent(this, JoinGroupActivity.class);
+			Intent joinGroupIntent = new Intent(activity, JoinGroupActivity.class);
             startActivity(joinGroupIntent);
 			return true;
 		case (R.id.deactivateAccount):
-			Intent deactivateAccountIntent = new Intent(this, DeactivateAccountActivity.class);
+			Intent deactivateAccountIntent = new Intent(activity, DeactivateAccountActivity.class);
             startActivity(deactivateAccountIntent);
 			return true;
 		case (R.id.aboutUs):
-			Intent aboutUsIntent = new Intent(this, AboutUsActivity.class);
+			Intent aboutUsIntent = new Intent(activity, AboutUsActivity.class);
             startActivity(aboutUsIntent);
 			return true;
 		default:
@@ -239,11 +238,10 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 					
 					
 				} else {
-					setContentView(R.layout.groups_list);
-					TextView errorFieldValue = (TextView) findViewById(R.id.listGroupsErrorField);
+					activity.setContentView(R.layout.groups_list);
+					TextView errorFieldValue = (TextView) activity.findViewById(R.id.listGroupsErrorField);
 					errorFieldValue.setText("You have no groups!");
 				}
-			pDlg.dismiss();
 		}
 			
 			if(response!=null && query.contains("searchGroup")){
@@ -257,7 +255,6 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 				xstream.alias("pendingMembers", String.class);
 				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
 				Group group = (Group) xstream.fromXML(response);
-				pDlg.dismiss();
 				if (group != null) {
 					if(phone.equals(group.getAdmin())){
 						Intent intent = new Intent(mContext, GroupAdminListActivity.class);
@@ -268,6 +265,11 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 					}
 				}					
 			}
+			try {
+				if(pDlg.isShowing() && pDlg != null) {
+					pDlg.dismiss();
+				}
+			} catch(Exception e) {}
 
 	   }
 	}
@@ -330,7 +332,12 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 
 			@Override
 			protected void onPostExecute(byte[] response) {
-				
+				super.onPostExecute(response);
+				try {
+					if(pDlg.isShowing() && pDlg != null) {
+						pDlg.dismiss();
+					}
+				} catch(Exception e) {}
 				
 				if(response != null){
 					
@@ -347,15 +354,12 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 					adapter.setData(groupsList);
 					list.setAdapter(adapter);
 				}
-				
-				pDlg.dismiss();
 			}
 
 	}
 	
-	@Override
 	public void onBackPressed() {
-	    Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
+	    Intent intent = new Intent(activity, MainActivity.class);
 	    startActivity(intent);
 	}
 	
@@ -378,5 +382,9 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 		}
 
 		return true;
+	}
+	
+	public void setActivity(Activity activity) {
+		this.activity = activity;
 	}
 }

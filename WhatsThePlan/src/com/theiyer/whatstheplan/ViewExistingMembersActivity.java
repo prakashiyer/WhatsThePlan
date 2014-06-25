@@ -273,7 +273,7 @@ OnItemClickListener {
 	
 	@Override
 	public void onBackPressed() {
-		Intent intent = new Intent(this,HomePlanActivity.class);
+		Intent intent = new Intent(this,HomePlanGroupFragmentActivity.class);
 		startActivity(intent);
 	}
 

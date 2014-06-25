@@ -26,6 +26,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import com.theiyer.whatstheplan.entity.Group;
+import com.thoughtworks.xstream.XStream;
+
 public class InviteListActivity extends Activity implements MultiChoiceModeListener {
 
 	ListView inviteListView;
@@ -195,7 +198,7 @@ public class InviteListActivity extends Activity implements MultiChoiceModeListe
 					if (group != null && groupName.equals(group.getName())) {
 						
 						button.setTextColor(getResources().getColor(R.color.button_text));
-						Intent intent = new Intent(this, GroupsListActivity.class);
+						Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 						startActivity(intent);
 					} else {
 					}

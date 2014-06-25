@@ -113,7 +113,7 @@ public class ProfileImageUploadActivity extends Activity {
 				"You can use the menu to change photo later.", Toast.LENGTH_LONG)
 				.show();
 		button.setTextColor(getResources().getColor(R.color.button_text));
-		Intent intent = new Intent(this, HomePlanActivity.class);
+		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 		startActivity(intent);
 	}
 

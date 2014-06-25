@@ -123,7 +123,7 @@ public class ViewMyGroupActivity extends Activity implements
 				(String) plansListSpinner.getSelectedItem());
 		editor.apply();
 
-		Intent intent = new Intent(this, ViewMyPlansActivity.class);
+		Intent intent = new Intent(this, ViewMyNewPlansActivity.class);
 		startActivity(intent);
 	}
 

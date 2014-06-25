@@ -91,10 +91,10 @@ public class GCMIntentService extends GCMBaseIntentService {
     		editor.putString("selectedPlan", planName);
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
-                    new Intent(this, ViewMyPlansActivity.class), 0);
+                    new Intent(this, ViewMyNewPlansActivity.class), 0);
         } else if(msg.contains("deleted")) {
         	contentIntent = PendingIntent.getActivity(this, 0,
-                    new Intent(this, HomePlanActivity.class), 0);
+                    new Intent(this, HomePlanGroupFragmentActivity.class), 0);
         } else if(msg.contains("attending")) {
         	String planName = null;
         	String temp[] = msg.split("'");
@@ -104,7 +104,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     		editor.putString("selectedPlan", planName);
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
-                    new Intent(this, ViewMyPlansActivity.class), 0);
+                    new Intent(this, ViewMyNewPlansActivity.class), 0);
         } else if (msg.contains("edited")) {
         	String planName = null;
         	String temp[] = msg.split("'");
@@ -114,7 +114,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     		editor.putString("selectedPlan", planName);
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
-                    new Intent(this, ViewMyPlansActivity.class), 0);
+                    new Intent(this, ViewMyNewPlansActivity.class), 0);
         } else if (msg.contains("left the group")) {
         	String groupName = null;
         	String temp[] = msg.split("'");

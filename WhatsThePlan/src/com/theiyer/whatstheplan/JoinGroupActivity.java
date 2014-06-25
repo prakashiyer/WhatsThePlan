@@ -107,7 +107,7 @@ public class JoinGroupActivity extends Activity {
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(
 				new String[] { joinQuery });
-		Intent intent = new Intent(this, GroupsListActivity.class);
+		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 		startActivity(intent);
 		
 	}

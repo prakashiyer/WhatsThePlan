@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
                    
                    
                    
-                   Intent intent = new Intent(context, HomePlanActivity.class);
+                   Intent intent = new Intent(context, HomePlanGroupFragmentActivity.class);
                    startActivity(intent);
            	} else {
            		Log.i(TAG, "New User logs in");
