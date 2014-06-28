@@ -3,46 +3,7 @@
     android:layout_height="fill_parent"
     android:columnCount="1" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:gravity="center"
-        android:layout_gravity="left|center"
-        android:layout_row="0"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/welcomeStatement"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/left_margin"
-            android:layout_marginTop="@dimen/top_margin"
-            android:text="@string/welcome_statement"
-            android:typeface="sans"
-            android:textStyle="bold"
-            android:textSize="@dimen/standard_text_size"            
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_gravity="left|top"
-        android:gravity="center"
-        android:layout_row="1"
-        android:orientation="vertical" >
-
-        <Button
-            android:id="@+id/newUserButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_margin"
-            android:background="@drawable/just_meet_splash"
-            android:onClick="goToNewUserPage" />
-
-    </LinearLayout>
+    
     
     <FrameLayout 
     	android:id="@+id/fragment_container"
