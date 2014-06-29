@@ -89,15 +89,7 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 		startActivity(intent);
 	}
 	
-	/** Called when the user clicks the view group button */
-	public void viewGroups(View view) {
-		
-		Button button = (Button) findViewById(R.id.viewGroupBtn);
-		button.setTextColor(getResources().getColor(R.color.click_button_1));
-		
-		Intent intent = new Intent(this, GroupsListActivity.class);
-		startActivity(intent);
-	}
+	
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

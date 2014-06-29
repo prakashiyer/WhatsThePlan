@@ -75,6 +75,34 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		}
 		
 	}
+	
+	/** Called when the user clicks the create plan button */
+	public void newPlan(View view) {
+		
+		Button button = (Button) activity.findViewById(R.id.createPlanBtn);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		
+		Intent intent = new Intent(activity, ViewExistingMembersActivity.class);
+		startActivity(intent);
+	}
+	
+	/** Called when the user clicks the join group button */
+	public void joinGroups(View view) {
+		Button button = (Button) activity.findViewById(R.id.joinGroupBtn);
+		button.setTextColor(getResources().getColor(R.color.click_button_1));
+		Intent intent = new Intent(activity, JoinGroupActivity.class);
+		
+		startActivity(intent);
+	}
+	
+	/** Called when the user clicks the Create group button */
+	public void createGroups(View view) {
+		Button button = (Button) activity.findViewById(R.id.createGroupBtn);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		Intent intent = new Intent(activity, CreateGroupActivity.class);
+		
+		startActivity(intent);
+	}
 
 	/** Called when the user clicks the Create group button *//*
 	public void createGroups(View view) {

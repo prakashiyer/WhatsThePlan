@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -84,6 +85,8 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 			startActivity(intent);
 		}
 	}
+	
+	
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -240,8 +243,7 @@ public class GroupsListActivity extends Activity implements OnItemClickListener 
 					
 				} else {
 					setContentView(R.layout.groups_list);
-					TextView errorFieldValue = (TextView) findViewById(R.id.listGroupsErrorField);
-					errorFieldValue.setText("You have no groups!");
+					
 				}
 			pDlg.dismiss();
 		}

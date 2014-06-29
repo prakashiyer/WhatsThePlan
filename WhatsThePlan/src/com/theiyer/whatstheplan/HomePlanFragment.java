@@ -81,22 +81,15 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
         return rootView;
 	}
 
-	/** Called when the user clicks the Create group button */
-	public void createGroups(View view) {
-		Button button = (Button) activity.findViewById(R.id.createGroupBtn);
-		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		Intent intent = new Intent(activity, CreateGroupActivity.class);
-		
-		startActivity(intent);
-	}
 	
-	/** Called when the user clicks the view group button */
-	public void viewGroups(View view) {
+	
+	/** Called when the user clicks the create plan button */
+	public void newPlan(View view) {
 		
-		Button button = (Button) activity.findViewById(R.id.viewGroupBtn);
-		button.setTextColor(getResources().getColor(R.color.click_button_1));
+		Button button = (Button) activity.findViewById(R.id.createPlanBtn);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
 		
-		Intent intent = new Intent(activity, GroupsListActivity.class);
+		Intent intent = new Intent(activity, ViewExistingMembersActivity.class);
 		startActivity(intent);
 	}
 	

@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -84,6 +85,24 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 			restClient.execute(new String[] { searchQuery });
 		}
         return rootView;
+	}
+	
+	/** Called when the user clicks the Create group button */
+	public void joinGroups(View view) {
+		Button button = (Button) activity.findViewById(R.id.joinGroupBtn);
+		button.setTextColor(getResources().getColor(R.color.click_button_1));
+		Intent intent = new Intent(activity, JoinGroupActivity.class);
+		
+		startActivity(intent);
+	}
+	
+	/** Called when the user clicks the Create group button */
+	public void createGroups(View view) {
+		Button button = (Button) activity.findViewById(R.id.createGroupBtn);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		Intent intent = new Intent(activity, CreateGroupActivity.class);
+		
+		startActivity(intent);
 	}
 
 	@Override
@@ -239,8 +258,7 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 					
 				} else {
 					activity.setContentView(R.layout.groups_list);
-					TextView errorFieldValue = (TextView) activity.findViewById(R.id.listGroupsErrorField);
-					errorFieldValue.setText("You have no groups!");
+					
 				}
 		}
 			
