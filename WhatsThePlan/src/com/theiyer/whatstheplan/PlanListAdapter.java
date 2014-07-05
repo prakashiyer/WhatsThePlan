@@ -1,5 +1,6 @@
 package com.theiyer.whatstheplan;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,12 +60,23 @@ public class PlanListAdapter extends BaseAdapter {
 				view = inflater.inflate(R.layout.plan_list_row, null);
 			}
 			TextView planName = (TextView) view.findViewById(R.id.planName);
+			TextView planDay = (TextView) view.findViewById(R.id.planDay);
 			TextView planTime = (TextView) view.findViewById(R.id.planTime);
+			TextView planMems = (TextView) view.findViewById(R.id.planMembAttending);
 			
 			Map<String,String> selectedMap = data.get(position);
             for(Entry<String,String> entry: selectedMap.entrySet()){
-            	planName.setText("Plan  |    "+entry.getKey());
+            	planName.setText(entry.getKey());
             	String date = entry.getValue().substring(0, 10);
+            	Calendar cal = Calendar.getInstance();
+            	String year = date.substring(0, 4);
+            	String month = date.substring(5, 7);
+            	String dateStr = date.substring(8, 10);
+            	cal.set(Integer.valueOf(year), Integer.valueOf(month)-1, Integer.valueOf(dateStr));
+            	int day = cal.get(Calendar.DAY_OF_WEEK);
+            	String weekday = retrieveDay(day);
+            	int mon = cal.get(Calendar.MONTH);
+            	String monthStr = retrieveMonth(mon);
             	String time = entry.getValue().substring(11, 16);
             	String hour = time.substring(0, 2);
             	String min = time.substring(3);
@@ -77,9 +89,84 @@ public class PlanListAdapter extends BaseAdapter {
             		}
             		ampm = "PM";
             	}
-            	planTime.setText("When   |    "+date+" "+hour+":"+min+" "+ampm);
+            	planDay.setText(" " +weekday+", "+monthStr+" "+dateStr +" ");
+            	planTime.setText(" " +hour+":"+min+" "+ampm+ " ");
+            	planMems.setText(" Members Attending (1)");
 			}
 			return view;
+		}
+		
+		private String retrieveDay(int day){
+			switch(day){
+			case Calendar.SUNDAY: {
+				return "Sunday";
+			}
+			case Calendar.MONDAY: {
+				return "Monday";
+			}
+			case Calendar.TUESDAY: {
+				return "Tuesday";
+			}
+			case Calendar.WEDNESDAY: {
+				return "Wednesday";
+			}
+			case Calendar.THURSDAY: {
+				return "Thursday";
+			}
+			case Calendar.FRIDAY: {
+				return "Friday";
+			}
+			case Calendar.SATURDAY: {
+				return "Saturday";
+			}
+			default: {
+				return "";
+			}
+			}
+		}
+		
+		private String retrieveMonth(int month){
+			switch(month){
+			case Calendar.JANUARY: {
+				return "Jan";
+			}
+			case Calendar.FEBRUARY: {
+				return "Feb";
+			}
+			case Calendar.MARCH: {
+				return "Mar";
+			}
+			case Calendar.APRIL: {
+				return "Apr";
+			}
+			case Calendar.MAY: {
+				return "May";
+			}
+			case Calendar.JUNE: {
+				return "Jun";
+			}
+			case Calendar.JULY: {
+				return "Jul";
+			}
+			case Calendar.AUGUST: {
+				return "Aug";
+			}
+			case Calendar.SEPTEMBER: {
+				return "Sep";
+			}
+			case Calendar.OCTOBER: {
+				return "Oct";
+			}
+			case Calendar.NOVEMBER: {
+				return "Nov";
+			}
+			case Calendar.DECEMBER: {
+				return "Dec";
+			}
+			default: {
+				return "";
+			}
+			}
 		}
 
 }

@@ -65,9 +65,9 @@
     <string name="plan_member_list_label_text">Members Attending:</string>
     <string name="existing_member_list_label_text">Existing Members:</string>
     <string name="invite_list_label_text">Search and Invite friends:</string>
-    <string name="plans_list_label_text">Upcoming Plans:</string>
+    <string name="plans_list_label_text">Upcoming Plans</string>
     <string name="retry_text">No network found. Please tap below image to retry.</string>
-    <string name="history_label_text">Plan History:</string>
+    <string name="history_label_text">Plan History</string>
     <string name="welcome_New_User_SignUp_Value">Welcome, You can start here!</string>
     <string name="welcome_Code">We have sent you a secret code, type it here and click Register</string>
     <string name="expense_welcome">Expense Report</string>

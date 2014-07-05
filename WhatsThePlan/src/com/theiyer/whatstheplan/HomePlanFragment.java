@@ -37,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.entity.PlanList;
@@ -104,6 +105,7 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 				
 				SharedPreferences.Editor editor = prefs.edit();
 				selectedPlan = entry.getKey();
+				System.out.println("Selected Plan: " +selectedPlan);
 				editor.putString("selectedPlan",selectedPlan);
 				editor.apply();
 				break;
@@ -236,13 +238,17 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 							}
 
 							if (!plansResult.isEmpty()) {
-								
+								planListView.setVisibility(ListView.VISIBLE);
 								adapter.setData(plansResult);
 								planListView.setAdapter(adapter);
 								// Click event for single list row
 							}
 
-						}
+						} 
+					} else {
+						planListView.setVisibility(ListView.INVISIBLE);
+						TextView planLabel = (TextView) rootView.findViewById(R.id.upcomingPlanListLabel);
+						planLabel.setText("No upcoming plans for you.");
 					}
 				}
 			}

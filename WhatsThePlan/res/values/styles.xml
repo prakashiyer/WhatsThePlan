@@ -20,6 +20,7 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
     <color name="button_text">#FFFFFF</color>
+    <color name="grey">#585858</color>
     <color name="red">#FF0000</color>
     <color name="green">#1D951D</color>
      <color name="orange">#C47451</color>

@@ -4,7 +4,7 @@
     android:layout_height="match_parent" >
 
    <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="left|top"
@@ -14,22 +14,68 @@
 
         <TextView
             android:id="@+id/planName"
-            android:layout_width="290dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/top_less_margin"
+            android:layout_gravity="left|top"
+            android:typeface="monospace"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textSize="@dimen/standard_text_size"    
+            android:textAppearance="?android:attr/textAppearanceSearchResultTitle" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="1"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/planDay"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left|top"
-            android:layout_marginLeft="@dimen/left_margin"
+            android:layout_marginLeft="@dimen/top_less_margin"
             android:typeface="sans"
-            android:textStyle="bold"    
-            android:textAppearance="?android:attr/textAppearanceSearchResultTitle" />
+            android:textStyle="bold"
+            android:textColor="@color/grey"
+            android:textAppearance="?android:attr/textAppearanceSearchResultSubtitle" />
         <TextView
             android:id="@+id/planTime"
-            android:layout_width="290dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="left|top"
-            android:layout_marginLeft="@dimen/left_margin"
+            android:layout_marginRight="@dimen/top_less_margin"
             android:typeface="sans"
-            android:textStyle="bold" 
+            android:gravity="right"    
+            android:textStyle="bold"
+            android:textColor="@color/grey"
             android:textAppearance="?android:attr/textAppearanceSearchResultSubtitle" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="2"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/planMembAttending"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/top_less_margin"
+            android:layout_marginBottom="@dimen/top_less_margin"
+            android:layout_gravity="left|top"
+            android:typeface="sans"
+            android:textStyle="bold"
+            android:textColor="@color/grey"
+            android:textAppearance="?android:attr/textAppearanceSearchResultSubtitle" />
+        
     </LinearLayout>
 
 </GridLayout>

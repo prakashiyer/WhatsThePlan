@@ -304,11 +304,11 @@ public class ViewMyNewPlansActivity extends Activity {
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
 				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
+				xstream.addImplicitCollection(Plan.class, "memberNames","memberNames",String.class);
 				xstream.alias("membersInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "membersInvited");
+				xstream.addImplicitCollection(Plan.class, "membersInvited","membersInvited", String.class);
 				xstream.alias("groupsInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "groupsInvited");
+				xstream.addImplicitCollection(Plan.class, "groupsInvited","groupsInvited", String.class);
 				Plan plan = (Plan) xstream.fromXML(response);
 				ViewMyNewPlansActivity.plan = plan;
 				if (plan != null) {
@@ -319,6 +319,7 @@ public class ViewMyNewPlansActivity extends Activity {
 					}
 
 
+					System.out.println("RESP: "+response);
 					TextView planTimeValue = (TextView) findViewById(R.id.viewNewPlanTime);
 					TextView planEndTimeValue = (TextView) findViewById(R.id.viewNewPlanEndTime);
 

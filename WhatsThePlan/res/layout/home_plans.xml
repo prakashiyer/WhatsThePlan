@@ -41,7 +41,7 @@
             android:id="@+id/upcomingPlanListLabel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/left_margin"
+            android:gravity="center"
             android:layout_marginTop="@dimen/top_less_margin"
             android:text="@string/plans_list_label_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -51,9 +51,10 @@
 
         <ListView
             android:id="@+id/viewupcomingplansList"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
+            android:layout_width="350dp"
+            android:layout_height="300dp"
             android:layout_marginTop="@dimen/top_less_margin"
+            android:layout_marginBottom="@dimen/top_less_margin"
             android:background="@drawable/gradient_bg"
             android:divider="#b5b5b5"
             android:dividerHeight="1dp"
