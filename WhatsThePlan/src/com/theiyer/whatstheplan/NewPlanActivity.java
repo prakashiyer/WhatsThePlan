@@ -171,7 +171,7 @@ public class NewPlanActivity extends FragmentActivity {
 	
 	@Override
 	public void onBackPressed() {
-	    Intent intent = new Intent(this, ViewExistingGroupsActivity.class);
+	    Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 	    startActivity(intent);
 	}
 	

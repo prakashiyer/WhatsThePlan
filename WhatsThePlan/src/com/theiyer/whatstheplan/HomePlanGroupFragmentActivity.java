@@ -143,7 +143,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		}
 	}*/
 	
-	/* @Override
+	 @Override
 		public boolean onCreateOptionsMenu(Menu menu) {
 			// Inflate the menu; this adds items to the action bar if it is present.
 			getMenuInflater().inflate(R.menu.main, menu);
@@ -179,14 +179,10 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 				Intent aboutUsIntent = new Intent(this, AboutUsActivity.class);
 	            startActivity(aboutUsIntent);
 				return true;
-			case (R.id.viewUserList):
-				Intent viewUsers = new Intent(this, ViewExistingMembersActivity.class);
-	            startActivity(viewUsers);
-				return true;
 			default:
 				return false;
 			}
-		}*/
+		}
 		
 		/*private class WebServiceClient extends AsyncTask<String, Integer, String> {
 
@@ -268,11 +264,11 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 
 		}*/
 
-/*		@Override
+		@Override
 		public void onBackPressed() {
 		    Intent intent = new Intent(this, MainActivity.class);
 			startActivity(intent);
-		}*/
+		}
 		
 		/**
 		 * Checks if we have a valid Internet Connection on the device.

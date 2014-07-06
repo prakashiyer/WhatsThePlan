@@ -205,10 +205,10 @@
             android:name="com.theiyer.whatstheplan.ViewMyGroupActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:parentActivityName="com.theiyer.whatstheplan.GroupsListActivity" >
+            android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.theiyer.whatstheplan.GroupsListActivity" />
+                android:value="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" />
         </activity>
         
          <!-- View group members page -->

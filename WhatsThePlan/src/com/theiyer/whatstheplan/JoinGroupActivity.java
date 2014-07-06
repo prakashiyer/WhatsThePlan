@@ -107,6 +107,8 @@ public class JoinGroupActivity extends Activity {
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(
 				new String[] { joinQuery });
+		Toast.makeText(getApplicationContext(), "You can view this group once approved by the creator.",
+				Toast.LENGTH_LONG).show();
 		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 		startActivity(intent);
 		
@@ -308,5 +310,11 @@ public class JoinGroupActivity extends Activity {
 		}
 
 		return true;
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
+		startActivity(intent);
 	}
 }

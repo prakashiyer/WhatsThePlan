@@ -146,11 +146,6 @@ public class ViewMyNewPlansActivity extends Activity {
 
 		MenuItem editPlanItem = menu.findItem(R.id.editPlan);
 		editPlanItem.setVisible(true);
-
-		
-
-		MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
-		deactivateAccountItem.setVisible(true);
 		
 		MenuItem viewGroupsInvitedListItem = menu.findItem(R.id.viewGroupsInvitedList);
 		viewGroupsInvitedListItem.setVisible(true);

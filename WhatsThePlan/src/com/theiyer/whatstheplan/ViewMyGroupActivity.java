@@ -173,14 +173,6 @@ public class ViewMyGroupActivity extends Activity implements
 		MenuItem leaveGroupItem = menu.findItem(R.id.leaveGroup);
 		leaveGroupItem.setVisible(true);
 
-		if (isAdmin) {
-			MenuItem inviteMembersItem = menu.findItem(R.id.inviteMembers);
-			inviteMembersItem.setVisible(true);
-		}
-
-		MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
-		deactivateAccountItem.setVisible(true);
-
 		return true;
 	}
 
@@ -203,18 +195,9 @@ public class ViewMyGroupActivity extends Activity implements
 					GroupImageChangeActivity.class);
 			startActivity(changeGroupPicIntent);
 			return true;
-		case (R.id.inviteMembers):
-			Intent inviteIntent = new Intent(this, InviteListActivity.class);
-			startActivity(inviteIntent);
-			return true;
 		case (R.id.leaveGroup):
 			Intent leaveGroupIntent = new Intent(this, LeaveGroupActivity.class);
 			startActivity(leaveGroupIntent);
-			return true;
-		case (R.id.deactivateAccount):
-			Intent deactivateAccountIntent = new Intent(this,
-					DeactivateAccountActivity.class);
-			startActivity(deactivateAccountIntent);
 			return true;
 		case (R.id.aboutUs):
 			Intent aboutUsIntent = new Intent(this, AboutUsActivity.class);
@@ -435,6 +418,12 @@ public class ViewMyGroupActivity extends Activity implements
 		}
 
 		return true;
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
+		startActivity(intent);
 	}
 
 }
