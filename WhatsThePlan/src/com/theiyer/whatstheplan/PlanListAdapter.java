@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.theiyer.whatstheplan.entity.Plan;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,12 +18,12 @@ import android.widget.TextView;
 public class PlanListAdapter extends BaseAdapter {
 		 
 	    private Activity activity;
-	    private List<Map<String, String>> data; 
-	    public List<Map<String, String>> getData() {
+	    private List<Map<String, Plan>> data; 
+	    public List<Map<String, Plan>> getData() {
 			return data;
 		}
 
-		public void setData(List<Map<String, String>> data) {
+		public void setData(List<Map<String, Plan>> data) {
 			this.data = data;
 		}
 
@@ -32,7 +34,7 @@ public class PlanListAdapter extends BaseAdapter {
 		        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		 }
 	 
-	    public PlanListAdapter(Activity a, List<Map<String, String>> d) {
+	    public PlanListAdapter(Activity a, List<Map<String, Plan>> d) {
 	        activity = a;
 	        data=d;
 	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -64,10 +66,11 @@ public class PlanListAdapter extends BaseAdapter {
 			TextView planTime = (TextView) view.findViewById(R.id.planTime);
 			TextView planMems = (TextView) view.findViewById(R.id.planMembAttending);
 			
-			Map<String,String> selectedMap = data.get(position);
-            for(Entry<String,String> entry: selectedMap.entrySet()){
+			Map<String,Plan> selectedMap = data.get(position);
+            for(Entry<String,Plan> entry: selectedMap.entrySet()){
             	planName.setText(entry.getKey());
-            	String date = entry.getValue().substring(0, 10);
+            	Plan plan = entry.getValue();
+            	String date = plan.getStartTime().substring(0, 10);
             	Calendar cal = Calendar.getInstance();
             	String year = date.substring(0, 4);
             	String month = date.substring(5, 7);
@@ -77,7 +80,7 @@ public class PlanListAdapter extends BaseAdapter {
             	String weekday = retrieveDay(day);
             	int mon = cal.get(Calendar.MONTH);
             	String monthStr = retrieveMonth(mon);
-            	String time = entry.getValue().substring(11, 16);
+            	String time = plan.getStartTime().substring(11, 16);
             	String hour = time.substring(0, 2);
             	String min = time.substring(3);
             	int hourInt = Integer.valueOf(hour);
@@ -91,7 +94,11 @@ public class PlanListAdapter extends BaseAdapter {
             	}
             	planDay.setText(" " +weekday+", "+monthStr+" "+dateStr +" ");
             	planTime.setText(" " +hour+":"+min+" "+ampm+ " ");
-            	planMems.setText(" Members Attending (1)");
+            	int members = 0;
+            	if(plan.getMemberNames() != null){
+            		members = plan.getMemberNames().size();
+            	}
+            	planMems.setText(" Members Attending ("+members+")");
 			}
 			return view;
 		}

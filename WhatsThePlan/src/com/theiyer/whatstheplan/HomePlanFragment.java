@@ -50,7 +50,7 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 	ListView planListView;
 	View rootView;
 	PlanListAdapter adapter;
-	List<Map<String, String>> plansResult;
+	List<Map<String, Plan>> plansResult;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -100,8 +100,8 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 				"Prefs", Activity.MODE_PRIVATE);
 		String selectedPlan = "";
 		if(plansResult != null && !plansResult.isEmpty()){
-			Map<String,String> selectedMap = plansResult.get(position);
-			for(Entry<String,String> entry: selectedMap.entrySet()){
+			Map<String,Plan> selectedMap = plansResult.get(position);
+			for(Entry<String,Plan> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
 				selectedPlan = entry.getKey();
@@ -218,21 +218,21 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 					xstream.alias("plans", Plan.class);
 					xstream.addImplicitCollection(PlanList.class, "plans");
 					xstream.alias("memberNames", String.class);
-					xstream.addImplicitCollection(Plan.class, "memberNames");
+					xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
 					xstream.alias("membersInvited", String.class);
-					xstream.addImplicitCollection(Plan.class, "membersInvited");
+					xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
 					xstream.alias("groupsInvited", String.class);
-					xstream.addImplicitCollection(Plan.class, "groupsInvited");
+					xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
 					PlanList planList = (PlanList) xstream.fromXML(response);
 					if (planList != null && planList.getPlans() != null) {
 
 						List<Plan> plans = planList.getPlans();
 
 						if (plans != null && !plans.isEmpty()) {
-						    plansResult = new ArrayList<Map<String, String>>();
+						    plansResult = new ArrayList<Map<String, Plan>>();
 							for (Plan plan : plans) {
-								Map<String, String> planMap = new HashMap<String, String>();
-								planMap.put(plan.getName(), plan.getStartTime());
+								Map<String, Plan> planMap = new HashMap<String, Plan>();
+								planMap.put(plan.getName(), plan);
 								plansResult.add(planMap);
 
 							}

@@ -43,7 +43,7 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 
 	ListView planListView;
 	PlanListAdapter adapter;
-	List<Map<String, String>> plansResult;
+	List<Map<String, Plan>> plansResult;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -97,8 +97,8 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 				"Prefs", Activity.MODE_PRIVATE);
 		String selectedPlan = "";
 		if(plansResult != null && !plansResult.isEmpty()){
-			Map<String,String> selectedMap = plansResult.get(position);
-			for(Entry<String,String> entry: selectedMap.entrySet()){
+			Map<String,Plan> selectedMap = plansResult.get(position);
+			for(Entry<String,Plan> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
 				selectedPlan = entry.getKey();
@@ -225,10 +225,10 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 						List<Plan> plans = planList.getPlans();
 
 						if (plans != null && !plans.isEmpty()) {
-						    plansResult = new ArrayList<Map<String, String>>();
+						    plansResult = new ArrayList<Map<String, Plan>>();
 							for (Plan plan : plans) {
-								Map<String, String> planMap = new HashMap<String, String>();
-								planMap.put(plan.getName(), plan.getStartTime());
+								Map<String, Plan> planMap = new HashMap<String, Plan>();
+								planMap.put(plan.getName(), plan);
 								plansResult.add(planMap);
 
 							}
