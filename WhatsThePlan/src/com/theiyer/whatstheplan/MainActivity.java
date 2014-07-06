@@ -37,41 +37,28 @@ public class MainActivity extends Activity {
 
 		context = this;
 		
-		new Handler().postDelayed(new Runnable() {
-			 
-            /*
-            * Showing splash screen with a timer. This will be useful when you
-            * want to show case your app logo / company
-            */
-
-           @Override
-           public void run() {
-               // This method will be executed once the timer is over
-               // Start your app main activity
-           	AccountManager am = AccountManager.get(context); // "this" references the current Context
-       		Account[] accounts = am.getAccountsByType(WTPConstants.ACCOUNT_ADDRESS);
-       		if(accounts != null && accounts.length > 0){
-       			Account account = accounts[0];
-       			SharedPreferences prefs = getSharedPreferences("Prefs", Activity.MODE_PRIVATE);
-                   SharedPreferences.Editor editor = prefs.edit();
-                   editor.putString("userName", am.getUserData(account, "userName"));
-                   editor.putString("phone", account.name);
-                   editor.apply();
-                   setTheme(R.style.AppTheme);
-                   Log.i(TAG, "Logging as an existing user: "+account.name);
-                   
-                   
-                   
-                   Intent intent = new Intent(context, HomePlanGroupFragmentActivity.class);
-                   startActivity(intent);
-           	} else {
-           		Log.i(TAG, "New User logs in");
-           		
-           		Intent intent = new Intent(context, NewUserSignUpActivity.class);
-        		startActivity(intent);
-       		}
-           }
-       }, SPLASH_TIME_OUT);
+		AccountManager am = AccountManager.get(context); // "this" references the current Context
+   		Account[] accounts = am.getAccountsByType(WTPConstants.ACCOUNT_ADDRESS);
+   		if(accounts != null && accounts.length > 0){
+   			Account account = accounts[0];
+   			SharedPreferences prefs = getSharedPreferences("Prefs", Activity.MODE_PRIVATE);
+               SharedPreferences.Editor editor = prefs.edit();
+               editor.putString("userName", am.getUserData(account, "userName"));
+               editor.putString("phone", account.name);
+               editor.apply();
+               setTheme(R.style.AppTheme);
+               Log.i(TAG, "Logging as an existing user: "+account.name);
+               
+               
+               
+               Intent intent = new Intent(context, HomePlanGroupFragmentActivity.class);
+               startActivity(intent);
+       	} else {
+       		Log.i(TAG, "New User logs in");
+       		
+       		Intent intent = new Intent(context, NewUserSignUpActivity.class);
+    		startActivity(intent);
+   		}
 
 	}
 
