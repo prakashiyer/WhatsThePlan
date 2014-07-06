@@ -38,7 +38,8 @@
         <!-- Main Activity -->
         <activity
             android:name="com.theiyer.whatstheplan.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -50,6 +51,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.NewUserSignUpActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -59,24 +61,28 @@
         <!-- Upload Image page -->
         <activity
             android:name="com.theiyer.whatstheplan.ProfileImageUploadActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name">
         </activity>
         
         <!-- Home page -->
         <activity
             android:name="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         
          <!-- Retry page -->
         <activity
             android:name="com.theiyer.whatstheplan.RetryActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
 
         <!-- View Members page -->
         <activity
             android:name="com.theiyer.whatstheplan.ViewExistingMembersActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -90,6 +96,7 @@
          <!-- View Groups page -->
         <activity
             android:name="com.theiyer.whatstheplan.ViewExistingGroupsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -103,6 +110,7 @@
          <!-- New Plan page -->
         <activity
             android:name="com.theiyer.whatstheplan.NewPlanActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         
@@ -110,6 +118,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.ViewMyNewPlansActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -120,6 +129,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.CreateGroupActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -130,6 +140,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.JoinGroupActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -144,6 +155,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.InviteListActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -158,6 +170,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.CreatePlanActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.ViewMyGroupActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -168,6 +181,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.GroupsListActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -178,6 +192,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.GroupAdminListActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.GroupsListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -189,6 +204,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.ViewMyGroupActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.GroupsListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -199,6 +215,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.ViewGroupMembersActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.ViewMyGroupActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -209,6 +226,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.PlanHistoryActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.ViewMyGroupActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -219,6 +237,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.ExpenseReportActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.PlanHistoryActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -229,6 +248,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.AddExpenseActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.ExpenseReportActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -239,6 +259,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.ViewExpenseActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.ExpenseReportActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -250,6 +271,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.ViewMyPlansActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -260,6 +282,7 @@
         <activity
             android:name="com.theiyer.whatstheplan.ViewPlanMembersActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.ViewMyPlansActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -269,26 +292,32 @@
         <!-- menu items -->
         <activity
             android:name="com.theiyer.whatstheplan.AboutUsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name="com.theiyer.whatstheplan.DeactivateAccountActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name="com.theiyer.whatstheplan.ViewProfileActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name="com.theiyer.whatstheplan.LeaveGroupActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name="com.theiyer.whatstheplan.EditPlanActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name="com.theiyer.whatstheplan.GroupImageChangeActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
         </activity>
         
