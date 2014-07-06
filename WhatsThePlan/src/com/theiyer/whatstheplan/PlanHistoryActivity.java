@@ -153,7 +153,12 @@ public class PlanHistoryActivity extends Activity implements OnItemClickListener
 				xstream.alias("plans", Plan.class);
 				xstream.addImplicitCollection(PlanList.class, "plans");
 				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
+				xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
+				xstream.alias("membersInvited", String.class);
+				xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
+				xstream.alias("groupsInvited", String.class);
+				xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
+				
 				PlanList planList = (PlanList) xstream.fromXML(response);
 				if (planList != null && planList.getPlans() != null) {
 
