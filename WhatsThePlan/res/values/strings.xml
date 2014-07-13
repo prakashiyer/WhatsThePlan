@@ -111,5 +111,8 @@
     <string name="view_plan_location_label">  Where</string>
     <string name="home_plan_label"> Home Plan</string>
     <string name="groups_list_label"> Group List</string>
+    <string name="group_member"> Member</string>
+    <string name="settle_bill"> Settle</string>
+    <string name="group_upcomming_plan"> Upcoming</string>
 
 </resources>

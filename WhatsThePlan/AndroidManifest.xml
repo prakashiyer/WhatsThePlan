@@ -202,7 +202,7 @@
 
         <!-- View Groups page -->
         <activity
-            android:name="com.theiyer.whatstheplan.ViewMyGroupActivity"
+            android:name="com.theiyer.whatstheplan.ViewGroupNewPlanHistoryFragmentActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
@@ -216,10 +216,10 @@
             android:name="com.theiyer.whatstheplan.ViewGroupMembersActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:parentActivityName="com.theiyer.whatstheplan.ViewMyGroupActivity" >
+            android:parentActivityName="com.theiyer.whatstheplan.ViewGroupNewPlanHistoryFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.theiyer.whatstheplan.ViewMyGroupActivity" />
+                android:value="com.theiyer.whatstheplan.ViewGroupNewPlanHistoryFragmentActivity" />
         </activity>
         
         <!-- View plan history page -->
@@ -227,10 +227,10 @@
             android:name="com.theiyer.whatstheplan.PlanHistoryActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:parentActivityName="com.theiyer.whatstheplan.ViewMyGroupActivity" >
+            android:parentActivityName="com.theiyer.whatstheplan.ViewGroupNewPlanHistoryFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.theiyer.whatstheplan.ViewMyGroupActivity" />
+                android:value="com.theiyer.whatstheplan.ViewGroupNewPlanHistoryFragmentActivity" />
         </activity>
         
         <!-- Expense Report page -->

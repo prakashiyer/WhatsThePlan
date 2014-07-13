@@ -95,7 +95,7 @@ public class ExpenseReportActivity extends Activity implements OnItemClickListen
 	
 	@Override
 	public void onBackPressed() {
-	    Intent intent = new Intent(this, ViewMyGroupActivity.class);
+	    Intent intent = new Intent(this, ViewGroupNewPlanHistoryFragmentActivity.class);
 	    startActivity(intent);
 	}
 	

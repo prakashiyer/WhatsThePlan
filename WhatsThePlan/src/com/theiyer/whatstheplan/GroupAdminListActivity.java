@@ -183,7 +183,7 @@ public class GroupAdminListActivity extends Activity implements
 
 	/** Called when the user clicks the Proceed to View Groups button */
 	public void proceedAdminToViewGroups(View view) {
-		Intent intent = new Intent(this, ViewMyGroupActivity.class);
+		Intent intent = new Intent(this, ViewGroupNewPlanHistoryFragmentActivity.class);
 		startActivity(intent);
 	}
 
@@ -365,7 +365,7 @@ public class GroupAdminListActivity extends Activity implements
 					} else {
 
 						Intent intent = new Intent(mContext,
-								ViewMyGroupActivity.class);
+								ViewGroupNewPlanHistoryFragmentActivity.class);
 						startActivity(intent);
 					}
 

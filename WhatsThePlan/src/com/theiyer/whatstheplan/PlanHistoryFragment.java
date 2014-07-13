@@ -26,7 +26,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -36,44 +39,47 @@ import com.theiyer.whatstheplan.entity.PlanList;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
-public class PlanHistoryActivity extends Activity implements OnItemClickListener {
+public class PlanHistoryFragment extends Fragment implements OnItemClickListener {
 
 	ListView planListView;
 	PlanListAdapter adapter;
 	List<Map<String, Plan>> plansResult;
+	Activity activity;
+	View rootView;
+	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if(haveInternet(this)){
-			setContentView(R.layout.plan_history);
-			ActionBar aBar = getActionBar();
+		activity = this.getActivity();
+		if(haveInternet(activity)){
+			rootView = inflater.inflate(R.layout.plan_history, container, false);
+			ActionBar aBar = activity.getActionBar();
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
 			aBar.setTitle(" Plan History");
 
-			SharedPreferences prefs = getSharedPreferences("Prefs",
+			SharedPreferences prefs = activity.getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 
 			String selectedGroup = prefs.getString("selectedGroup", "");
 			String searchQuery = "/fetchPlanHistory?groupName="+selectedGroup.replace(" ", "%20");
 
-			WebServiceClient restClient = new WebServiceClient(this);
-			planListView = (ListView) findViewById(R.id.viewPlanHistoryList);
+			WebServiceClient restClient = new WebServiceClient(activity);
+			planListView = (ListView) rootView.findViewById(R.id.viewPlanHistoryList);
 			planListView.setOnItemClickListener(this);
-			adapter = new PlanListAdapter(this);
+			adapter = new PlanListAdapter(activity);
 			restClient.execute(new String[] { searchQuery });
 		} else {
-			Intent intent = new Intent(this, RetryActivity.class);
+			Intent intent = new Intent(activity, RetryActivity.class);
 			startActivity(intent);
 		}
-		
+		return rootView;
 	}
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		SharedPreferences prefs = getSharedPreferences(
+		SharedPreferences prefs = activity.getSharedPreferences(
 				"Prefs", Activity.MODE_PRIVATE);
 		String selectedPlan = "";
 		if(plansResult != null && !plansResult.isEmpty()){
@@ -87,15 +93,9 @@ public class PlanHistoryActivity extends Activity implements OnItemClickListener
 				break;
 			}
 			
-			Intent intent = new Intent(this, ExpenseReportActivity.class);
+			Intent intent = new Intent(activity, ExpenseReportActivity.class);
 			startActivity(intent);		
 		}
-	}
-	
-	@Override
-	public void onBackPressed() {
-	    Intent intent = new Intent(this, ViewGroupNewPlanHistoryFragmentActivity.class);
-	    startActivity(intent);
 	}
 	
 	public class WebServiceClient extends AsyncTask<String, Integer, String> {

@@ -105,7 +105,7 @@ public class GroupImageChangeActivity extends Activity {
 		Toast.makeText(getApplicationContext(),
 				"You can use the menu to change photo later.",
 				Toast.LENGTH_LONG).show();
-		Intent intent = new Intent(this, ViewMyGroupActivity.class);
+		Intent intent = new Intent(this, ViewGroupNewPlanHistoryFragmentActivity.class);
 		startActivity(intent);
 	}
 

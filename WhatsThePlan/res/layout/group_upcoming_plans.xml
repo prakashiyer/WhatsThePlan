@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:columnCount="1" >
+    android:layout_height="match_parent" >
+
+    
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_column="0"
-        android:layout_gravity="center_horizontal|top"
-        android:layout_row="1"
+        android:layout_gravity="left|top"
+        android:layout_row="0"
         android:gravity="center"
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/planHistoryListLabel"
+            android:id="@+id/upcomingGroupPlanListLabel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginTop="@dimen/top_margin"
-            android:text="@string/history_label_text"
+            android:text="@string/plans_list_label_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="@dimen/standard_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
 
         <ListView
-            android:id="@+id/viewPlanHistoryList"
+            android:id="@+id/viewGroupUpcomingplansList"
             android:layout_width="350dp"
             android:layout_height="350dp"
             android:layout_marginTop="@dimen/top_less_margin"
@@ -36,6 +37,5 @@
             android:dividerHeight="1dp"
             android:listSelector="@drawable/list_selector" />
     </LinearLayout>
-
 
 </GridLayout>

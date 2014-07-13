@@ -278,7 +278,7 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 						Intent intent = new Intent(mContext, GroupAdminListActivity.class);
 						startActivity(intent);
 					} else {
-						Intent intent = new Intent(mContext, ViewMyGroupActivity.class);
+						Intent intent = new Intent(mContext, ViewGroupNewPlanHistoryFragmentActivity.class);
 						startActivity(intent);
 					}
 				}					
