@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <solid android:color="#FFFFFF" />
+    <solid android:color="#e7e7e8" />
 
     <stroke
         android:width="3dp"
-        android:color="@color/orange" />
+        android:color="@color/click_button_1" />
 
     <padding
         android:bottom="1dp"

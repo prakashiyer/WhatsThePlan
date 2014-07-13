@@ -6,7 +6,7 @@
 
     <ImageView
         android:id="@+id/memberGridPicThumbnail"
-        android:layout_width="fill_parent"
+        android:layout_width="190dp"
         android:layout_height="140dp"
         android:layout_gravity="left|top"
         android:background="@drawable/image_border"
@@ -15,7 +15,7 @@
 
     <TextView
         android:id="@+id/memberGridNameField"
-        android:layout_width="fill_parent"
+        android:layout_width="190dp"
         android:layout_height="30dp"
         android:layout_gravity="left|top"
         android:background="@drawable/image_border"
