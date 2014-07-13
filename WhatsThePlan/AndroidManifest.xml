@@ -275,7 +275,7 @@
             android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.theiyer.whatstheplan.HomePlanActivity" />
+                android:value="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" />
         </activity>
         
         <!-- View members page -->

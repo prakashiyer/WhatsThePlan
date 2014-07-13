@@ -100,8 +100,8 @@ public class EditPlanActivity  extends FragmentActivity {
 		TextView planEndTimeEditText = (TextView) findViewById(R.id.newPlanEndTimeValue);
 		String planEndTime = planEndTimeEditText.getText().toString();
 
-		String endHour = planTime.substring(0, 2);
-    	String endMin = planTime.substring(3,5);
+		String endHour = planEndTime.substring(0, 2);
+    	String endMin = planEndTime.substring(3,5);
     	if(planEndTime.contains("PM")){
     		endHour = String.valueOf((Integer.valueOf(endHour) +12));
     	}
@@ -117,7 +117,8 @@ public class EditPlanActivity  extends FragmentActivity {
 				+ "&oldName=" + oldName.replace(" ", "%20") 
 				+ "&date=" + planDate + "&time="
 				+ planTime+":00" + "&location=" + planLocation.replace(" ", "%20")
-				+ "&groupName=" + selectedGroup.replace(" ", "%20");
+				+ "&groupName=" + selectedGroup.replace(" ", "%20")
+				+ "&endDate=" + planEndDate + "&endTime=" + planEndTime+":00";
 
 		TextView errorFieldValue = (TextView) findViewById(R.id.editPlanErrorField);
 		errorFieldValue.setText("");
@@ -130,7 +131,7 @@ public class EditPlanActivity  extends FragmentActivity {
 		calendarHelper.execute(new String[] { planTime,
 				planName, planLocation,
 				"", "", "update",planDate, oldName,planEndDate,planEndTime});
-		Intent intent = new Intent(this, ViewMyPlansActivity.class);
+		Intent intent = new Intent(this, ViewMyNewPlansActivity.class);
 		startActivity(intent);
 	}
 	
@@ -168,7 +169,7 @@ public class EditPlanActivity  extends FragmentActivity {
 	
 	@Override
 	public void onBackPressed() {
-	    Intent intent = new Intent(this, ViewMyPlansActivity.class);
+	    Intent intent = new Intent(this, ViewMyNewPlansActivity.class);
 	    startActivity(intent);
 	}
 	
@@ -230,6 +231,11 @@ public class EditPlanActivity  extends FragmentActivity {
 				xstream.alias("Plan", Plan.class);
 				xstream.alias("memberNames", String.class);
 				xstream.addImplicitCollection(Plan.class, "memberNames");
+				xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
+				xstream.alias("membersInvited", String.class);
+				xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
+				xstream.alias("groupsInvited", String.class);
+				xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null) {
 					
@@ -245,6 +251,7 @@ public class EditPlanActivity  extends FragmentActivity {
 					String time = plan.getStartTime().substring(11,16);
 					String hour = time.substring(0, 2);
 	            	String min = time.substring(3);
+	            	System.out.println("Plan start time :  " + plan.getStartTime());
 	            	int hourInt = Integer.valueOf(hour);
 	            	String ampm = "AM";
 	            	if(hourInt > 12){
@@ -262,6 +269,7 @@ public class EditPlanActivity  extends FragmentActivity {
 					String endTime = plan.getEndTime().substring(11,16);
 					String endHour = endTime.substring(0, 2);
 	            	String endMin = endTime.substring(3);
+	            	System.out.println("Plan end time :  " + plan.getEndTime());
 	            	int endHourInt = Integer.valueOf(endHour);
 	            	String endAmPm = "AM";
 	            	if(endHourInt > 12){

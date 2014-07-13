@@ -210,8 +210,9 @@
             android:layout_marginTop="@dimen/top_less_margin"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold"
-            android:typeface="sans" />
-        <Button
+            android:typeface="sans" 
+            android:visibility="visible" />
+       <Button
             android:id="@+id/rsvpNewPlanButton"
             android:layout_width="100dp"
             android:layout_height="wrap_content"

@@ -62,6 +62,7 @@ public class ViewMyNewPlansActivity extends Activity {
 
 			selectedGroup = prefs.getString("selectedGroup", "New User");
 			selectedPlan = prefs.getString("selectedPlan", "New User");
+			System.out.println("Fetch plan selected plan " + selectedPlan);
 			TextView selectedPlanValue = (TextView) findViewById(R.id.viewNewPlanTitle);
 			selectedPlanValue.setText(" " + selectedPlan);
 
@@ -118,7 +119,7 @@ public class ViewMyNewPlansActivity extends Activity {
 		System.out.println("Plan deleted.....");
 		rsvpPlanButton.setVisibility(1);
 		rsvpLabel.setVisibility(1);
-		Intent intent = new Intent(this, HomePlanActivity.class);
+		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 		startActivity(intent);
 		} else {
 			System.out.println("Selected plan : " + selectedPlan);
@@ -146,6 +147,11 @@ public class ViewMyNewPlansActivity extends Activity {
 
 		MenuItem editPlanItem = menu.findItem(R.id.editPlan);
 		editPlanItem.setVisible(true);
+
+		
+
+		MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
+		deactivateAccountItem.setVisible(true);
 		
 		MenuItem viewGroupsInvitedListItem = menu.findItem(R.id.viewGroupsInvitedList);
 		viewGroupsInvitedListItem.setVisible(true);
@@ -196,7 +202,7 @@ public class ViewMyNewPlansActivity extends Activity {
 					calendarHelper.execute(new String[] { "",
 							selectedPlan, "", "", "", "delete"});
 					Intent homeIntent = new Intent(context,
-							HomePlanActivity.class);
+							HomePlanGroupFragmentActivity.class);
 					startActivity(homeIntent);
 				}
 			});
@@ -299,11 +305,11 @@ public class ViewMyNewPlansActivity extends Activity {
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
 				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames","memberNames",String.class);
+				xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
 				xstream.alias("membersInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "membersInvited","membersInvited", String.class);
+				xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
 				xstream.alias("groupsInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "groupsInvited","groupsInvited", String.class);
+				xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
 				Plan plan = (Plan) xstream.fromXML(response);
 				ViewMyNewPlansActivity.plan = plan;
 				if (plan != null) {
@@ -314,10 +320,11 @@ public class ViewMyNewPlansActivity extends Activity {
 					}
 
 
-					System.out.println("RESP: "+response);
 					TextView planTimeValue = (TextView) findViewById(R.id.viewNewPlanTime);
 					TextView planEndTimeValue = (TextView) findViewById(R.id.viewNewPlanEndTime);
 
+					System.out.println("plan response : " + response);
+					System.out.println("plan start ***** " + plan.getStartTime());
 					String date = plan.getStartTime().substring(0, 10);
 					String time = plan.getStartTime().substring(11, 16);
 					String hour = time.substring(0, 2);
@@ -353,16 +360,17 @@ public class ViewMyNewPlansActivity extends Activity {
 					TextView planLocationValue = (TextView) findViewById(R.id.viewNewPlanLocation);
 					planLocationValue.setText(" " + plan.getLocation());
 
-					List<String> members = plan.getMemberNames();
+					List<String> members = plan.getMembersInvited();
+					System.out.println(" *** members :: " + members);
 
 					if (members != null && !members.isEmpty()) {
 
 						Button membersAttending = (Button) findViewById(R.id.seeMembersAttendingButton);
 						membersAttending.setText("Members Attending ("
-								+ String.valueOf(members.size()) + ") >>");
+								+ String.valueOf(plan.getMemberNames().size()) + ") >>");
 						TextView rsvpLabel = (TextView) findViewById(R.id.rsvpNewLabel);
 
-						if (members.contains(phone)) {
+						if (plan.getMemberNames().contains(phone)) {
 							rsvpLabel.setText("You are going, Click here to");
 							rsvpPlanButton.setText("Say No");
 						} else {
@@ -380,7 +388,11 @@ public class ViewMyNewPlansActivity extends Activity {
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
 				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
+				xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
+				xstream.alias("membersInvited", String.class);
+				xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
+				xstream.alias("groupsInvited", String.class);
+				xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null) {
 					List<String> members = plan.getMemberNames();
