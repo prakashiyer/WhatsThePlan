@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.util.WTPConstants;
+import com.theiyer.whatstheplan.util.WhatstheplanUtil;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewMyNewPlansActivity extends Activity {
@@ -62,7 +63,6 @@ public class ViewMyNewPlansActivity extends Activity {
 
 			selectedGroup = prefs.getString("selectedGroup", "New User");
 			selectedPlan = prefs.getString("selectedPlan", "New User");
-			System.out.println("Fetch plan selected plan " + selectedPlan);
 			TextView selectedPlanValue = (TextView) findViewById(R.id.viewNewPlanTitle);
 			selectedPlanValue.setText(" " + selectedPlan);
 
@@ -147,11 +147,6 @@ public class ViewMyNewPlansActivity extends Activity {
 
 		MenuItem editPlanItem = menu.findItem(R.id.editPlan);
 		editPlanItem.setVisible(true);
-
-		
-
-		MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
-		deactivateAccountItem.setVisible(true);
 		
 		MenuItem viewGroupsInvitedListItem = menu.findItem(R.id.viewGroupsInvitedList);
 		viewGroupsInvitedListItem.setVisible(true);
@@ -320,19 +315,24 @@ public class ViewMyNewPlansActivity extends Activity {
 					}
 
 
+					System.out.println("RESP: "+response);
 					TextView planTimeValue = (TextView) findViewById(R.id.viewNewPlanTime);
 					TextView planEndTimeValue = (TextView) findViewById(R.id.viewNewPlanEndTime);
 
-					System.out.println("plan response : " + response);
-					System.out.println("plan start ***** " + plan.getStartTime());
 					String date = plan.getStartTime().substring(0, 10);
 					String time = plan.getStartTime().substring(11, 16);
+					String[] postedLocalDate = WhatstheplanUtil.createGmtToLocalTime(date + " " + time+":00");
+					date = postedLocalDate[0];
+					time = postedLocalDate[1];
 					String hour = time.substring(0, 2);
-					String min = time.substring(3);
+					String min = time.substring(3,5);
 					String endDate = plan.getEndTime().substring(0, 10);
 					String endTime = plan.getEndTime().substring(11, 16);
+					String[] endLocalDate = WhatstheplanUtil.createGmtToLocalTime(endDate + " " + endTime+":00");
+					endDate = endLocalDate[0];
+					endTime = endLocalDate[1];
 					String endHour = endTime.substring(0, 2);
-					String endMin = endTime.substring(3);
+					String endMin = endTime.substring(3,5);
 					int hourInt = Integer.valueOf(hour);
 					String ampm = "AM";
 					if (hourInt > 12) {
@@ -361,7 +361,6 @@ public class ViewMyNewPlansActivity extends Activity {
 					planLocationValue.setText(" " + plan.getLocation());
 
 					List<String> members = plan.getMembersInvited();
-					System.out.println(" *** members :: " + members);
 
 					if (members != null && !members.isEmpty()) {
 

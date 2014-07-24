@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.util.WTPConstants;
+import com.theiyer.whatstheplan.util.WhatstheplanUtil;
 import com.thoughtworks.xstream.XStream;
 
 public class NewPlanActivity extends FragmentActivity {
@@ -111,13 +112,16 @@ public class NewPlanActivity extends FragmentActivity {
 		String phoneList = prefs.getString("selectedIndividuals", "");
 		System.out.println("Phone List: "+phoneList);
 
+		String[] planDates = WhatstheplanUtil.createLocalToGmtTime(planDate+" "+planTime+":00");
+		String[] planEndDates = WhatstheplanUtil.createLocalToGmtTime(planEndDate+" "+planEndTime+":00");
+		
 		String insertQuery = "/newPlan?name=" + planName.replace(" ", "%20")
-				+ "&phone=" + phone + "&date=" + planDate + "&time="
-				+ planTime+":00" + "&location=" + planLocation.replace(" ", "%20")
+				+ "&phone=" + phone + "&date=" + planDates[0] + "&time="
+				+ planDates[1] + "&location=" + planLocation.replace(" ", "%20")
 				+ "&phoneList=" + phoneList
 				+ "&groupList=" + groupList.replace(" ", "%20")
-				+ "&creator=" + phone+ "&endDate=" + planEndDate + "&endTime="
-						+ planEndTime+":00" ;
+				+ "&creator=" + phone+ "&endDate=" + planEndDates[0] + "&endTime="
+						+ planEndDates[1] ;
 		System.out.println("QUERY: "+insertQuery);
 		
 		WebServiceClient restClient = new WebServiceClient(this);
@@ -131,6 +135,8 @@ public class NewPlanActivity extends FragmentActivity {
 
 		
 	}
+	
+	
 
 	public void setTime(View v) {
 		Button button = (Button) findViewById(R.id.setStartTimeButton);
