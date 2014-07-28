@@ -36,7 +36,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Group;
@@ -48,7 +48,8 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 	
 	Activity activity;
 	
-	ListView list;
+	//ListView list;
+	GridView gridView;
 	GroupListAdapter adapter;
 	List<Map<String, byte[]>> groupsList;
 	String phone;
@@ -74,8 +75,8 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 			userNameValue.setText(userName + ", View all the groups here!");
 			
 			adapter = new GroupListAdapter(activity);
-			list = (ListView) rootView.findViewById(R.id.groupList);
-			list.setOnItemClickListener(this);
+			gridView = (GridView) rootView.findViewById(R.id.groupList);
+			gridView.setOnItemClickListener(this);
 
 			phone = prefs.getString("phone", "");
 
@@ -370,7 +371,7 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 				
 				if(Boolean.valueOf(lastname)){
 					adapter.setData(groupsList);
-					list.setAdapter(adapter);
+					gridView.setAdapter(adapter);
 				}
 			}
 

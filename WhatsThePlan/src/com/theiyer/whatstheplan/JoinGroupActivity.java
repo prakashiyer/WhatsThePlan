@@ -29,6 +29,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -40,7 +41,7 @@ import com.thoughtworks.xstream.XStream;
 
 public class JoinGroupActivity extends Activity {
 
-	private ListView list;
+	private GridView list;
 	private GroupListAdapter adapter;
 	private List<Map<String, byte[]>> groupsList;
 	private String phone ;
@@ -188,7 +189,7 @@ public class JoinGroupActivity extends Activity {
 
 					WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
 							mContext);
-					list = (ListView) findViewById(R.id.joingroupList);
+					list = (GridView) findViewById(R.id.joingroupList);
 					phone = prefs.getString("phone","");
 					members = group.getMembers();
 				    pendingMembers = group.getPendingMembers();

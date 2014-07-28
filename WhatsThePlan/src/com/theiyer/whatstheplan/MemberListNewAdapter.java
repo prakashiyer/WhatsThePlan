@@ -15,10 +15,25 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class GroupListAdapter extends BaseAdapter {
+public class MemberListNewAdapter extends BaseAdapter {
 		 
 	    private Activity activity;
 	    private List<Map<String, byte[]>> data; 
+	   
+
+		private static LayoutInflater inflater=null;
+	 
+	    public MemberListNewAdapter(Activity a, List<Map<String, byte[]>> d) {
+	        activity = a;
+	        data=d;
+	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    }
+	    
+	    public MemberListNewAdapter(Activity a) {
+	        activity = a;
+	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    }
+	    
 	    public List<Map<String, byte[]>> getData() {
 			return data;
 		}
@@ -26,19 +41,6 @@ public class GroupListAdapter extends BaseAdapter {
 		public void setData(List<Map<String, byte[]>> data) {
 			this.data = data;
 		}
-
-		private static LayoutInflater inflater=null;
-	 
-		public GroupListAdapter(Activity a) {
-	        activity = a;
-	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	    }
-		
-	    public GroupListAdapter(Activity a, List<Map<String, byte[]>> d) {
-	        activity = a;
-	        data=d;
-	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	    }
 
 		@Override
 		public int getCount() {
@@ -59,19 +61,21 @@ public class GroupListAdapter extends BaseAdapter {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = convertView;
 			if(view==null){
-				view = inflater.inflate(R.layout.groups_grid_row, null);
+				view = inflater.inflate(R.layout.member_grid_row, null);
 			}
-			ImageView imgView = (ImageView) view.findViewById(R.id.groupGridPicThumbnail);
-			TextView textView = (TextView) view.findViewById(R.id.groupGridNameField);
+			ImageView imgView = (ImageView) view.findViewById(R.id.memberGridPicThumbnail);
+			TextView textView = (TextView) view.findViewById(R.id.memberGridNameField);
 			
 			Map<String,byte[]> selectedMap = data.get(position);
             for(Entry<String,byte[]> entry: selectedMap.entrySet()){
             	textView.setText(entry.getKey());
             	
             	byte[] image = entry.getValue();
-            	if (image != null) {
-					Bitmap img = BitmapFactory.decodeByteArray(image, 0,
-							image.length);
+            	Bitmap img = BitmapFactory.decodeByteArray(image, 0,
+						image.length);
+            	if (img != null) {
+					
+
 					imgView.setImageBitmap(img);
             	} else {
             		imgView.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_launcher));

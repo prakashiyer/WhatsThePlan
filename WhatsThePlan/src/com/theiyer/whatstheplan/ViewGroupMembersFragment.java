@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ListView;
 
 import com.theiyer.whatstheplan.entity.Group;
@@ -41,8 +42,8 @@ public class ViewGroupMembersFragment extends Fragment {
 
 	private static final String TAG = "ViewGroupMembersActivity";
 	
-	private ListView memberListView;
-	private MemberListAdapter adapter;
+	private GridView memberListView;
+	private MemberListNewAdapter adapter;
 	private List<Map<String, byte[]>> membersList;
 	private boolean isLastMember = false;
 	private Activity activity;
@@ -70,8 +71,8 @@ public class ViewGroupMembersFragment extends Fragment {
 
 			
 			membersList = new ArrayList<Map<String, byte[]>>();
-			memberListView = (ListView) rootView.findViewById(R.id.viewgroupMemberList);
-			adapter = new MemberListAdapter(activity);
+			memberListView = (GridView) rootView.findViewById(R.id.viewgroupMemberList);
+			adapter = new MemberListNewAdapter(activity);
 			
 			WebServiceClient restClient = new WebServiceClient(activity);
 			restClient.execute(new String[] { searchQuery });
