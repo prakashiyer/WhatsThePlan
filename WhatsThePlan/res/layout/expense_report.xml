@@ -20,7 +20,7 @@
        <ListView
             android:id="@+id/viewexpensereport"
             android:layout_width="290dp"
-            android:layout_height="wrap_content"
+            android:layout_height="320dp"
             android:layout_marginTop="@dimen/top_less_margin"
             android:background="@drawable/gradient_bg"
             android:divider="#b5b5b5"
