@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,8 +46,8 @@ import com.thoughtworks.xstream.XStream;
 public class GroupAdminListActivity extends Activity implements
 		OnItemClickListener {
 
-	ListView list;
-	MemberListAdapter adapter;
+	GridView list;
+	MemberListNewAdapter adapter;
 	List<Map<String, byte[]>> membersList;
 	Map<String, String> userMap;
 	private Context context = this;
@@ -83,10 +84,10 @@ public class GroupAdminListActivity extends Activity implements
     		WebServiceClient restClient = new WebServiceClient(this);
     		membersList = new ArrayList<Map<String, byte[]>>();
     		userMap = new HashMap<String, String>();
-    		list = (ListView) findViewById(R.id.memberListAdmin);
+    		list = (GridView) findViewById(R.id.memberListAdmin);
     		// Click event for single list row
     		list.setOnItemClickListener(this);
-    		adapter = new MemberListAdapter(this);
+    		adapter = new MemberListNewAdapter(this);
     		imageClient.execute(new String[] { "fetchGroupImage",
     				selectedGroup.replace(" ", "%20") });
 
