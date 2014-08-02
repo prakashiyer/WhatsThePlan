@@ -126,7 +126,7 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 			
 			for(Group group: allGroups){
 				if(selectedGroup.equals(group.getName())){
-					if(phone.equals(group.getAdmin())){
+					if(phone.equals(group.getAdmin()) && group.getPendingMembers() != null && group.getPendingMembers().size() > 0){
 						Intent intent = new Intent(activity, GroupAdminListActivity.class);
 						startActivity(intent);
 					} else {
