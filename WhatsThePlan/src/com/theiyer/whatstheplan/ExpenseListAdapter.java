@@ -74,14 +74,17 @@ public class ExpenseListAdapter extends BaseAdapter {
 				.findViewById(R.id.expmembervalueField);
 
 		ExpenseRow expenseRow = data.get(position);
-
-		membertextView.setText(expenseRow.getName());
+		
 		int value = expenseRow.getValue();
 		valuetextView.setText(String.valueOf(expenseRow.getValue()));
 		if(value<0){
-			
+			membertextView.setText(expenseRow.getName() + " to pay");
 			valuetextView.setBackgroundColor(context.getResources().getColor(R.color.red));
+		} else if(value==0){
+			membertextView.setText(expenseRow.getName() + " is even at ");
+			valuetextView.setBackgroundColor(context.getResources().getColor(R.color.green));
 		} else {
+			membertextView.setText(expenseRow.getName() + " to receive ");
 			valuetextView.setBackgroundColor(context.getResources().getColor(R.color.green));
 		}
 		

@@ -238,10 +238,10 @@
             android:name="com.theiyer.whatstheplan.ExpenseReportActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:parentActivityName="com.theiyer.whatstheplan.PlanHistoryActivity" >
+            android:parentActivityName="com.theiyer.whatstheplan.ViewGroupNewPlanHistoryFragmentActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.theiyer.whatstheplan.PlanHistoryActivity" />
+                android:value="com.theiyer.whatstheplan.ViewGroupNewPlanHistoryFragmentActivity" />
         </activity>
         
         <!-- Add Expense page -->

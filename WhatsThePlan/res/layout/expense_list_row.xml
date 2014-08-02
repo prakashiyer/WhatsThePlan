@@ -9,12 +9,11 @@
             android:layout_height="50dp"
             android:src="@drawable/ic_launcher"
             android:layout_gravity="left|top" 
-            android:contentDescription="@string/upload_profile_pic_description"
-            android:background="@drawable/image_border"/>
+            android:contentDescription="@string/upload_profile_pic_description"/>
     
     <TextView
             android:id="@+id/expmemberNameField"
-            android:layout_width="150dp"
+            android:layout_width="170dp"
             android:layout_height="50dp"
             android:layout_gravity="left|top" 
             android:gravity="center"
@@ -26,7 +25,7 @@
     
     <TextView
             android:id="@+id/expmembervalueField"
-            android:layout_width="80dp"
+            android:layout_width="70dp"
             android:layout_height="50dp"
             android:layout_gravity="left|top" 
             android:gravity="center"
