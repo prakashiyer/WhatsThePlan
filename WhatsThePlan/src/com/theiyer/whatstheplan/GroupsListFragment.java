@@ -40,7 +40,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Group;
-import com.theiyer.whatstheplan.entity.User;
+import com.theiyer.whatstheplan.entity.GroupList;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
@@ -52,6 +52,7 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 	GridView gridView;
 	GroupListAdapter adapter;
 	List<Map<String, byte[]>> groupsList;
+	List<Group> allGroups;
 	String phone;
 	View rootView;
 	
@@ -80,7 +81,8 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 
 			phone = prefs.getString("phone", "");
 
-			String searchQuery = "/fetchUser?phone=" + phone;
+			String searchQuery = "/fetchExistingGroups?phone="
+					+ phone;
 			
 			WebServiceClient restClient = new WebServiceClient(activity);
 			restClient.execute(new String[] { searchQuery });
@@ -122,9 +124,17 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 				break;
 			}
 			
-			String searchQuery = "/searchGroup?groupName=" + selectedGroup.replace(" ", "%20");
-			WebServiceClient restClient = new WebServiceClient(activity);
-			restClient.execute(new String[] { searchQuery });
+			for(Group group: allGroups){
+				if(selectedGroup.equals(group.getName())){
+					if(phone.equals(group.getAdmin())){
+						Intent intent = new Intent(activity, GroupAdminListActivity.class);
+						startActivity(intent);
+					} else {
+						Intent intent = new Intent(activity, ViewGroupNewPlanHistoryFragmentActivity.class);
+						startActivity(intent);
+					}
+				}
+			}
 		}
 	}
 	
@@ -228,154 +238,45 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 		@Override
 		protected void onPostExecute(String response) {
 			
-			if (response != null && query.contains("fetchUser")) {
-				XStream xstream = new XStream();
-				xstream.alias("UserInformation", User.class);
-				xstream.alias("groupNames", String.class);
-				xstream.addImplicitCollection(User.class, "groupNames","groupNames",String.class);
-				xstream.alias("pendingGroupNames", String.class);
-				xstream.addImplicitCollection(User.class, "pendingGroupNames","pendingGroupNames",String.class);
-				User user = (User) xstream
-						.fromXML(response);
-				if (user != null && user.getGroupNames()!= null && !(user.getGroupNames().isEmpty())) {
-
-					List<String> groupNames = user.getGroupNames();
+			if (response != null) {
+				System.out.println("RESPONSE: "+response);
+				XStream groupsXstream = new XStream();
+				groupsXstream.alias("GroupList", GroupList.class);
+				groupsXstream.addImplicitCollection(GroupList.class, "groups");
+				groupsXstream.alias("groups", Group.class);
+				
+				groupsXstream.alias("members", String.class);
+				groupsXstream.addImplicitCollection(Group.class, "members","members",String.class);
+				groupsXstream.alias("planNames", String.class);
+				groupsXstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
+				groupsXstream.alias("pendingMembers", String.class);
+				groupsXstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
+				GroupList groupList = (GroupList) groupsXstream.fromXML(response);
+				if (groupList != null) {
 					groupsList = new ArrayList<Map<String, byte[]>>();
-
-					
-					for (int i=0; i<groupNames.size(); i++) {
-						String groupName = groupNames.get(i);
-						WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
-								mContext);
-						
-						boolean lastName = (i == groupNames.size()-1);
-						
-						imageClient.execute(
-								new String[] { "fetchGroupImage", groupName.replace(" ", "%20"), String.valueOf(lastName) });
-						
-						
-					}
-					
-					
+					allGroups = groupList.getGroups();
+					if(allGroups != null && !allGroups.isEmpty()){
+						for(Group group: allGroups){
+							Map<String, byte[]> groupDetails = new HashMap<String, byte[]>();
+							groupDetails.put(group.getName(), group.getImage());
+							groupsList.add(groupDetails);
+						}
+						if(!groupsList.isEmpty()){
+							adapter.setData(groupsList);
+							gridView.setAdapter(adapter);
+						}
+					}					
 				} else {
 					activity.setContentView(R.layout.groups_list);
 					
 				}
-		}
-			
-			if(response!=null && query.contains("searchGroup")){
-				XStream xstream = new XStream();
-				xstream.alias("Group", Group.class);
-				
-				xstream.alias("members", String.class);
-				xstream.addImplicitCollection(Group.class, "members","members",String.class);
-				xstream.alias("planNames", String.class);
-				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
-				xstream.alias("pendingMembers", String.class);
-				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
-				Group group = (Group) xstream.fromXML(response);
-				if (group != null) {
-					if(phone.equals(group.getAdmin())){
-						Intent intent = new Intent(mContext, GroupAdminListActivity.class);
-						startActivity(intent);
-					} else {
-						Intent intent = new Intent(mContext, ViewGroupNewPlanHistoryFragmentActivity.class);
-						startActivity(intent);
-					}
-				}					
 			}
-			try {
-				if(pDlg.isShowing() && pDlg != null) {
-					pDlg.dismiss();
-				}
-			} catch(Exception e) {}
-
-	   }
+			pDlg.dismiss();
+		}	
+			
 	}
 		
-	private class WebImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
-
-			private Context mContext;
-			private ProgressDialog pDlg;
-			private String name;
-			private String lastname;
-
-			public WebImageRetrieveRestWebServiceClient(Context mContext) {
-				this.mContext = mContext;
-			}
-
-			private void showProgressDialog() {
-
-				pDlg = new ProgressDialog(mContext);
-				pDlg.setMessage("Processing ....");
-				pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				pDlg.setCancelable(false);
-				pDlg.show();
-
-			}
-
-			@Override
-			protected void onPreExecute() {
-				showProgressDialog();
-
-			}
-
-			@Override
-			protected byte[] doInBackground(String... params) {
-				String method = params[0];
-				String path = WTPConstants.SERVICE_PATH+"/"+method;
-
-				name = params[1];
-				lastname = params[2];
-				if("fetchUserImage".equals(method)){
-		        	path = path+"?phone="+params[1];
-		        } else {
-		        	path = path+"?groupName="+params[1];
-		        }
-				//HttpHost target = new HttpHost(TARGET_HOST);
-				HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
-				HttpClient client = new DefaultHttpClient();
-				HttpGet get = new HttpGet(path);
-				HttpEntity results = null;
-
-				try {
-					
-					HttpResponse response = client.execute(target, get);
-					results = response.getEntity(); 
-					byte[] byteresult = EntityUtils.toByteArray(results);
-					return byteresult;
-				} catch (Exception e) {
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(byte[] response) {
-				super.onPostExecute(response);
-				try {
-					if(pDlg.isShowing() && pDlg != null) {
-						pDlg.dismiss();
-					}
-				} catch(Exception e) {}
-				
-				if(response != null){
-					
-					Map<String, byte[]> groupDetails = new HashMap<String, byte[]>();
-					
-					groupDetails.put(name, response);
-					groupsList.add(groupDetails);
-					
-					
-					
-				}
-				
-				if(Boolean.valueOf(lastname)){
-					adapter.setData(groupsList);
-					gridView.setAdapter(adapter);
-				}
-			}
-
-	}
+	
 	
 	public void onBackPressed() {
 	    Intent intent = new Intent(activity, MainActivity.class);

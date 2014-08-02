@@ -31,10 +31,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-import android.widget.ListView;
 
-import com.theiyer.whatstheplan.entity.Group;
 import com.theiyer.whatstheplan.entity.User;
+import com.theiyer.whatstheplan.entity.UserList;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
@@ -45,7 +44,6 @@ public class ViewGroupMembersFragment extends Fragment {
 	private GridView memberListView;
 	private MemberListNewAdapter adapter;
 	private List<Map<String, byte[]>> membersList;
-	private boolean isLastMember = false;
 	private Activity activity;
 	View rootView;
 	
@@ -67,7 +65,7 @@ public class ViewGroupMembersFragment extends Fragment {
 			
 
 			String selectedGroup = prefs.getString("selectedGroup", "");
-			String searchQuery = "/searchGroup?groupName=" + selectedGroup.replace(" ", "%20");
+			String searchQuery = "/fetchGroupUsers?groupName=" + selectedGroup.replace(" ", "%20");
 
 			
 			membersList = new ArrayList<Map<String, byte[]>>();
@@ -134,190 +132,38 @@ public class ViewGroupMembersFragment extends Fragment {
 		protected void onPostExecute(String response) {
 			if (response != null) {
 				Log.i(TAG, response);
-				XStream xstream = new XStream();
-				xstream.alias("Group", Group.class);
-				
-				xstream.alias("members", String.class);
-				xstream.addImplicitCollection(Group.class, "members","members",String.class);
-				xstream.alias("planNames", String.class);
-				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
-				xstream.alias("pendingMembers", String.class);
-				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
-				Group group = (Group) xstream.fromXML(response);
-                if (group != null) {
+				XStream userXstream = new XStream();
+				userXstream.alias("UserList", UserList.class);
+				userXstream.addImplicitCollection(UserList.class, "users");
+				userXstream.alias("users", User.class);
+				userXstream.alias("groupNames", String.class);
+				userXstream.addImplicitCollection(User.class, "groupNames",
+						"groupNames", String.class);
+				userXstream.alias("pendingGroupNames", String.class);
+				userXstream.addImplicitCollection(User.class,
+						"pendingGroupNames", "pendingGroupNames", String.class);
+				UserList userList = (UserList) userXstream.fromXML(response);
+				if (userList != null) {
 					
-
-					List<String> members = group.getMembers();
-					
-					if(members != null && !members.isEmpty()){
+					List<User> users = userList.getUsers();
+					Log.i(TAG, "Got User list " +users.size());
+					if(users != null){
 						
-						for(int i=0; i<members.size(); i++){
-							String phone = members.get(i);
-							String userQuery = "/fetchUser?phone=" + phone;
-							if(i == members.size() - 1){
-								isLastMember = true;
-							}
-							UserWebServiceClient userRestClient = new UserWebServiceClient(mContext);
-							userRestClient.execute(new String[] { userQuery, phone });							
+						for(User user: users){
+							Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
+							memberMap.put(user.getName(), user.getImage());
+							membersList.add(memberMap);
 						}
 						
-						
-
 					}
-
-				}
+					if(!membersList.isEmpty()){
+						adapter.setData(membersList);
+						memberListView.setAdapter(adapter);
+					}
+				}           
 			}
 			pDlg.dismiss();
 		}
-
-	}
-	
-	private class UserWebServiceClient extends AsyncTask<String, Integer, String> {
-
-		private Context mContext;
-		private ProgressDialog pDlg;
-		private String phone;
-
-		public UserWebServiceClient(Context mContext) {
-			this.mContext = mContext;
-		}
-
-		private void showProgressDialog() {
-
-			pDlg = new ProgressDialog(mContext);
-			pDlg.setMessage("Processing ....");
-			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDlg.setCancelable(false);
-			pDlg.show();
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			
-		   showProgressDialog();
-
-		}
-
-		@Override
-		protected String doInBackground(String... params) {
-			String path = WTPConstants.SERVICE_PATH+params[0];
-			phone = params[1];
-			//HttpHost target = new HttpHost(TARGET_HOST);
-			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
-			HttpClient client = new DefaultHttpClient();
-			HttpGet get = new HttpGet(path);
-			HttpEntity results = null;
-
-			try {
-				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
-				String result = EntityUtils.toString(results);
-				return result;
-			} catch (Exception e) {
-				
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String response) {
-			if (response != null) {
-							
-				    Log.i(TAG, response);
-					XStream userXstream = new XStream();
-					userXstream.alias("UserInformation", User.class);
-					userXstream.alias("groupNames", String.class);
-					userXstream.addImplicitCollection(User.class, "groupNames","groupNames",String.class);
-					userXstream.alias("pendingGroupNames", String.class);
-					userXstream.addImplicitCollection(User.class, "pendingGroupNames","pendingGroupNames",String.class);
-					User user = (User) userXstream
-							.fromXML(response);
-					if(user != null){
-						WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
-								mContext);
-						userImageClient.execute(new String[] { "fetchUserImage", phone, user.getName() });
-						
-					}	
-				
-			}
-			pDlg.dismiss();
-		}
-
-	}
-	
-	public class WebImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
-
-		private Context mContext;
-		private ProgressDialog pDlg;
-		private String userName;
-
-		public WebImageRetrieveRestWebServiceClient(Context mContext) {
-			this.mContext = mContext;
-		}
-
-		private void showProgressDialog() {
-
-			pDlg = new ProgressDialog(mContext);
-			pDlg.setMessage("Processing ....");
-			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDlg.setCancelable(false);
-			pDlg.show();
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			showProgressDialog();
-
-		}
-
-		@Override
-		protected byte[] doInBackground(String... params) {
-			String method = params[0];
-			String path = WTPConstants.SERVICE_PATH+"/"+method;
-			userName = params[2];
-
-			if("fetchUserImage".equals(method)){
-	        	path = path+"?phone="+params[1];
-	        } else {
-	        	path = path+"?groupName="+params[1];
-	        }
-			//HttpHost target = new HttpHost(TARGET_HOST);
-			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
-			HttpClient client = new DefaultHttpClient();
-			HttpGet get = new HttpGet(path);
-			HttpEntity results = null;
-
-			try {
-				
-				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
-				byte[] byteresult = EntityUtils.toByteArray(results);
-				return byteresult;
-			} catch (Exception e) {
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(byte[] response) {
-			
-			
-			if(response != null){	
-				Log.i(TAG, response.toString());
-				Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
-				memberMap.put(userName, response);
-				membersList.add(memberMap);	
-				if(!membersList.isEmpty() && isLastMember){
-					adapter.setData(membersList);
-					memberListView.setAdapter(adapter);
-				}
-			}
-			
-			pDlg.dismiss();
-		}
-
 	}
 
 	/**

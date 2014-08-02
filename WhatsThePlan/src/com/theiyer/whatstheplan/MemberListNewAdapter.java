@@ -71,9 +71,10 @@ public class MemberListNewAdapter extends BaseAdapter {
             	textView.setText(entry.getKey());
             	
             	byte[] image = entry.getValue();
-            	Bitmap img = BitmapFactory.decodeByteArray(image, 0,
-						image.length);
-            	if (img != null) {
+            	
+            	if (image != null) {
+            		Bitmap img = BitmapFactory.decodeByteArray(image, 0,
+    						image.length);
 					
 
 					imgView.setImageBitmap(img);

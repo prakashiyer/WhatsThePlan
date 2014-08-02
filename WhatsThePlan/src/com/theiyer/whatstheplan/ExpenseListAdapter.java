@@ -89,7 +89,6 @@ public class ExpenseListAdapter extends BaseAdapter {
 		byte[] image = expenseRow.getUserImage();
 		if (image != null) {
 			Bitmap img = BitmapFactory.decodeByteArray(image, 0, image.length);
-
 			imgView.setImageBitmap(img);
 		} else {
 			imgView.setImageDrawable(context.getResources().getDrawable(

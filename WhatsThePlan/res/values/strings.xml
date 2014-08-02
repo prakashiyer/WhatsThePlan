@@ -75,7 +75,7 @@
     <string name="view_expense_text">Amount spent:</string>
     <string name="expense_title">Add a Title&#8230;</string>
     <string name="expense_value">0</string>
-    <string name="expense_currency">Rs.</string>
+    <string name="expense_currency">$</string>
     <string name="expense_button_text">Submit Expense</string>
     <string name="add_expense_1_text">(1)</string>
     <string name="add_expense_2_text">(2)</string>
