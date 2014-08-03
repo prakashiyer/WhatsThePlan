@@ -169,20 +169,22 @@ public class ViewGroupUpcomingPlanFragment extends Fragment implements OnItemCli
 
 				}
 			}
+			System.out.println("I M HERE !!!!! " + response);
 
-			if (response != null && response.contains("<PlanList>")) {
+			if (response != null && response.contains("PlanList")) {
 				Log.i(TAG, response);
 				XStream xstream = new XStream();
 				xstream.alias("PlanList", PlanList.class);
 				xstream.alias("plans", Plan.class);
 				xstream.addImplicitCollection(PlanList.class, "plans");
 				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
+				xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
 				xstream.alias("membersInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "membersInvited");
+				xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
 				xstream.alias("groupsInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "groupsInvited");
+				xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
 				PlanList planList = (PlanList) xstream.fromXML(response);
+				System.out.println("planList.getPlans() : " + planList.getPlans());
 				if (planList != null && planList.getPlans() != null) {
 
 					List<Plan> plans = planList.getPlans();
@@ -202,11 +204,12 @@ public class ViewGroupUpcomingPlanFragment extends Fragment implements OnItemCli
 							planListView.setAdapter(adapter);
 							// Click event for single list row
 						}
-					}  else {
-						planListView.setVisibility(ListView.INVISIBLE);
-						TextView planLabel = (TextView) rootView.findViewById(R.id.upcomingGroupPlanListLabel);
-						planLabel.setText("No upcoming plans for you.");
-					}
+					}  
+				} else {
+					System.out.println("NO PLANS FOR U");
+					planListView.setVisibility(ListView.INVISIBLE);
+					TextView planLabel = (TextView) rootView.findViewById(R.id.upcomingGroupPlanListLabel);
+					planLabel.setText("No upcoming plans for you.");
 				}
 			}
 			pDlg.dismiss();
