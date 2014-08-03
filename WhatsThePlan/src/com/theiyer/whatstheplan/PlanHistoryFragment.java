@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.entity.PlanList;
@@ -180,7 +181,11 @@ public class PlanHistoryFragment extends Fragment implements OnItemClickListener
 
 					}
 
-				}
+				} else {
+					planListView.setVisibility(ListView.INVISIBLE);
+					TextView planLabel = (TextView) rootView.findViewById(R.id.planHistoryListLabel);
+					planLabel.setText("No upcoming plans for you.");
+					}
 			}
 			pDlg.dismiss();
 		}

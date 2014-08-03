@@ -37,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Group;
@@ -268,6 +269,9 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 						}
 					}					
 				} else {
+					gridView.setVisibility(ListView.INVISIBLE);
+					TextView userNameValue = (TextView)rootView.findViewById(R.id.welcomeListGroupsLabel);
+					userNameValue.setText("You haven't joined any groups");
 					activity.setContentView(R.layout.groups_list);
 					
 				}
