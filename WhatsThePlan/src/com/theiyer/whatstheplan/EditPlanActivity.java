@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.util.WTPConstants;
+import com.theiyer.whatstheplan.util.WhatstheplanUtil;
 import com.thoughtworks.xstream.XStream;
 
 public class EditPlanActivity  extends FragmentActivity {
@@ -112,13 +113,15 @@ public class EditPlanActivity  extends FragmentActivity {
 		
 		String selectedGroup = prefs.getString("selectedGroup", "");;
 
-
+		String[] planDates = WhatstheplanUtil.createLocalToGmtTime(planDate+" "+planTime+":00");
+		String[] planEndDates = WhatstheplanUtil.createLocalToGmtTime(planEndDate+" "+planEndTime+":00");
+		
 		String insertQuery = "/editPlan?newName=" + planName.replace(" ", "%20")
 				+ "&oldName=" + oldName.replace(" ", "%20") 
-				+ "&date=" + planDate + "&time="
-				+ planTime+":00" + "&location=" + planLocation.replace(" ", "%20")
+				+ "&date=" + planDates[0] + "&time="
+				+ planDates[1] + "&location=" + planLocation.replace(" ", "%20")
 				+ "&groupName=" + selectedGroup.replace(" ", "%20")
-				+ "&endDate=" + planEndDate + "&endTime=" + planEndTime+":00";
+				+ "&endDate=" + planEndDates[0] + "&endTime=" +planEndDates[1];
 
 		TextView errorFieldValue = (TextView) findViewById(R.id.editPlanErrorField);
 		errorFieldValue.setText("");
@@ -128,7 +131,11 @@ public class EditPlanActivity  extends FragmentActivity {
 		editor.putString("selectedPlan", planName);
 		editor.apply();
 		CalendarHelper calendarHelper = new CalendarHelper(this);
-		calendarHelper.execute(new String[] { planTime,
+		String[] startPlanTime = null;
+		if(planTime != null) {
+			startPlanTime = WhatstheplanUtil.createGmtToLocalTime(planTime);
+		}
+		calendarHelper.execute(new String[] { startPlanTime[0] +" " + startPlanTime[1],
 				planName, planLocation,
 				"", "", "update",planDate, oldName,planEndDate,planEndTime});
 		Intent intent = new Intent(this, ViewMyNewPlansActivity.class);
@@ -240,17 +247,16 @@ public class EditPlanActivity  extends FragmentActivity {
 				if (plan != null) {
 					
 					TextView planDateValue = (TextView) findViewById(R.id.newPlanDateValue);
-					planDateValue
-							.setText(plan.getStartTime().substring(0,10));
+					String date = plan.getStartTime().substring(0,10);
+					String time = plan.getStartTime().substring(11,16);
 					
-					TextView planEndDateValue = (TextView) findViewById(R.id.newPlanEndDateValue);
-					planEndDateValue
-							.setText(plan.getEndTime().substring(0,10));
+					String[] postedLocalDate = WhatstheplanUtil.createGmtToLocalTime(date + " " + time+":00");
+					planDateValue.setText(postedLocalDate[0]);
 					
 					TextView planTimeValue = (TextView) findViewById(R.id.newPlanTimeValue);
-					String time = plan.getStartTime().substring(11,16);
-					String hour = time.substring(0, 2);
-	            	String min = time.substring(3);
+					
+					String hour = postedLocalDate[1].substring(0, 2);
+	            	String min = postedLocalDate[1].substring(3);
 	            	System.out.println("Plan start time :  " + plan.getStartTime());
 	            	int hourInt = Integer.valueOf(hour);
 	            	String ampm = "AM";
@@ -265,10 +271,16 @@ public class EditPlanActivity  extends FragmentActivity {
 					planTimeValue
 							.setText(hour+":"+min+" "+ampm);
 					
-					TextView planEndTimeValue = (TextView) findViewById(R.id.newPlanEndTimeValue);
+					TextView planEndDateValue = (TextView) findViewById(R.id.newPlanEndDateValue);
+					String endDate = plan.getEndTime().substring(0,10);
 					String endTime = plan.getEndTime().substring(11,16);
-					String endHour = endTime.substring(0, 2);
-	            	String endMin = endTime.substring(3);
+					
+					String[] endLocalDate = WhatstheplanUtil.createGmtToLocalTime(endDate + " " + endTime+":00");
+					planEndDateValue.setText(endLocalDate[0]);
+					TextView planEndTimeValue = (TextView) findViewById(R.id.newPlanEndTimeValue);
+					
+					String endHour = endLocalDate[1].substring(0, 2);
+	            	String endMin = endLocalDate[1].substring(3);
 	            	System.out.println("Plan end time :  " + plan.getEndTime());
 	            	int endHourInt = Integer.valueOf(endHour);
 	            	String endAmPm = "AM";

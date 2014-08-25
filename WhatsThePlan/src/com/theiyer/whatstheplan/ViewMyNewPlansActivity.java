@@ -125,7 +125,12 @@ public class ViewMyNewPlansActivity extends Activity {
 			System.out.println("Selected plan : " + selectedPlan);
 			System.out.println("******** Plan : " +plan.getStartTime().toString());
 			CalendarHelper calendarHelper = new CalendarHelper(context);
-			calendarHelper.execute(new String[] { plan.getStartTime(),
+			String[] startPlanTime = null;
+			String planTime = plan.getStartTime();
+			if(planTime != null) {
+				startPlanTime = WhatstheplanUtil.createGmtToLocalTime(planTime);
+			}
+			calendarHelper.execute(new String[] { startPlanTime[0] +" " + startPlanTime[1],
 					selectedPlan, plan.getLocation(),
 					String.valueOf(plan.getId()), phone, "create", "01:20", "2014-04-02" });
 		}

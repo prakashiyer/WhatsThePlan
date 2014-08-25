@@ -247,7 +247,12 @@ public class NewPlanActivity extends FragmentActivity {
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null) {
 					CalendarHelper calendarHelper = new CalendarHelper(mContext);
-					calendarHelper.execute(new String[] { plan.getStartTime(),
+					String startTime = plan.getStartTime();
+					String[] startPlanTime = null;
+					if(startTime != null) {
+						startPlanTime = WhatstheplanUtil.createGmtToLocalTime(startTime);
+					}
+					calendarHelper.execute(new String[] { startPlanTime[0] +" " + startPlanTime[1],
 							plan.getName(), plan.getLocation(),
 							String.valueOf(plan.getId()), phone, "create", planEndTime, planEndDate});
 					Intent intent = new Intent(mContext, ViewMyNewPlansActivity.class);
