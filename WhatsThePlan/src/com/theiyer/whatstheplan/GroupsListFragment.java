@@ -87,6 +87,9 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 			
 			WebServiceClient restClient = new WebServiceClient(activity);
 			restClient.execute(new String[] { searchQuery });
+		} else {
+			Intent intent = new Intent(activity, RetryActivity.class);
+			startActivity(intent);
 		}
         return rootView;
 	}
