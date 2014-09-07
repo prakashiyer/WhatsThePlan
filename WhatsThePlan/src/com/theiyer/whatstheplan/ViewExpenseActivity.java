@@ -49,14 +49,17 @@ public class ViewExpenseActivity extends Activity {
 			String userName = prefs.getString("selectedUser", "");
 			String phone = prefs.getString("selectedPhone", "");
 			String selectedPlan = prefs.getString("selectedPlan", "");
+			String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 			String selectedGroup = prefs.getString("selectedGroup", "");
+			String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 
 			TextView addLabel = (TextView) findViewById(R.id.viewexpenseLabel);
 			addLabel.setText(userName + "'s Expenses:");
 
 			String searchQuery = "/fetchExpense?phone=" + phone + "&planName="
-					+ selectedPlan.replace(" ", "%20") + "&groupName="
-					+ selectedGroup.replace(" ", "%20");
+					+ selectedPlan.replace(" ", "%20") +"&planIndex="+selectedPlanIndex + "&groupName="
+					+ selectedGroup.replace(" ", "%20") + "&groupIndex="
+							+ selectedGroupIndex;
 
 			WebServiceClient restClient = new WebServiceClient(this);
 			restClient.execute(new String[] { searchQuery });

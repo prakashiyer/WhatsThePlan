@@ -52,7 +52,7 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 	//ListView list;
 	GridView gridView;
 	GroupListAdapter adapter;
-	List<Map<String, byte[]>> groupsList;
+	List<Map<String, Group>> groupsList;
 	List<Group> allGroups;
 	String phone;
 	View rootView;
@@ -117,13 +117,16 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 		SharedPreferences prefs = activity.getSharedPreferences(
 				"Prefs", Activity.MODE_PRIVATE);
 		String selectedGroup = "";
+		String selectedGroupIndex = "";
 		if(groupsList != null && !groupsList.isEmpty()){
-			Map<String,byte[]> selectedMap = groupsList.get(position);
-			for(Entry<String,byte[]> entry: selectedMap.entrySet()){
+			Map<String,Group> selectedMap = groupsList.get(position);
+			for(Entry<String,Group> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
-				selectedGroup = entry.getKey();
+				selectedGroup = entry.getValue().getName();
+				selectedGroupIndex = entry.getKey();
 				editor.putString("selectedGroup",selectedGroup);
+				editor.putString("selectedGroupIndex",selectedGroupIndex);
 				editor.apply();
 				break;
 			}
@@ -258,12 +261,12 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 				groupsXstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
 				GroupList groupList = (GroupList) groupsXstream.fromXML(response);
 				if (groupList != null) {
-					groupsList = new ArrayList<Map<String, byte[]>>();
+					groupsList = new ArrayList<Map<String, Group>>();
 					allGroups = groupList.getGroups();
 					if(allGroups != null && !allGroups.isEmpty()){
 						for(Group group: allGroups){
-							Map<String, byte[]> groupDetails = new HashMap<String, byte[]>();
-							groupDetails.put(group.getName(), group.getImage());
+							Map<String, Group> groupDetails = new HashMap<String, Group>();
+							groupDetails.put(String.valueOf(group.getId()), group);
 							groupsList.add(groupDetails);
 						}
 						if(!groupsList.isEmpty()){

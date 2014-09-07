@@ -72,26 +72,25 @@ public class GroupAdminListActivity extends Activity implements
     				+ ", new member requests are listed below:");
 
     		String selectedGroup = prefs.getString("selectedGroup", "");
+    		String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 
     		TextView selectedGroupValue = (TextView) findViewById(R.id.selectedGroupAdminValue);
     		selectedGroupValue.setText(" " + selectedGroup);
 
-    		String searchQuery = "/searchGroup?groupName="
-    				+ selectedGroup.replace(" ", "%20");
+    		String searchQuery = "/fetchGroup?groupIndex="+selectedGroupIndex;
 
-    		WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
-    				this);
+    		
     		WebServiceClient restClient = new WebServiceClient(this);
+    		restClient.execute(new String[] { searchQuery });
     		membersList = new ArrayList<Map<String, byte[]>>();
     		userMap = new HashMap<String, String>();
     		list = (GridView) findViewById(R.id.memberListAdmin);
     		// Click event for single list row
     		list.setOnItemClickListener(this);
     		adapter = new MemberListNewAdapter(this);
-    		imageClient.execute(new String[] { "fetchGroupImage",
-    				selectedGroup.replace(" ", "%20") });
+    		
 
-    		restClient.execute(new String[] { searchQuery });
+    		
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
@@ -136,6 +135,7 @@ public class GroupAdminListActivity extends Activity implements
 
 							String selectedGroup = prefs.getString(
 									"selectedGroup", "");
+							String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 
 							WebServiceClient restClient = new WebServiceClient(
 									context);
@@ -143,6 +143,8 @@ public class GroupAdminListActivity extends Activity implements
 									+ phone
 									+ "&groupName="
 									+ selectedGroup.replace(" ", "%20")
+									+ "&groupIndex="
+									+ selectedGroupIndex
 									+ "&decision=yes";
 							restClient.execute(new String[] { searchQuery });
 
@@ -332,7 +334,7 @@ public class GroupAdminListActivity extends Activity implements
 
 		@Override
 		protected void onPostExecute(String response) {
-			if (response != null && query.contains("searchGroup")) {
+			if (response != null && query.contains("fetchGroup")) {
 				XStream xstream = new XStream();
 				xstream.alias("Group", Group.class);
 				xstream.alias("members", String.class);
@@ -341,12 +343,21 @@ public class GroupAdminListActivity extends Activity implements
 				xstream.alias("planNames", String.class);
 				xstream.addImplicitCollection(Group.class, "planNames",
 						"planNames", String.class);
+				xstream.alias("planIds", String.class);
+				xstream.addImplicitCollection(Group.class, "planIds",
+						"planIds", String.class);
 				xstream.alias("pendingMembers", String.class);
 				xstream.addImplicitCollection(Group.class, "pendingMembers",
 						"pendingMembers", String.class);
 				Group group = (Group) xstream.fromXML(response);
 				if (group != null) {
 
+					Bitmap img = BitmapFactory.decodeByteArray(group.getImage(), 0,
+							group.getImage().length);
+
+					ImageView imgView = (ImageView) findViewById(R.id.selectedGroupAdminPicThumbnail);
+					imgView.setImageBitmap(img);
+					
 					List<String> pendingMembers = group.getPendingMembers();
 
 					if (pendingMembers != null && !pendingMembers.isEmpty()) {

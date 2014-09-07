@@ -63,9 +63,10 @@ public class ViewPlanMembersActivity extends Activity {
 			memberListLabel = (TextView) findViewById(R.id.viewPlanMemberListLabel);
 
 			String selectedPlan = prefs.getString("selectedPlan", "New User");
+			String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 			System.out.println("View Selected: "  +selectedPlan);
 			String searchQuery = "/fetchPlan?planName="
-					+ selectedPlan.replace(" ", "%20");
+					+ selectedPlan.replace(" ", "%20")+"&planIndex="+selectedPlanIndex;
 			viewSelected = prefs.getString("viewSelected", "members");
 			System.out.println("View Selected: "  +viewSelected);
 
@@ -159,7 +160,7 @@ public class ViewPlanMembersActivity extends Activity {
 			query = params[0];
 			String path = WTPConstants.SERVICE_PATH+query;
 
-			if(query.contains("fetchUser")){
+			if(query.contains("fetchUser") || query.contains("fetchGroup")){
 				isLastMember = params[1];
 			}
 			//HttpHost target = new HttpHost(TARGET_HOST);
@@ -209,7 +210,7 @@ public class ViewPlanMembersActivity extends Activity {
 						for(int i=0; i<members.size(); i++){
 							String userQuery = "";
 							if(viewSelected.equals("groupsInvited")){
-								userQuery = "/searchGroup?groupName=" + members.get(i).replace(" ", "%20");
+								userQuery = "/fetchGroup?groupIndex=" + members.get(i);
 							} else {
 								userQuery = "/fetchUser?phone=" + members.get(i);
 							}
@@ -234,16 +235,26 @@ public class ViewPlanMembersActivity extends Activity {
 				userXstream.addImplicitCollection(User.class, "groupNames","groupNames",String.class);
 				userXstream.alias("pendingGroupNames", String.class);
 				userXstream.addImplicitCollection(User.class, "pendingGroupNames","pendingGroupNames",String.class);
+				userXstream.alias("groupIds", String.class);
+				userXstream.addImplicitCollection(User.class, "groupIds","groupIds",String.class);
+				userXstream.alias("pendingGroupIds", String.class);
+				userXstream.addImplicitCollection(User.class, "pendingGroupIds","pendingGroupIds",String.class);
 				User user = (User) userXstream
 						.fromXML(response);
 				if(user != null){
+					Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
+					memberMap.put(user.getName(), user.getImage());
+					membersList.add(memberMap);	
 					
-					WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
-							mContext);
-					userImageClient.execute(new String[] { "fetchUserImage", user.getPhone(), user.getName(), isLastMember });
-					
+					if(!membersList.isEmpty() && isLastMember.equals("true")){
+						
+					    adapter.setData(membersList);
+						memberListView.setAdapter(adapter);
+						memberListLabel.setVisibility(TextView.VISIBLE);
+						memberListView.setVisibility(ListView.VISIBLE);
+					}
 				}	
-			} else if (response != null && query.contains("searchGroup")) {
+			} else if (response != null && query.contains("fetchGroup")) {
 				System.out.println("GRP RESPONSE: " +response);
 				XStream xstream = new XStream();
 				xstream.alias("Group", Group.class);
@@ -254,13 +265,23 @@ public class ViewPlanMembersActivity extends Activity {
 				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
 				xstream.alias("pendingMembers", String.class);
 				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
+				xstream.alias("planIds", String.class);
+				xstream.addImplicitCollection(Group.class, "planIds","planIds",String.class);
 				Group group = (Group) xstream.fromXML(response);
-				pDlg.dismiss();
+				
 				if (group != null) {
 					String groupName = group.getName();
-					WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
-							mContext);
-					userImageClient.execute(new String[] { "fetchGroupImage",  groupName.replace(" ", "%20"),  groupName.replace(" ", "%20"), "true" });
+						Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
+						memberMap.put(groupName, group.getImage());
+						membersList.add(memberMap);	
+						
+						if(!membersList.isEmpty() && isLastMember.equals("true")){
+							
+						    adapter.setData(membersList);
+							memberListView.setAdapter(adapter);
+							memberListLabel.setVisibility(TextView.VISIBLE);
+							memberListView.setVisibility(ListView.VISIBLE);
+						}					
 				}
 			}
 			pDlg.dismiss();

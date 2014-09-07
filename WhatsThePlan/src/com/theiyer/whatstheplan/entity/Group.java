@@ -8,6 +8,7 @@ public class Group {
 	private String name;
 	private List<String> members;
 	private List<String> planNames;
+	private List<String> planIds;
 	private List<String> pendingMembers;
 	private String admin;
 	private byte[] image;
@@ -81,5 +82,13 @@ public class Group {
 		this.selected = selected;
 	}
 	
+	public List<String> getPlanIds() {
+		return planIds;
+	}
+
+	public void setPlanIds(List<String> planIds) {
+		this.planIds = planIds;
+	}
+
 	
 }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.theiyer.whatstheplan.entity.Group;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,12 +20,12 @@ import android.widget.TextView;
 public class GroupListAdapter extends BaseAdapter {
 		 
 	    private Activity activity;
-	    private List<Map<String, byte[]>> data; 
-	    public List<Map<String, byte[]>> getData() {
+	    private List<Map<String, Group>> data; 
+	    public List<Map<String, Group>> getData() {
 			return data;
 		}
 
-		public void setData(List<Map<String, byte[]>> data) {
+		public void setData(List<Map<String, Group>> data) {
 			this.data = data;
 		}
 
@@ -34,7 +36,7 @@ public class GroupListAdapter extends BaseAdapter {
 	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	    }
 		
-	    public GroupListAdapter(Activity a, List<Map<String, byte[]>> d) {
+	    public GroupListAdapter(Activity a, List<Map<String, Group>> d) {
 	        activity = a;
 	        data=d;
 	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -64,11 +66,12 @@ public class GroupListAdapter extends BaseAdapter {
 			ImageView imgView = (ImageView) view.findViewById(R.id.groupGridPicThumbnail);
 			TextView textView = (TextView) view.findViewById(R.id.groupGridNameField);
 			
-			Map<String,byte[]> selectedMap = data.get(position);
-            for(Entry<String,byte[]> entry: selectedMap.entrySet()){
-            	textView.setText(entry.getKey());
+			Map<String,Group> selectedMap = data.get(position);
+            for(Entry<String,Group> entry: selectedMap.entrySet()){
+            	Group group = entry.getValue();
+            	textView.setText(group.getName());
             	
-            	byte[] image = entry.getValue();
+            	byte[] image = group.getImage();
             	if (image != null) {
 					Bitmap img = BitmapFactory.decodeByteArray(image, 0,
 							image.length);

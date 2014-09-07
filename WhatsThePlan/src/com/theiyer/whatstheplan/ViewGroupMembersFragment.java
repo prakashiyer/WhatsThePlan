@@ -65,7 +65,8 @@ public class ViewGroupMembersFragment extends Fragment {
 			
 
 			String selectedGroup = prefs.getString("selectedGroup", "");
-			String searchQuery = "/fetchGroupUsers?groupName=" + selectedGroup.replace(" ", "%20");
+			String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
+			String searchQuery = "/fetchGroupUsers?groupName=" + selectedGroup.replace(" ", "%20")+"&groupIndex=" + selectedGroupIndex;
 
 			
 			membersList = new ArrayList<Map<String, byte[]>>();

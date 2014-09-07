@@ -255,6 +255,13 @@ public class NewPlanActivity extends FragmentActivity {
 					calendarHelper.execute(new String[] { startPlanTime[0] +" " + startPlanTime[1],
 							plan.getName(), plan.getLocation(),
 							String.valueOf(plan.getId()), phone, "create", planEndTime, planEndDate});
+					SharedPreferences prefs = getSharedPreferences("Prefs",
+							Activity.MODE_PRIVATE);
+					SharedPreferences.Editor editor = prefs.edit();
+					editor.putString("selectedPlan", plan.getName());
+					editor.putString("selectedPlanIndex", String.valueOf(plan.getId()));
+					editor.apply();
+					
 					Intent intent = new Intent(mContext, ViewMyNewPlansActivity.class);
 					startActivity(intent);
 				} else {

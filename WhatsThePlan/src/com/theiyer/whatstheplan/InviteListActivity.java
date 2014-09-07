@@ -179,10 +179,11 @@ public class InviteListActivity extends Activity implements MultiChoiceModeListe
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		String groupName = prefs.getString("selectedGroup", "");
+		String groupNameIndex = prefs.getString("selectedGroupIndex", "");
 		if(!selectedList.isEmpty()){
 			for(String phone: selectedList){
 				String joinQuery = "/invite?groupName=" + groupName.replace(" ", "%20")
-						+ "&phone=" + phone;
+						+ "&phone=" + phone +"&groupIndex="+groupNameIndex;
 				/*RestWebServiceClient restClient = new RestWebServiceClient(this);
 				try {
 					String response = restClient.execute(

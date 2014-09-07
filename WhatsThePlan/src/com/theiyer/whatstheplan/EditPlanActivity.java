@@ -54,12 +54,13 @@ public class EditPlanActivity  extends FragmentActivity {
 			userNameValue.setText(userName + ", edit selected plan here!");
 			
 			String selectedPlan = prefs.getString("selectedPlan", "New User");
+			String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 			TextView selectedPlanValue = (TextView) findViewById(R.id.editPlanTitleValue);
 			selectedPlanValue.setText(selectedPlan);
 			oldName = selectedPlan;
 
 			String searchQuery = "/fetchPlan?planName="
-					+ selectedPlan.replace(" ", "%20");
+					+ selectedPlan.replace(" ", "%20") +"&planIndex="+selectedPlanIndex;
 
 			WebServiceClient restClient = new WebServiceClient(this);
 			restClient.execute(new String[] { searchQuery });
@@ -111,16 +112,20 @@ public class EditPlanActivity  extends FragmentActivity {
 		EditText planLocationEditText = (EditText) findViewById(R.id.editPlanLocationValue);
 		String planLocation = planLocationEditText.getText().toString();
 		
-		String selectedGroup = prefs.getString("selectedGroup", "");;
+		String selectedGroup = prefs.getString("selectedGroup", "");
+		String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
+		String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 
 		String[] planDates = WhatstheplanUtil.createLocalToGmtTime(planDate+" "+planTime+":00");
 		String[] planEndDates = WhatstheplanUtil.createLocalToGmtTime(planEndDate+" "+planEndTime+":00");
 		
 		String insertQuery = "/editPlan?newName=" + planName.replace(" ", "%20")
-				+ "&oldName=" + oldName.replace(" ", "%20") 
+				+ "&oldName=" + oldName.replace(" ", "%20")
+				+ "&planIndex=" + selectedPlanIndex
 				+ "&date=" + planDates[0] + "&time="
 				+ planDates[1] + "&location=" + planLocation.replace(" ", "%20")
 				+ "&groupName=" + selectedGroup.replace(" ", "%20")
+				+ "&groupIndex=" + selectedGroupIndex
 				+ "&endDate=" + planEndDates[0] + "&endTime=" +planEndDates[1];
 
 		TextView errorFieldValue = (TextView) findViewById(R.id.editPlanErrorField);

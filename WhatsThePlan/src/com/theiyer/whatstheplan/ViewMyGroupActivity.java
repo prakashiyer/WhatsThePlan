@@ -69,26 +69,23 @@ public class ViewMyGroupActivity extends Activity implements
 					Activity.MODE_PRIVATE);
 
 			selectedGroup = prefs.getString("selectedGroup", "");
+			String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 			phone = prefs.getString("phone", "");
 
 			TextView selectedGroupValue = (TextView) findViewById(R.id.selectedGroupValue);
 			selectedGroupValue.setText(" " + selectedGroup);
 
-			String searchGrpQuery = "/searchGroup?groupName="
-					+ selectedGroup.replace(" ", "%20");
+			String searchGrpQuery = "/fetchGroup?groupName="
+					+ selectedGroup.replace(" ", "%20")
+					+ "&groupIndex="+selectedGroupIndex;
 
 			WebServiceClient groupRestClient = new WebServiceClient(this);
 			groupRestClient.execute(new String[] { searchGrpQuery });
 
-			WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
-					this);
-
-			imageClient.execute(new String[] { "fetchGroupImage",
-					selectedGroup.replace(" ", "%20") });
-
 			WebServiceClient restClient = new WebServiceClient(this);
 			String searchQuery = "/fetchGroupPlans?groupName="
-					+ selectedGroup.replace(" ", "%20");
+					+ selectedGroup.replace(" ", "%20")
+					+ "&groupIndex="+selectedGroupIndex;
 
 			restClient.execute(new String[] { searchQuery });
 
@@ -269,11 +266,25 @@ public class ViewMyGroupActivity extends Activity implements
 				xstream.alias("planNames", String.class);
 				xstream.addImplicitCollection(Group.class, "planNames",
 						"planNames", String.class);
+				xstream.alias("planIds", String.class);
+				xstream.addImplicitCollection(Group.class, "planIds",
+						"planIds", String.class);
 				xstream.alias("pendingMembers", String.class);
 				xstream.addImplicitCollection(Group.class, "pendingMembers",
 						"pendingMembers", String.class);
 				Group group = (Group) xstream.fromXML(response);
 				if (group != null && selectedGroup.equals(group.getName())) {
+					Bitmap img = BitmapFactory.decodeByteArray(group.getImage(), 0,
+							group.getImage().length);
+
+					Activity activity = (Activity) mContext;
+
+					// For ViewMyGroupActivity
+					ImageView imgView = (ImageView) activity
+							.findViewById(R.id.selectedGroupPicThumbnail);
+					if (imgView != null) {
+						imgView.setImageBitmap(img);
+					}
 					if (phone.equals(group.getAdmin())) {
 						isAdmin = true;
 					} else {
@@ -316,82 +327,6 @@ public class ViewMyGroupActivity extends Activity implements
 					}
 
 				}
-			}
-
-			pDlg.dismiss();
-		}
-
-	}
-
-	public class WebImageRetrieveRestWebServiceClient extends
-			AsyncTask<String, Integer, byte[]> {
-
-		private Context mContext;
-		private ProgressDialog pDlg;
-
-		public WebImageRetrieveRestWebServiceClient(Context mContext) {
-			this.mContext = mContext;
-		}
-
-		private void showProgressDialog() {
-
-			pDlg = new ProgressDialog(mContext);
-			pDlg.setMessage("Processing ....");
-			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDlg.setCancelable(false);
-			pDlg.show();
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			showProgressDialog();
-
-		}
-
-		@Override
-		protected byte[] doInBackground(String... params) {
-			String method = params[0];
-			String path = WTPConstants.SERVICE_PATH + "/" + method;
-
-			if ("fetchUserImage".equals(method)) {
-				path = path + "?phone=" + params[1];
-			} else {
-				path = path + "?groupName=" + params[1];
-			}
-			// HttpHost target = new HttpHost(TARGET_HOST);
-			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
-			HttpClient client = new DefaultHttpClient();
-			HttpGet get = new HttpGet(path);
-			HttpEntity results = null;
-
-			try {
-
-				HttpResponse response = client.execute(target, get);
-				results = response.getEntity();
-				byte[] byteresult = EntityUtils.toByteArray(results);
-				return byteresult;
-			} catch (Exception e) {
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(byte[] response) {
-
-			if (response != null) {
-				Bitmap img = BitmapFactory.decodeByteArray(response, 0,
-						response.length);
-
-				Activity activity = (Activity) mContext;
-
-				// For ViewMyGroupActivity
-				ImageView imgView = (ImageView) activity
-						.findViewById(R.id.selectedGroupPicThumbnail);
-				if (imgView != null) {
-					imgView.setImageBitmap(img);
-				}
-
 			}
 
 			pDlg.dismiss();

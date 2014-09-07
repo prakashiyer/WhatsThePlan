@@ -38,7 +38,9 @@ import com.thoughtworks.xstream.XStream;
 public class ViewMyNewPlansActivity extends Activity {
 
 	private String selectedPlan;
+	private String selectedPlanIndex;
 	private String selectedGroup;
+	private String selectedGroupIndex;
 	private Context context = this;
 	private Menu menu;
 	public static Plan plan;
@@ -62,12 +64,14 @@ public class ViewMyNewPlansActivity extends Activity {
 			userNameValue.setText(userName + ", here's selected plan details!");
 
 			selectedGroup = prefs.getString("selectedGroup", "New User");
+			selectedGroupIndex = prefs.getString("selectedGroupIndex", "New User");
 			selectedPlan = prefs.getString("selectedPlan", "New User");
+			selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 			TextView selectedPlanValue = (TextView) findViewById(R.id.viewNewPlanTitle);
 			selectedPlanValue.setText(" " + selectedPlan);
 
 			String searchQuery = "/fetchPlan?planName="
-					+ selectedPlan.replace(" ", "%20");
+					+ selectedPlan.replace(" ", "%20") +"&planIndex="+selectedPlanIndex;
 			String phone = prefs.getString("phone", "");
 
 			WebServiceClient restClient = new WebServiceClient(this);
@@ -102,6 +106,7 @@ public class ViewMyNewPlansActivity extends Activity {
 				Activity.MODE_PRIVATE);
 		String phone = prefs.getString("phone", "");
 		String selectedPlan = prefs.getString("selectedPlan", "");
+		String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 		System.out.println("*********** Prefs : " + prefs.getAll().toString());
 		String rsvp = "no";
 
@@ -110,7 +115,7 @@ public class ViewMyNewPlansActivity extends Activity {
 		}
 
 		String updateQuery = "/rsvpPlan?planName="
-				+ selectedPlan.replace(" ", "%20") + "&phone=" + phone
+				+ selectedPlan.replace(" ", "%20") +"&planIndex="+selectedPlanIndex + "&phone=" + phone
 				+ "&rsvp=" + rsvp;
 		if (rsvp == "no") { 
 		CalendarHelper calendarHelper = new CalendarHelper(context);
@@ -194,8 +199,9 @@ public class ViewMyNewPlansActivity extends Activity {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					String updateQuery = "/deletePlan?planName="
-							+ selectedPlan.replace(" ", "%20") + "&groupName="
-							+ selectedGroup.replace(" ", "%20");
+							+ selectedPlan.replace(" ", "%20") +"&planIndex="+selectedPlanIndex + "&groupName="
+							+ selectedGroup.replace(" ", "%20")
+							+ "&groupIndex="+selectedGroupIndex;
 					WebServiceClient restClient = new WebServiceClient(context);
 					restClient.execute(new String[] { updateQuery });
 					CalendarHelper calendarHelper = new CalendarHelper(context);

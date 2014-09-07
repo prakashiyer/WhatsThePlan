@@ -99,14 +99,17 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 		SharedPreferences prefs = activity.getSharedPreferences(
 				"Prefs", Activity.MODE_PRIVATE);
 		String selectedPlan = "";
+		String selectedPlanIndex = "";
 		if(plansResult != null && !plansResult.isEmpty()){
 			Map<String,Plan> selectedMap = plansResult.get(position);
 			for(Entry<String,Plan> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
-				selectedPlan = entry.getKey();
+				selectedPlan = entry.getValue().getName();
+				selectedPlanIndex = entry.getKey();
 				System.out.println("Selected Plan: " +selectedPlan);
 				editor.putString("selectedPlan",selectedPlan);
+				editor.putString("selectedPlanIndex",selectedPlanIndex);
 				editor.apply();
 				break;
 			}
@@ -232,7 +235,7 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 						    plansResult = new ArrayList<Map<String, Plan>>();
 							for (Plan plan : plans) {
 								Map<String, Plan> planMap = new HashMap<String, Plan>();
-								planMap.put(plan.getName(), plan);
+								planMap.put(String.valueOf(plan.getId()), plan);
 								plansResult.add(planMap);
 
 							}

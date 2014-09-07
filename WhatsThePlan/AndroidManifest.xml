@@ -177,16 +177,7 @@
                 android:value="com.theiyer.whatstheplan.ViewMyGroupActivity" />
         </activity>
         
-        <!-- List Groups page -->
-        <activity
-            android:name="com.theiyer.whatstheplan.GroupsListActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.theiyer.whatstheplan.HomePlanActivity" />
-        </activity> 
+        
         
         <!-- Group Admin page -->
         <activity

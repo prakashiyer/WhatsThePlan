@@ -68,8 +68,9 @@ public class PlanListAdapter extends BaseAdapter {
 			
 			Map<String,Plan> selectedMap = data.get(position);
             for(Entry<String,Plan> entry: selectedMap.entrySet()){
-            	planName.setText(entry.getKey());
+            	
             	Plan plan = entry.getValue();
+            	planName.setText(plan.getName());
             	String date = plan.getStartTime().substring(0, 10);
             	Calendar cal = Calendar.getInstance();
             	String year = date.substring(0, 4);

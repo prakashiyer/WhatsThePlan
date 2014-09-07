@@ -6,7 +6,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
@@ -39,13 +38,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.theiyer.whatstheplan.entity.Group;
 import com.theiyer.whatstheplan.util.WTPConstants;
+import com.thoughtworks.xstream.XStream;
 
 public class CreateGroupActivity extends Activity {
 
 	private static final int PICK_IMAGE = 1;
 	private ImageView imgView;
-	private String filePath;
+	private String filePath = "";
 
 	private Bitmap bitmap;
 	
@@ -92,24 +93,16 @@ public class CreateGroupActivity extends Activity {
 					Activity.MODE_PRIVATE);
 			String phone = prefs.getString("phone", "");
 
-			String insertQuery = "/addGroup?groupName="
-					+ groupName.replace(" ", "%20") + "&phone=" + phone;
-
-			WebServiceClient restClient = new WebServiceClient(this);
-			restClient.execute(
-					new String[] { insertQuery });
+			
 			if (bitmap == null) {
 				Toast.makeText(getApplicationContext(), "You can use menu to upload image later.",
 						Toast.LENGTH_SHORT).show();
-			} else {
-				
-					WebImageRestWebServiceClient imageRestClient = new WebImageRestWebServiceClient(
-							this);
-
-					imageRestClient.execute(
-							new String[] { "uploadGroupImage", groupName, filePath });
-					
 			}
+			WebImageRestWebServiceClient imageRestClient = new WebImageRestWebServiceClient(
+					this);
+
+			imageRestClient.execute(
+					new String[] { "addGroup", groupName, phone, filePath });
 
 			Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 			startActivity(intent);
@@ -228,62 +221,9 @@ public class CreateGroupActivity extends Activity {
 	    startActivity(intent);
 	}
 	
-	public class WebServiceClient extends AsyncTask<String, Integer, String> {
-
-		private Context mContext;
-		private ProgressDialog pDlg;
-
-		public WebServiceClient(Context mContext) {
-			this.mContext = mContext;
-		}
-
-		private void showProgressDialog() {
-
-			pDlg = new ProgressDialog(mContext);
-			pDlg.setMessage("Processing ....");
-			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDlg.setCancelable(false);
-			pDlg.show();
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			
-		   showProgressDialog();
-
-		}
-
-		@Override
-		protected String doInBackground(String... params) {
-			String path = WTPConstants.SERVICE_PATH+params[0];
-
-			//HttpHost target = new HttpHost(TARGET_HOST);
-			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
-			HttpClient client = new DefaultHttpClient();
-			HttpGet get = new HttpGet(path);
-			HttpEntity results = null;
-
-			try {
-				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
-				String result = EntityUtils.toString(results);
-				return result;
-			} catch (Exception e) {
-				
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String response) {
-			
-			pDlg.dismiss();
-		}
-
-	}
 	
-	public class WebImageRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
+	
+	public class WebImageRestWebServiceClient extends AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
@@ -309,7 +249,7 @@ public class CreateGroupActivity extends Activity {
 		}
 
 		@Override
-		protected byte[] doInBackground(String... params) {
+		protected String doInBackground(String... params) {
 			
 			String method = params[0];
 			String path = WTPConstants.SERVICE_PATH+"/"+method;
@@ -322,19 +262,20 @@ public class CreateGroupActivity extends Activity {
 			try {
 		        MultipartEntity entity = new MultipartEntity();
 		       
-		        if("uploadUserImage".equals(method)){
-		        	entity.addPart("phone", new StringBody(params[1]));
+		        entity.addPart("groupName", new StringBody(params[1]));
+		        entity.addPart("phone", new StringBody(params[2]));
+		        if(params[3] != ""){
+		        	entity.addPart("image", new FileBody(new File(params[3])));
 		        } else {
-		        	entity.addPart("groupName", new StringBody(params[1]));
+		        	entity.addPart("image", null);
 		        }
 		        
-		        entity.addPart("image", new FileBody(new File(params[2])));
 		        post.setEntity(entity);
 
 		        HttpResponse response = client.execute(target, post);
 		        results = response.getEntity(); 
-				byte[] byteresult = EntityUtils.toByteArray(results);
-				return byteresult;
+				String result = EntityUtils.toString(results);
+				return result;
 			} catch (Exception e) {
 				
 			}
@@ -342,16 +283,33 @@ public class CreateGroupActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(byte[] response) {
+		protected void onPostExecute(String response) {
 			
 			if (response != null) {
-				Bitmap img = BitmapFactory.decodeByteArray(response, 0,
-						response.length);
+				
+				XStream xstream = new XStream();
+				xstream.alias("Group", Group.class);
+				
+				xstream.alias("members", String.class);
+				xstream.addImplicitCollection(Group.class, "members","members",String.class);
+				xstream.alias("planNames", String.class);
+				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
+				xstream.alias("pendingMembers", String.class);
+				xstream.addImplicitCollection(Group.class, "planIds","planIds",String.class);
+				xstream.alias("pendingMembers", String.class);
+				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
+				Group group = (Group) xstream.fromXML(response);
+				if (group != null) {
+					byte[] image = group.getImage();
+					Bitmap img = BitmapFactory.decodeByteArray(image, 0,
+							image.length);
 
-				imgView.setImageBitmap(img);
-				Toast.makeText(getApplicationContext(),
-						"Selected Photo has been set", Toast.LENGTH_LONG)
-						.show();
+					imgView.setImageBitmap(img);
+					Toast.makeText(getApplicationContext(),
+							"Selected Photo has been set", Toast.LENGTH_LONG)
+							.show();
+				}
+				
 			}	
 			pDlg.dismiss();
 		}

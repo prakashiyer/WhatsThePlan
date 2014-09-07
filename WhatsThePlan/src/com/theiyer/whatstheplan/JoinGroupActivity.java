@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,7 +42,7 @@ public class JoinGroupActivity extends Activity {
 
 	private GridView list;
 	private GroupListAdapter adapter;
-	private List<Map<String, byte[]>> groupsList;
+	private List<Map<String, Group>> groupsList;
 	private String phone ;
 	private List<String> members;
 	private List<String> pendingMembers;
@@ -102,8 +101,10 @@ public class JoinGroupActivity extends Activity {
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		String phone = prefs.getString("phone", "");
+		String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 
 		String joinQuery = "/joinGroup?groupName=" + groupName.replace(" ", "%20")
+				+ "&groupIndex=" + selectedGroupIndex
 				+ "&phone=" + phone;
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(
@@ -183,18 +184,33 @@ public class JoinGroupActivity extends Activity {
 				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
 				Group group = (Group) xstream.fromXML(response);
 				if (group != null) {
-
-					String groupName = group.getName();
-					groupsList = new ArrayList<Map<String, byte[]>>();
-
-					WebImageRetrieveRestWebServiceClient imageClient = new WebImageRetrieveRestWebServiceClient(
-							mContext);
+					groupsList = new ArrayList<Map<String, Group>>();
 					list = (GridView) findViewById(R.id.joingroupList);
 					phone = prefs.getString("phone","");
 					members = group.getMembers();
 				    pendingMembers = group.getPendingMembers();
-					imageClient.execute(
-							new String[] { "fetchGroupImage", groupName.replace(" ", "%20") });
+				    
+				    TextView groupNameLabel= (TextView) findViewById(R.id.groupSearchResultsLabel);
+					TextView groupNameValue = (TextView) findViewById(R.id.groupSearchResultValue);
+					
+					Map<String, Group> groupDetails = new HashMap<String, Group>();
+					groupDetails.put(String.valueOf(group.getId()), group);
+					groupsList.add(groupDetails);
+					adapter.setData(groupsList);
+					list.setAdapter(adapter);
+					groupNameLabel.setVisibility(TextView.VISIBLE);
+					groupNameValue.setText(group.getName());
+					
+					//CHANGE THIS CODE
+					SharedPreferences.Editor editor = prefs.edit();
+					editor.putString("selectedGroupIndex", String.valueOf(group.getId()));
+					editor.apply();
+					
+					if(pendingMembers == null || (!pendingMembers.contains(phone) && !members.contains(phone))){
+						Button joinButton = (Button) findViewById(R.id.joinGroupButton);
+						joinButton.setVisibility(Button.VISIBLE);
+					}
+					
 					
 				} else {
 					Toast.makeText(mContext,
@@ -213,84 +229,7 @@ public class JoinGroupActivity extends Activity {
 
 	}
 	
-	public class WebImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
-
-		private Context mContext;
-		private ProgressDialog pDlg;
-		private String groupName;
-
-		public WebImageRetrieveRestWebServiceClient(Context mContext) {
-			this.mContext = mContext;
-		}
-
-		private void showProgressDialog() {
-
-			pDlg = new ProgressDialog(mContext);
-			pDlg.setMessage("Processing ....");
-			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDlg.setCancelable(false);
-			pDlg.show();
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			showProgressDialog();
-
-		}
-
-		@Override
-		protected byte[] doInBackground(String... params) {
-			String method = params[0];
-			groupName = params[1].replace("%20", " ");
-			String path = WTPConstants.SERVICE_PATH+"/"+method;
-
-			if("fetchUserImage".equals(method)){
-	        	path = path+"?phone="+params[1];
-	        } else {
-	        	path = path+"?groupName="+params[1];
-	        }
-			//HttpHost target = new HttpHost(TARGET_HOST);
-			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
-			HttpClient client = new DefaultHttpClient();
-			HttpGet get = new HttpGet(path);
-			HttpEntity results = null;
-
-			try {
-				
-				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
-				byte[] byteresult = EntityUtils.toByteArray(results);
-				return byteresult;
-			} catch (Exception e) {
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(byte[] response) {
-			TextView groupNameLabel= (TextView) findViewById(R.id.groupSearchResultsLabel);
-			TextView groupNameValue = (TextView) findViewById(R.id.groupSearchResultValue);
-			
-			if(response != null){
-				Map<String, byte[]> groupDetails = new HashMap<String, byte[]>();
-				groupDetails.put(groupName, response);
-				groupsList.add(groupDetails);
-				adapter.setData(groupsList);
-				list.setAdapter(adapter);
-				groupNameLabel.setVisibility(TextView.VISIBLE);
-				groupNameValue.setText(groupName);
-				
-				if(pendingMembers == null || (!pendingMembers.contains(phone) && !members.contains(phone))){
-					Button joinButton = (Button) findViewById(R.id.joinGroupButton);
-					joinButton.setVisibility(Button.VISIBLE);
-				}
-			}
-			
-			pDlg.dismiss();
-		}
-
-	}
+	
 
 	/**
 	 * Checks if we have a valid Internet Connection on the device.

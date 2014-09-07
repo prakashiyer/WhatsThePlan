@@ -68,8 +68,9 @@ public class GroupImageChangeActivity extends Activity {
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String selectedGroup = prefs.getString("selectedGroup", "");
+			String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 			imageRetrieveClient.execute(new String[] { "fetchGroupImage",
-					selectedGroup });
+					selectedGroup, selectedGroupIndex });
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
@@ -88,13 +89,14 @@ public class GroupImageChangeActivity extends Activity {
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String selectedGroup = prefs.getString("selectedGroup", "");
+			String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 			Log.i("GROUP SELECTED", selectedGroup);
 
 			WebImageRestWebServiceClient restClient = new WebImageRestWebServiceClient(
 					this);
 
 			restClient.execute(new String[] { "uploadGroupImage",
-					selectedGroup, filePath });
+					selectedGroup, filePath, selectedGroupIndex });
 		}
 
 	}
@@ -244,7 +246,7 @@ public class GroupImageChangeActivity extends Activity {
 			if ("fetchUserImage".equals(method)) {
 				path = path + "?phone=" + params[1];
 			} else {
-				path = path + "?groupName=" + params[1];
+				path = path + "?groupName=" + params[1] + "&groupIndex=" +params[2];
 			}
 			// HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
@@ -327,6 +329,7 @@ public class GroupImageChangeActivity extends Activity {
 					entity.addPart("phone", new StringBody(params[1]));
 				} else {
 					entity.addPart("groupName", new StringBody(params[1]));
+					entity.addPart("groupIndex", new StringBody(params[3]));
 				}
 
 				entity.addPart("image", new FileBody(new File(params[2])));

@@ -32,16 +32,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.Group;
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.entity.PlanList;
-import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
@@ -49,8 +46,6 @@ public class ViewGroupUpcomingPlanFragment extends Fragment implements OnItemCli
 
 	private static final String TAG = "ViewGroupMembersActivity";
 	
-	private ListView memberListView;
-	private boolean isLastMember = false;
 	private Activity activity;
 	PlanListAdapter adapter;
 	ListView planListView;
@@ -78,8 +73,10 @@ public class ViewGroupUpcomingPlanFragment extends Fragment implements OnItemCli
 			
 			
 			selectedGroup = prefs.getString("selectedGroup", "");
+			String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 			phone = prefs.getString("phone", "");
-			String searchQuery = "/fetchGroupPlans?groupName=" + selectedGroup.replace(" ", "%20");
+			String searchQuery = "/fetchGroupPlans?groupName=" + selectedGroup.replace(" ", "%20")
+					+"&groupIndex="+selectedGroupIndex;
 
 			
 			adapter = new PlanListAdapter(activity);
@@ -156,6 +153,9 @@ public class ViewGroupUpcomingPlanFragment extends Fragment implements OnItemCli
 				xstream.alias("planNames", String.class);
 				xstream.addImplicitCollection(Group.class, "planNames",
 						"planNames", String.class);
+				xstream.alias("planIds", String.class);
+				xstream.addImplicitCollection(Group.class, "planIds",
+						"planIds", String.class);
 				xstream.alias("pendingMembers", String.class);
 				xstream.addImplicitCollection(Group.class, "pendingMembers",
 						"pendingMembers", String.class);
@@ -193,7 +193,7 @@ public class ViewGroupUpcomingPlanFragment extends Fragment implements OnItemCli
 						plansResult = new ArrayList<Map<String, Plan>>();
 						for (Plan plan : plans) {
 							Map<String, Plan> planMap = new HashMap<String, Plan>();
-							planMap.put(plan.getName(), plan);
+							planMap.put(String.valueOf(plan.getId()), plan);
 							plansResult.add(planMap);
 
 						}
@@ -318,14 +318,17 @@ public class ViewGroupUpcomingPlanFragment extends Fragment implements OnItemCli
 		SharedPreferences prefs = activity.getSharedPreferences(
 				"Prefs", Activity.MODE_PRIVATE);
 		String selectedPlan = "";
+		String selectedPlanIndex = "";
 		if(plansResult != null && !plansResult.isEmpty()){
 			Map<String,Plan> selectedMap = plansResult.get(position);
 			for(Entry<String,Plan> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
-				selectedPlan = entry.getKey();
+				selectedPlan = entry.getValue().getName();
+				selectedPlanIndex = entry.getKey();
 				System.out.println("Selected Plan: " +selectedPlan);
 				editor.putString("selectedPlan",selectedPlan);
+				editor.putString("selectedPlanIndex",selectedPlanIndex);
 				editor.apply();
 				break;
 			}

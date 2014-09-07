@@ -58,14 +58,17 @@ public class AddExpenseActivity extends Activity {
 			String userName = prefs.getString("userName", "");
 			String phone = prefs.getString("phone", "");
 			String selectedPlan = prefs.getString("selectedPlan", "");
+			String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 			String selectedGroup = prefs.getString("selectedGroup", "");
+			String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 
 			TextView addLabel = (TextView) findViewById(R.id.addexpenseLabel);
 			addLabel.setText(userName + "'s Expenses:");
 
 			String searchQuery = "/fetchExpense?phone=" + phone + "&planName="
-					+ selectedPlan.replace(" ", "%20") + "&groupName="
-					+ selectedGroup.replace(" ", "%20");
+					+ selectedPlan.replace(" ", "%20") + "&planIndex="
+							+ selectedPlanIndex + "&groupName="
+					+ selectedGroup.replace(" ", "%20") + "&groupIndex="+selectedGroupIndex;
 
 		    WebServiceClient restClient = new WebServiceClient(this);
 
@@ -88,7 +91,9 @@ public class AddExpenseActivity extends Activity {
 
 		String phone = prefs.getString("phone", "");
 		String selectedPlan = prefs.getString("selectedPlan", "");
+		String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 		String selectedGroup = prefs.getString("selectedGroup", "");
+		String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 
 		EditText expenseTitle1 = (EditText) findViewById(R.id.addexpense1Title);
 		EditText expenseValue1 = (EditText) findViewById(R.id.addexpense1Value);
@@ -97,7 +102,7 @@ public class AddExpenseActivity extends Activity {
 
 		if (title1 != null && !title1.isEmpty() && exp1 != null
 				&& !exp1.isEmpty()) {
-			updateExpense(phone, selectedPlan, selectedGroup, title1, exp1,
+			updateExpense(phone, selectedPlan, selectedPlanIndex, selectedGroup, selectedGroupIndex, title1, exp1,
 					edit1);
 		}
 
@@ -108,7 +113,7 @@ public class AddExpenseActivity extends Activity {
 
 		if (title2 != null && !title2.isEmpty() && exp2 != null
 				&& !exp2.isEmpty()) {
-			updateExpense(phone, selectedPlan, selectedGroup, title2, exp2,
+			updateExpense(phone, selectedPlan, selectedPlanIndex, selectedGroup, selectedGroupIndex, title2, exp2,
 					edit2);
 		}
 
@@ -119,7 +124,7 @@ public class AddExpenseActivity extends Activity {
 
 		if (title3 != null && !title3.isEmpty() && exp3 != null
 				&& !exp3.isEmpty()) {
-			updateExpense(phone, selectedPlan, selectedGroup, title3, exp3,
+			updateExpense(phone, selectedPlan, selectedPlanIndex, selectedGroup, selectedGroupIndex, title3, exp3,
 					edit3);
 		}
 
@@ -130,7 +135,7 @@ public class AddExpenseActivity extends Activity {
 
 		if (title4 != null && !title4.isEmpty() && exp4 != null
 				&& !exp4.isEmpty()) {
-			updateExpense(phone, selectedPlan, selectedGroup, title4, exp4,
+			updateExpense(phone, selectedPlan, selectedPlanIndex, selectedGroup, selectedGroupIndex, title4, exp4,
 					edit4);
 		}
 
@@ -141,7 +146,7 @@ public class AddExpenseActivity extends Activity {
 
 		if (title5 != null && !title5.isEmpty() && exp5 != null
 				&& !exp5.isEmpty()) {
-			updateExpense(phone, selectedPlan, selectedGroup, title5, exp5,
+			updateExpense(phone, selectedPlan, selectedPlanIndex, selectedGroup, selectedGroupIndex, title5, exp5,
 					edit5);
 		}
 		Intent intent = new Intent(this, ExpenseReportActivity.class);
@@ -149,18 +154,20 @@ public class AddExpenseActivity extends Activity {
 
 	}
 
-	private void updateExpense(String phone, String selectedPlan,
-			String selectedGroup, String title, String exp, boolean edit) {
+	private void updateExpense(String phone, String selectedPlan, String selectedPlanIndex,
+			String selectedGroup, String selectedGroupIndex, String title, String exp, boolean edit) {
 		String query = "";
 		if (edit) {
 			query = "/updateExpense?planName="
-					+ selectedPlan.replace(" ", "%20") + "&phone=" + phone
+					+ selectedPlan.replace(" ", "%20") + "&planIndex="
+							+ selectedPlanIndex + "&phone=" + phone
 					+ "&groupName=" + selectedGroup.replace(" ", "%20")
+					+ "&groupIndex=" +selectedGroupIndex
 					+ "&title=" + title + "&value=" + exp;
 		} else {
 			query = "/addExpense?planName=" + selectedPlan.replace(" ", "%20")
-					+ "&phone=" + phone + "&groupName="
-					+ selectedGroup.replace(" ", "%20") + "&title=" + title
+					+ "&planIndex="	+ selectedPlanIndex+ "&phone=" + phone + "&groupName="
+					+ selectedGroup.replace(" ", "%20") + "&groupIndex=" +selectedGroupIndex + "&title=" + title
 					+ "&value=" + exp;
 		}
 

@@ -166,7 +166,7 @@ OnItemClickListener {
 				Group group = entry.getValue();
 				if(group.isSelected()){
 					group.setSelected(false);
-					selectedGroups = selectedGroups.replace(group.getName()+",", "");
+					selectedGroups = selectedGroups.replace(group.getId()+",", "");
 					editor.putString("selectedGroups", selectedGroups);
 					editor.apply();
 					adapter.setData(filteredList);
@@ -175,7 +175,7 @@ OnItemClickListener {
 					groupsGridView.setVisibility(GridView.VISIBLE);
 				} else {
 					group.setSelected(true);
-					selectedGroups = selectedGroups + group.getName()+",";
+					selectedGroups = selectedGroups + group.getId()+",";
 					editor.putString("selectedGroups", selectedGroups);
 					System.out.println("selected Groups: " +selectedGroups);
 					editor.apply();

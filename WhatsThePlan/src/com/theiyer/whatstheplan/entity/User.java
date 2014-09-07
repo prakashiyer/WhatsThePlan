@@ -9,6 +9,8 @@ public class User {
 	private String phone;
 	private List<String> groupNames;
 	private List<String> pendingGroupNames;
+	private List<String> groupIds;
+	private List<String> pendingGroupIds;
 	private byte[] image;
 	private boolean selected;
 	
@@ -72,6 +74,20 @@ public class User {
 		this.selected = selected;
 	}
 	
-	
+	public List<String> getGroupIds() {
+		return groupIds;
+	}
+
+	public void setGroupIds(List<String> groupIds) {
+		this.groupIds = groupIds;
+	}
+
+	public List<String> getPendingGroupIds() {
+		return pendingGroupIds;
+	}
+
+	public void setPendingGroupIds(List<String> pendingGroupIds) {
+		this.pendingGroupIds = pendingGroupIds;
+	}
 
 }

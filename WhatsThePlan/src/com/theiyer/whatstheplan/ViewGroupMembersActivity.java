@@ -58,8 +58,8 @@ public class ViewGroupMembersActivity extends Activity {
 					Activity.MODE_PRIVATE);
 			
 
-			String selectedGroup = prefs.getString("selectedGroup", "");
-			String searchQuery = "/searchGroup?groupName=" + selectedGroup.replace(" ", "%20");
+			String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
+			String searchQuery = "/fetchGroup?groupIndex="+selectedGroupIndex;
 
 			
 			membersList = new ArrayList<Map<String, byte[]>>();
@@ -134,13 +134,10 @@ public class ViewGroupMembersActivity extends Activity {
 				Log.i(TAG, response);
 				XStream xstream = new XStream();
 				xstream.alias("Group", Group.class);
-				
 				xstream.alias("members", String.class);
 				xstream.addImplicitCollection(Group.class, "members","members",String.class);
 				xstream.alias("planNames", String.class);
 				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
-				xstream.alias("pendingMembers", String.class);
-				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
 				Group group = (Group) xstream.fromXML(response);
                 if (group != null) {
 					

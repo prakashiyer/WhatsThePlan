@@ -65,8 +65,10 @@ public class LeaveGroupActivity extends Activity {
 				Activity.MODE_PRIVATE);
 		String phone = prefs.getString("phone", "");
 		String selectedGroup = prefs.getString("selectedGroup", "New User");
+		String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 		String searchQuery = "/leaveGroup?phone=" + phone
-				+ "&groupName=" + selectedGroup.replace(" ", "%20");
+				+ "&groupName=" + selectedGroup.replace(" ", "%20")
+				+ "&groupIndex=" + selectedGroupIndex;
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(
 				new String[] { searchQuery });

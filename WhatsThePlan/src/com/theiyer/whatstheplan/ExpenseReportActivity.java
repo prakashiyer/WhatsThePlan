@@ -55,8 +55,9 @@ public class ExpenseReportActivity extends Activity implements OnItemClickListen
 					Activity.MODE_PRIVATE);
 
 			String selectedPlan = prefs.getString("selectedPlan", "New User");
+			String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 			String searchQuery = "/generateReport?planName="
-					+ selectedPlan.replace(" ", "%20");
+					+ selectedPlan.replace(" ", "%20")+"&planIndex="+selectedPlanIndex;
 
 			adapter = new ExpenseListAdapter(this, this);
 			expenseReportListView = (ListView) findViewById(R.id.viewexpensereport);
