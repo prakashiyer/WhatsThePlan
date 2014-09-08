@@ -119,8 +119,8 @@ public class CalendarHelper extends AsyncTask<String, String, String> {
         		Integer.valueOf(endDate.substring(8,10)), 
         		Integer.valueOf(endTime.substring(0,2)), 
         		Integer.valueOf(endTime.substring(3,5)));
-        System.out.println("******* endTime " + endTime);
-        System.out.println("******* endDate " + endDate);
+        System.out.println("**** endTime " + endTime);
+        System.out.println("**** endDate " + endDate);
         long setDate = calendar.getTimeInMillis();
         Log.i(DEBUG_TAG, "DATE: " + setDate);
         calendar.add(Calendar.HOUR, 5);
