@@ -55,5 +55,17 @@ public class DateNewPickerFragment extends DialogFragment implements
 			}
 			planEndDateEditText.setText(year+"-"+mon+"-"+date);
 		}
+		else if (date == "birth") {
+			TextView planEndDateEditText = (TextView) getActivity().findViewById(R.id.dateOfBirth);
+			String mon = String.valueOf(month+1);
+			String date = String.valueOf(day);
+			if(month+1 < 10){
+				mon = "0"+mon;
+			}
+			if(day<10){
+				date = "0"+date;
+			}
+			planEndDateEditText.setText(year+"-"+mon+"-"+date);
+		}
 	}
 }

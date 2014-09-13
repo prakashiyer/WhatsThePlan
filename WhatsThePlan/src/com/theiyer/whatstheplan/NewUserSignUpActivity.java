@@ -24,15 +24,21 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,17 +47,22 @@ import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
-public class NewUserSignUpActivity extends Activity {
+public class NewUserSignUpActivity extends FragmentActivity implements OnItemSelectedListener {
 	
-	private SmsManager smsManager;
 	private Context context;
-	private String code;
+	private String genderVar;
+	private String bloodVar;
 
 	private static final String TAG = "Just Meet GCM";
 
 	private GoogleCloudMessaging gcm;
 	private String regid;
-
+	Spinner gender;
+	 //TextView selGender;
+	 Spinner bloodGrp;
+	 //TextView selblood;
+	 private String[] genderString = { "Male", "Female" };
+	 private String[] bloodGrpString = { "A+", "B+", "B-", "A-", "O+" , "O-", "AB+", "AB-" };
 	
 
 	@Override
@@ -65,9 +76,28 @@ public class NewUserSignUpActivity extends Activity {
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" Sign Up Form");
+			aBar.setTitle(" Individual Registration form");
 			context = getApplicationContext();
-			smsManager = SmsManager.getDefault(); 
+			
+			System.out.println(genderString.length);
+			  //selGender = (TextView) findViewById(R.id.selGender);
+			  gender = (Spinner) findViewById(R.id.genderDrp);
+			  ArrayAdapter<String> adapter_state = new ArrayAdapter<String>(this,
+			    android.R.layout.simple_spinner_item, genderString);
+			  adapter_state
+			    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			  gender.setAdapter(adapter_state);
+			  gender.setOnItemSelectedListener(this);
+			  
+			  System.out.println(bloodGrpString.length);
+			  //selblood = (TextView) findViewById(R.id.selblood);
+			  bloodGrp = (Spinner) findViewById(R.id.bloodGrp);
+			  ArrayAdapter<String> adapter_state1 = new ArrayAdapter<String>(this,
+			    android.R.layout.simple_spinner_item, bloodGrpString);
+			  adapter_state1
+			    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			  bloodGrp.setAdapter(adapter_state1);
+			  bloodGrp.setOnItemSelectedListener(this);
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
@@ -77,36 +107,24 @@ public class NewUserSignUpActivity extends Activity {
 	}
 	
 	/** Called when the user checks the change password */
-	public void enterCodeCheck(View view) {
+	public void enterDocCheck(View view) {
 		CheckBox checkBox = (CheckBox) findViewById(R.id.codeCheckBox);
-
-		EditText phoneText = (EditText) findViewById(R.id.newUserPhoneValue);
-		String phone = phoneText.getText().toString();
-		TextView codeLabel = (TextView) findViewById(R.id.newUserCodeLabel);
-		EditText newPassword = (EditText) findViewById(R.id.newPasswordValue);
-		Button regButton = (Button) findViewById(R.id.registerButton);
 		if (checkBox.isChecked()) {
-			if(!TextUtils.isEmpty(phone)){
-				String code = phone.substring(3, 7);
-				String message = "Welcome to Just Meet. Please enter the code "+code+" to prove you are sane.";
-				smsManager.sendTextMessage(phone, null, message, null, null);
-				codeLabel.setVisibility(EditText.VISIBLE);
-				newPassword.setVisibility(EditText.VISIBLE);
-				regButton.setVisibility(Button.VISIBLE);
-				gcm = GoogleCloudMessaging.getInstance(context);
-				Asyncer syncer = new Asyncer();
-				syncer.execute(new String[] {phone});
-			} else {
-				Toast.makeText(getApplicationContext(),
-						"Can I have your phone number?", Toast.LENGTH_LONG).show();
+			System.out.println("I Am A Doctor");
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putString("doc", "doctor");
+			editor.apply();
 			}
-			
-		} else {
-			codeLabel.setVisibility(EditText.INVISIBLE);
-			newPassword.setVisibility(EditText.INVISIBLE);
-			regButton.setVisibility(Button.INVISIBLE);
-		}
 
+	}
+	public void setDate(View v) {
+		Button button = (Button) findViewById(R.id.setDateOfBirth);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		DialogFragment newFragment = new DateNewPickerFragment("birth");
+		newFragment.show(getSupportFragmentManager(), "datePicker");
+		button.setTextColor(getResources().getColor(R.color.button_text));
 	}
 
 	/** Called when the user clicks the New User Register button */
@@ -119,21 +137,13 @@ public class NewUserSignUpActivity extends Activity {
 		EditText phoneText = (EditText) findViewById(R.id.newUserPhoneValue);
 		String phone = phoneText.getText().toString();
 
-		EditText passwordEditText = (EditText) findViewById(R.id.newPasswordValue);
-		String password = passwordEditText.getText().toString();
-
 		if (TextUtils.isEmpty(userName)) {
 			Toast.makeText(getApplicationContext(), "Don't you have a name?",
 					Toast.LENGTH_LONG).show();
 		} else if (TextUtils.isEmpty(phone)) {
 			Toast.makeText(getApplicationContext(),
 					"Can I have your phone number?", Toast.LENGTH_LONG).show();
-		} else if (TextUtils.isEmpty(password) && !TextUtils.equals(password, code)) {
-			Toast.makeText(getApplicationContext(),
-					"Nothing works without a right password!", Toast.LENGTH_LONG)
-					.show();
-		} else {
-			
+		} else {			
 			String insertQuery = "/addUser?name="
 					+ userName.replace(" ", "%20") + "&phone=" + phone;
 
@@ -360,5 +370,30 @@ public class NewUserSignUpActivity extends Activity {
 		}
 
 		return true;
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position,
+			   long id) {
+		switch(parent.getId()) {
+		case R.id.genderDrp:
+			gender.setSelection(position);
+			genderVar = (String) gender.getSelectedItem();
+			System.out.println("Selected gender is : " + genderVar);
+			break;
+		case R.id.bloodGrp:
+			bloodGrp.setSelection(position);
+			bloodVar = (String) bloodGrp.getSelectedItem();
+			System.out.println("Selected blood group is : " + bloodVar);
+			break;
+		}
+			  
+			  //selGender.setText("Gender :" + selState);
+			 }
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -47,9 +47,31 @@
             </intent-filter>
         </activity>
 
+        <!-- New User Sign up registration -->
+        <activity
+            android:name="com.theiyer.whatstheplan.NewRegistrationPage"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:parentActivityName="com.theiyer.whatstheplan.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.theiyer.whatstheplan.MainActivity" />
+        </activity>
+        
         <!-- New User Sign up -->
         <activity
             android:name="com.theiyer.whatstheplan.NewUserSignUpActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:parentActivityName="com.theiyer.whatstheplan.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.theiyer.whatstheplan.MainActivity" />
+        </activity>
+        
+        <!-- New User Sign up -->
+        <activity
+            android:name="com.theiyer.whatstheplan.NewHealthCenterSignUpActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:parentActivityName="com.theiyer.whatstheplan.MainActivity" >

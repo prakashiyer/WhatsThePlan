@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
 		Resources res = getResources();
 		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Home of Groups and Plans");
+		aBar.setTitle(" Network for doctors and patient");
 
 		context = this;
 		
@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
        	} else {
        		Log.i(TAG, "New User logs in");
        		
-       		Intent intent = new Intent(context, NewUserSignUpActivity.class);
+       		Intent intent = new Intent(context, NewRegistrationPage.class);
     		startActivity(intent);
    		}
 

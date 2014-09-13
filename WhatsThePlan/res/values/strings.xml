@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Just Meet</string>
+    <string name="app_name">Health Meet</string>
     <string name="main_activity_title">First Time Log in</string>
     <string name="action_view_profile">View Profile</string>
     <string name="action_change_profile_pic">Change Profile Pic</string>
@@ -17,6 +17,7 @@
     <string name="manage_plans_button_text">Manage Plans</string>
     <string name="old_user_button_text">Log In</string>
     <string name="register_button_text">Register</string>
+    <string name="register_button_text_new">Proceed to Register</string>
     <string name="admin_button_text">Proceed To View Group</string>
     <string name="login_button_text">Log In</string>
     <string name="user_email_id_label">Email Id (eg. justmeet@gmail.com)</string>
@@ -42,7 +43,11 @@
     <string name="new_plan_title_label">Type a Plan title</string>
     <string name="new_plan_time_label">Date &amp; Time:</string>
     <string name="new_plan_location_label">Type Location address</string>
+    <string name="address">Address</string>
     <string name="date_button_text">Set Date</string>
+    <string name="date_of_birth">Date Of Birth</string>
+    <string name="doctor_number">Doctors Number</string>
+    <string name="health_number">Health Centre No:</string>
      <string name="time_button_text">Set Time</string>
      <string name="end_time_button_text">Set End Time</string>
      <string name="end_date_button_text">Set End Date</string>
@@ -69,6 +74,7 @@
     <string name="retry_text">No network found. Please tap below image to retry.</string>
     <string name="history_label_text">Plan History:</string>
     <string name="welcome_New_User_SignUp_Value">Welcome, You can start here!</string>
+    <string name="welcome_New_User_reg_Value"> Who are you ? </string>
     <string name="welcome_Code">We have sent you a secret code, type it here and click Register</string>
     <string name="expense_welcome">Expense Report</string>
     <string name="add_expense_text">Add/Edit the amount spent!</string>
@@ -96,7 +102,7 @@
     <string name="change_password_button">Submit New Password</string>
     <string name="leave_group_button">Exit this Group</string>
     <string name="change_password_check_label">Change Password</string>
-    <string name="enter_code_check">I am sane and the number is correct.</string>
+    <string name="enter_doc_check">I am a Doctor</string>
     <string name="delete_profile_check_label">Your account will be deleted and all the existing records too</string>
     <string name="delete_profile_button">Delete Account</string>
     <string name="upload_profile_pic_description">Upload Profile pic</string>
@@ -114,5 +120,11 @@
     <string name="group_member"> Member</string>
     <string name="settle_bill"> Settle</string>
     <string name="group_upcomming_plan"> Upcoming</string>
+    <string name="invidual"> Individual User (Patient/Doctor)</string>
+    <string name="health_centre"> Health Centre</string>
+    <string name="gender"> Gender : </string>
+    <string name="blood"> Blood Group : </string>
+    <string name="name"> Name : </string>
+    <string name="phone"> Phone Number : </string>
 
 </resources>
