@@ -23,6 +23,7 @@
     <string name="user_email_id_label">Email Id (eg. justmeet@gmail.com)</string>
     <string name="user_details_label">User Information:</string>
     <string name="user_name_label">Name (eg. Prakash Iyer)</string>
+    <string name="user_address_label">Address </string>
     <string name="user_phone_label">10-digit Mobile Number</string>
     <string name="password_label">Password</string>
     <string name="retype_password_label">Re-type Password</string>
@@ -58,6 +59,7 @@
     <string name="next_step_button_text">Go to Next Step &gt;&gt;</string>
     <string name="cancel_plan_button_text">X</string>
     <string name="new_plan_date_hint">yyyy-mm-dd</string>
+    <string name="DOB_button">...</string>
     <string name="new_plan_time_hint">HH:MM AM/PM</string>
     <string name="select_group_hint">Select a Group</string>
     <string name="view_this_plan_button_text">View Plan details</string>
