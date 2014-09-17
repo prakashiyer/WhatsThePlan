@@ -41,6 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="@dimen/top_no_margin"
+            android:textSize="@dimen/standard_text_size"
             android:ems="10"
             android:text="@string/name"
             android:typeface="sans" />
@@ -62,7 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="left|top"
-        android:layout_row="2"
+        android:layout_row="4"
         android:gravity="left"
         android:orientation="horizontal" >
 
@@ -74,6 +75,7 @@
             android:layout_marginTop="@dimen/top_no_margin"
             android:ems="10"
             android:text="@string/address"
+            android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
 
         <EditText
@@ -86,7 +88,7 @@
             android:inputType="textMultiLine"
             android:lines="4"
             android:maxLines="4"
-            android:textSize="@dimen/small_text_size"
+            android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
 
     </LinearLayout>
@@ -95,18 +97,19 @@
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="left|top"
-        android:layout_row="4"
+        android:layout_row="3"
         android:gravity="left"
         android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/healthCentrePhoneText"
             android:layout_width="80dp"
-            android:layout_height="wrap_content"
+            android:layout_height="72dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="@dimen/top_no_margin"
             android:ems="10"
             android:text="@string/health_number"
+            android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
 
         <EditText
@@ -117,20 +120,20 @@
             android:ems="10"
             android:hint="@string/user_phone_label"
             android:inputType="phone"
-            android:textSize="@dimen/small_text_size"
+            android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
     </LinearLayout>
     <Button
     android:id="@+id/registerButton"
-    android:layout_width="200dp"
-    android:layout_height="30dp"
+    android:layout_width="250dp"
+    android:layout_height="40dp"
     android:layout_column="0"
     android:layout_gravity="center"
     android:layout_marginTop="@dimen/top_no_margin"
     android:layout_row="4"
     android:background="@drawable/button"
     android:onClick="logNewUser"
-    android:text="@string/register_button_text"
+    android:text="@string/register_button_text_new"
     android:textColor="@color/button_text"
     android:textSize="@dimen/standard_text_size"
     android:textStyle="bold"
