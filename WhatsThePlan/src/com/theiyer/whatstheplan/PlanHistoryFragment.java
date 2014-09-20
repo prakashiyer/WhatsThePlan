@@ -90,7 +90,7 @@ public class PlanHistoryFragment extends Fragment implements OnItemClickListener
 			for(Entry<String,Plan> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
-				selectedPlan = entry.getValue().getName();
+				//selectedPlan = entry.getValue().getName();
 				selectedPlanIndex = entry.getKey();
 				editor.putString("selectedPlan",selectedPlan);
 				editor.putString("selectedPlanIndex",selectedPlanIndex);

@@ -228,7 +228,7 @@ public class HomePlanActivity extends Activity implements OnItemClickListener {
 						    plansResult = new ArrayList<Map<String, Plan>>();
 							for (Plan plan : plans) {
 								Map<String, Plan> planMap = new HashMap<String, Plan>();
-								planMap.put(plan.getName(), plan);
+								//planMap.put(plan.getName(), plan);
 								plansResult.add(planMap);
 
 							}

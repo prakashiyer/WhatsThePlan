@@ -83,7 +83,7 @@ public class PlanHistoryActivity extends Activity implements OnItemClickListener
 			for(Entry<String,Plan> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
-				selectedPlan = entry.getValue().getName();
+				//selectedPlan = entry.getValue().getName();
 				selectedPlanIndex = entry.getKey();
 				editor.putString("selectedPlan",selectedPlan);
 				editor.putString("selectedPlanIndex",selectedPlanIndex);

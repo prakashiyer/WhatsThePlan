@@ -314,7 +314,7 @@ public class ViewMyGroupActivity extends Activity implements
 					if (plans != null && !plans.isEmpty()) {
 						List<String> planTitles = new ArrayList<String>();
 						for (Plan plan : plans) {
-							planTitles.add(plan.getName());
+							//planTitles.add(plan.getName());
 						}
 						ArrayAdapter<String> plansAdapter = new ArrayAdapter<String>(
 								context,

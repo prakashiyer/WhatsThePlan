@@ -70,7 +70,7 @@ public class PlanListAdapter extends BaseAdapter {
             for(Entry<String,Plan> entry: selectedMap.entrySet()){
             	
             	Plan plan = entry.getValue();
-            	planName.setText(plan.getName());
+            	//planName.setText(plan.getName());
             	String date = plan.getStartTime().substring(0, 10);
             	Calendar cal = Calendar.getInstance();
             	String year = date.substring(0, 4);
@@ -96,9 +96,9 @@ public class PlanListAdapter extends BaseAdapter {
             	planDay.setText(" " +weekday+", "+monthStr+" "+dateStr +" ");
             	planTime.setText(" " +hour+":"+min+" "+ampm+ " ");
             	int members = 0;
-            	if(plan.getMemberNames() != null){
+            	/*if(plan.getMemberNames() != null){
             		members = plan.getMemberNames().size();
-            	}
+            	}*/
             	planMems.setText(" Members Attending ("+members+")");
 			}
 			return view;

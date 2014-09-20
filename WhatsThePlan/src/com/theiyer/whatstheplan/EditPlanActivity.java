@@ -301,8 +301,8 @@ public class EditPlanActivity  extends FragmentActivity {
 							.setText(endHour+":"+endMin+" "+endAmPm);
 
 					EditText planLocationValue = (EditText) findViewById(R.id.editPlanLocationValue);
-					planLocationValue
-							.setText(plan.getLocation());
+					/*planLocationValue
+							.setText(plan.getLocation());*/
 				}
 			}
 			pDlg.dismiss();

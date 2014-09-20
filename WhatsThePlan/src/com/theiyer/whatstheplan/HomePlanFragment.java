@@ -105,7 +105,7 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 			for(Entry<String,Plan> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
-				selectedPlan = entry.getValue().getName();
+				//selectedPlan = entry.getValue().getName();
 				selectedPlanIndex = entry.getKey();
 				System.out.println("Selected Plan: " +selectedPlan);
 				editor.putString("selectedPlan",selectedPlan);

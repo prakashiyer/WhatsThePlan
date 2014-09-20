@@ -120,7 +120,7 @@ public class ViewMyPlansActivity extends Activity {
 			System.out.println("******** Plan : " +plan.getStartTime().toString());
 			CalendarHelper calendarHelper = new CalendarHelper(context);
 			calendarHelper.execute(new String[] { plan.getStartTime(),
-					selectedPlan, plan.getLocation(),
+				//	selectedPlan, plan.getLocation(),
 					String.valueOf(plan.getId()), phone, "create", "01:20", "2014-04-02" });
 		}
 		WebServiceClient restClient = new WebServiceClient(this);
@@ -277,13 +277,13 @@ public class ViewMyPlansActivity extends Activity {
 				ViewMyPlansActivity.plan = plan;
 				if (plan != null) {
 
-					if (phone.equals(plan.getCreator())) {
+					/*if (phone.equals(plan.getCreator())) {
 						MenuItem deletePlanItem = menu.findItem(R.id.deletePlan);
 						deletePlanItem.setVisible(true);
-					}
+					}*/
 
 					TextView planGroupValue = (TextView) findViewById(R.id.viewPlanGroup);
-					planGroupValue.setText(" " + plan.getGroupName());
+					//planGroupValue.setText(" " + plan.getGroupName());
 
 					TextView planTimeValue = (TextView) findViewById(R.id.viewPlanTime);
 					TextView planEndTimeValue = (TextView) findViewById(R.id.viewPlanEndTime);
@@ -321,11 +321,11 @@ public class ViewMyPlansActivity extends Activity {
 					+ " " + endAmPm);
 
 					TextView planLocationValue = (TextView) findViewById(R.id.viewPlanLocation);
-					planLocationValue.setText(" " + plan.getLocation());
+					/*planLocationValue.setText(" " + plan.getLocation());
 
-					List<String> members = plan.getMemberNames();
+					List<String> members = plan.getMemberNames();*/
 
-					if (members != null && !members.isEmpty()) {
+					/*if (members != null && !members.isEmpty()) {
 
 						Button membersAttending = (Button) findViewById(R.id.seeMembersButton);
 						membersAttending.setText("Members Attending ("
@@ -341,7 +341,7 @@ public class ViewMyPlansActivity extends Activity {
 							rsvpPlanButton.setText("Say Yes");
 						}
 						rsvpPlanButton.setVisibility(Button.VISIBLE);
-					}
+					}*/
 
 				}
 			}
@@ -353,9 +353,9 @@ public class ViewMyPlansActivity extends Activity {
 				xstream.addImplicitCollection(Plan.class, "memberNames");
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null) {
-					List<String> members = plan.getMemberNames();
+					//List<String> members = plan.getMemberNames();
 
-					if (members != null && !members.isEmpty()) {
+					/*if (members != null && !members.isEmpty()) {
 
 						Button membersAttending = (Button) findViewById(R.id.seeMembersButton);
 						membersAttending.setText("Members Attending ("
@@ -371,7 +371,7 @@ public class ViewMyPlansActivity extends Activity {
 						}
 						rsvpPlanButton.setTextColor(getResources().getColor(
 								R.color.button_text));
-					}
+					}*/
 				}
 			}
 			pDlg.dismiss();

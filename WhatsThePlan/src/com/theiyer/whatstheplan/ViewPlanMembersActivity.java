@@ -195,17 +195,17 @@ public class ViewPlanMembersActivity extends Activity {
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null) {
 
-					System.out.println("Plan selected: " +plan.getName());
-					List<String> members = new ArrayList<String>();
-					if(viewSelected.equals("members")){
-						members = plan.getMemberNames();
-					} else if(viewSelected.equals("groupsInvited")){
-						members = plan.getGroupsInvited();
-					} else if(viewSelected.equals("membersInvited")){
-						members = plan.getMembersInvited();
-					}
+//					System.out.println("Plan selected: " +plan.getName());
+//					List<String> members = new ArrayList<String>();
+//					if(viewSelected.equals("members")){
+//						members = plan.getMemberNames();
+//					} else if(viewSelected.equals("groupsInvited")){
+//						members = plan.getGroupsInvited();
+//					} else if(viewSelected.equals("membersInvited")){
+//						members = plan.getMembersInvited();
+//					}
 
-					if (members != null && !members.isEmpty()) {
+					/*if (members != null && !members.isEmpty()) {
 						String isLastMember = "false";
 						for(int i=0; i<members.size(); i++){
 							String userQuery = "";
@@ -222,7 +222,7 @@ public class ViewPlanMembersActivity extends Activity {
 							WebServiceClient userRestClient = new WebServiceClient(mContext);
 							userRestClient.execute(new String[] { userQuery, isLastMember });
 						}
-					}
+					}*/
 
 				}
 			}
