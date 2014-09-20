@@ -1,22 +1,21 @@
 package com.theiyer.whatstheplan.entity;
 
-import java.util.List;
 
 public class Plan {
 
 	private int id;
-	private String name;
-	private String groupName;
+	private String title;
 	private String startTime;
 	private String endTime;
-	private String location;
-	private List<String> memberNames;
-	private List<String> membersInvited;
-	private List<String> groupsInvited;
-	private String creator;
-	
-	public Plan(){
-		
+	private int userId;
+	private String userRsvp;
+	private int docId;
+	private String docRsvp;
+	private String centerPlanFlag;
+	private String centerId;
+	private String planFile;
+
+	public Plan() {
 	}
 
 	public int getId() {
@@ -27,20 +26,12 @@ public class Plan {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getGroupName() {
-		return groupName;
-	}
-
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getStartTime() {
@@ -50,7 +41,7 @@ public class Plan {
 	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
-	
+
 	public String getEndTime() {
 		return endTime;
 	}
@@ -59,43 +50,61 @@ public class Plan {
 		this.endTime = endTime;
 	}
 
-	public String getLocation() {
-		return location;
+	public int getUserId() {
+		return userId;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
-	public List<String> getMemberNames() {
-		return memberNames;
+	public String getUserRsvp() {
+		return userRsvp;
 	}
 
-	public void setMemberNames(List<String> memberNames) {
-		this.memberNames = memberNames;
+	public void setUserRsvp(String userRsvp) {
+		this.userRsvp = userRsvp;
 	}
 
-	public String getCreator() {
-		return creator;
+	public int getDocId() {
+		return docId;
 	}
 
-	public void setCreator(String creator) {
-		this.creator = creator;
+	public void setDocId(int docId) {
+		this.docId = docId;
 	}
+
+	public String getDocRsvp() {
+		return docRsvp;
+	}
+
+	public void setDocRsvp(String docRsvp) {
+		this.docRsvp = docRsvp;
+	}
+
+	public String getCenterPlanFlag() {
+		return centerPlanFlag;
+	}
+
+	public void setCenterPlanFlag(String centerPlanFlag) {
+		this.centerPlanFlag = centerPlanFlag;
+	}
+
+	public String getCenterId() {
+		return centerId;
+	}
+
+	public void setCenterId(String centerId) {
+		this.centerId = centerId;
+	}
+
+	public String getPlanFile() {
+		return planFile;
+	}
+
+	public void setPlanFile(String planFile) {
+		this.planFile = planFile;
+	}
+
 	
-	public List<String> getMembersInvited() {
-		return membersInvited;
-	}
-
-	public void setMembersInvited(List<String> membersInvited) {
-		this.membersInvited = membersInvited;
-	}
-
-	public List<String> getGroupsInvited() {
-		return groupsInvited;
-	}
-
-	public void setGroupsInvited(List<String> groupsInvited) {
-		this.groupsInvited = groupsInvited;
-	}
 }
