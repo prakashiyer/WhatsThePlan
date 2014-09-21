@@ -7,9 +7,9 @@ public class Plan {
 	private String title;
 	private String startTime;
 	private String endTime;
-	private int userId;
+	private String userPhone;
 	private String userRsvp;
-	private int docId;
+	private String docPhone;
 	private String docRsvp;
 	private String centerPlanFlag;
 	private String centerId;
@@ -50,12 +50,12 @@ public class Plan {
 		this.endTime = endTime;
 	}
 
-	public int getUserId() {
-		return userId;
+	public String getUserPhone() {
+		return userPhone;
 	}
 
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setUserPhone(String userPhone) {
+		this.userPhone = userPhone;
 	}
 
 	public String getUserRsvp() {
@@ -66,12 +66,12 @@ public class Plan {
 		this.userRsvp = userRsvp;
 	}
 
-	public int getDocId() {
-		return docId;
+	public String getDocPhone() {
+		return docPhone;
 	}
 
-	public void setDocId(int docId) {
-		this.docId = docId;
+	public void setDocPhone(String docPhone) {
+		this.docPhone = docPhone;
 	}
 
 	public String getDocRsvp() {
