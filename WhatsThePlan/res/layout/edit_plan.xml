@@ -24,15 +24,6 @@
             android:textStyle="bold"
             android:typeface="sans" />
 
-        <TextView
-            android:id="@+id/editPlanErrorField"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/left_margin"
-            android:layout_marginTop="@dimen/top_no_margin"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FF0000"
-            android:typeface="sans" />
     </LinearLayout>
 
     <LinearLayout
@@ -214,27 +205,6 @@
             android:typeface="sans" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_gravity="left|top"
-        android:layout_row="7"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <EditText
-            android:id="@+id/editPlanLocationValue"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_less_margin"
-            android:ems="10"
-            android:hint="@string/new_plan_location_label"
-            android:inputType="textPostalAddress"
-            android:textSize="@dimen/standard_text_size"
-            android:typeface="sans" />
-    </LinearLayout>
-
     
 
     <LinearLayout
@@ -242,7 +212,7 @@
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="center_horizontal|top"
-        android:layout_row="8"
+        android:layout_row="7"
         android:gravity="center"
         android:orientation="vertical" >
 

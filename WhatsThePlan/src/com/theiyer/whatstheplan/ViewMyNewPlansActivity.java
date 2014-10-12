@@ -2,6 +2,7 @@ package com.theiyer.whatstheplan;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -39,8 +40,6 @@ public class ViewMyNewPlansActivity extends Activity {
 
 	private String selectedPlan;
 	private String selectedPlanIndex;
-	private String selectedGroup;
-	private String selectedGroupIndex;
 	private Context context = this;
 	private Menu menu;
 	public static Plan plan;
@@ -63,19 +62,18 @@ public class ViewMyNewPlansActivity extends Activity {
 			TextView userNameValue = (TextView) findViewById(R.id.welcomeViewNewPlanLabel);
 			userNameValue.setText(userName + ", here's selected plan details!");
 
-			selectedGroup = prefs.getString("selectedGroup", "New User");
-			selectedGroupIndex = prefs.getString("selectedGroupIndex", "New User");
+			
 			selectedPlan = prefs.getString("selectedPlan", "New User");
 			selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
+			String docFlag = prefs.getString("docFlag", "");
 			TextView selectedPlanValue = (TextView) findViewById(R.id.viewNewPlanTitle);
 			selectedPlanValue.setText(" " + selectedPlan);
 
-			String searchQuery = "/fetchPlan?planName="
-					+ selectedPlan.replace(" ", "%20") +"&planIndex="+selectedPlanIndex;
+			String searchQuery = "/fetchPlan?id="+selectedPlanIndex;
 			String phone = prefs.getString("phone", "");
 
 			WebServiceClient restClient = new WebServiceClient(this);
-			restClient.execute(new String[] { searchQuery, phone });
+			restClient.execute(new String[] { searchQuery, phone, docFlag });
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
@@ -107,16 +105,16 @@ public class ViewMyNewPlansActivity extends Activity {
 		String phone = prefs.getString("phone", "");
 		String selectedPlan = prefs.getString("selectedPlan", "");
 		String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
-		System.out.println("*********** Prefs : " + prefs.getAll().toString());
+		String docFlag = prefs.getString("docFlag", "");
+		String centerPlanFlag = prefs.getString("centerPlanFlag", "");
 		String rsvp = "no";
 
 		if (rsvpPlanButton.getText().equals("Say Yes")) {
 			rsvp = "yes";
 		}
 
-		String updateQuery = "/rsvpPlan?planName="
-				+ selectedPlan.replace(" ", "%20") +"&planIndex="+selectedPlanIndex + "&phone=" + phone
-				+ "&rsvp=" + rsvp;
+		String updateQuery = "/rsvpPlan?id="+selectedPlanIndex + "&phone"+phone+"&docFlag=" + docFlag
+				+"&centerPlanFlag="+centerPlanFlag+ "&rsvp=" + rsvp;
 		if (rsvp == "no") { 
 		CalendarHelper calendarHelper = new CalendarHelper(context);
 		calendarHelper.execute(new String[] { "",
@@ -140,7 +138,7 @@ public class ViewMyNewPlansActivity extends Activity {
 					String.valueOf(plan.getId()), phone, "create", "01:20", "2014-04-02" });
 		}
 		WebServiceClient restClient = new WebServiceClient(this);
-		restClient.execute(new String[] { updateQuery, phone });
+		restClient.execute(new String[] { updateQuery, phone, docFlag });
 
 	}
 
@@ -157,9 +155,9 @@ public class ViewMyNewPlansActivity extends Activity {
 
 		MenuItem editPlanItem = menu.findItem(R.id.editPlan);
 		editPlanItem.setVisible(true);
-		
+		/*
 		MenuItem viewGroupsInvitedListItem = menu.findItem(R.id.viewGroupsInvitedList);
-		viewGroupsInvitedListItem.setVisible(true);
+		viewGroupsInvitedListItem.setVisible(true);*/
 		
 		MenuItem viewMembersInvitedListItem = menu.findItem(R.id.viewMembersInvitedList);
 		viewMembersInvitedListItem.setVisible(true);
@@ -198,10 +196,9 @@ public class ViewMyNewPlansActivity extends Activity {
 			ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					String updateQuery = "/deletePlan?planName="
-							+ selectedPlan.replace(" ", "%20") +"&planIndex="+selectedPlanIndex + "&groupName="
-							+ selectedGroup.replace(" ", "%20")
-							+ "&groupIndex="+selectedGroupIndex;
+					String updateQuery = "/editPlan?id="
+							+ selectedPlanIndex
+							+ "&phone=&title=&date=&time=&endDate=&endTime=&userPhone=&userRsvp=&docPhone=&docRsvp=&centerPlanFlag=&cancelFlag=Y";
 					WebServiceClient restClient = new WebServiceClient(context);
 					restClient.execute(new String[] { updateQuery });
 					CalendarHelper calendarHelper = new CalendarHelper(context);
@@ -225,13 +222,13 @@ public class ViewMyNewPlansActivity extends Activity {
 			startActivity(aboutUsIntent);
 			return true;
 			
-		case (R.id.viewGroupsInvitedList):
+		/*case (R.id.viewGroupsInvitedList):
 			
 			editor.putString("viewSelected", "groupsInvited");
 			editor.apply();
 			Intent viewGroupsInvitedIntent = new Intent(this, ViewPlanMembersActivity.class);
 			startActivity(viewGroupsInvitedIntent);
-			return true;
+			return true;*/
 			
 		case (R.id.viewMembersInvitedList):
 			editor.putString("viewSelected", "membersInvited");
@@ -256,6 +253,7 @@ public class ViewMyNewPlansActivity extends Activity {
 		private Context mContext;
 		private ProgressDialog pDlg;
 		private String phone;
+		private String docFlag;
 		private String query;
 
 		public WebServiceClient(Context mContext) {
@@ -285,6 +283,7 @@ public class ViewMyNewPlansActivity extends Activity {
 			String path = WTPConstants.SERVICE_PATH + query;
 			if (query.contains("fetchPlan") || query.contains("rsvpPlan")) {
 				phone = params[1];
+				docFlag = params[2];
 			}
 
 			// HttpHost target = new HttpHost(TARGET_HOST);
@@ -310,23 +309,15 @@ public class ViewMyNewPlansActivity extends Activity {
 			if (response != null && query.contains("fetchPlan")) {
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
-				xstream.alias("membersInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
-				xstream.alias("groupsInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
 				Plan plan = (Plan) xstream.fromXML(response);
 				ViewMyNewPlansActivity.plan = plan;
 				if (plan != null) {
 
-					/*if (phone.equals(plan.getCreator())) {
+					if (phone.equals(plan.getUserPhone())) {
 						MenuItem deletePlanItem = menu.findItem(R.id.deletePlan);
 						deletePlanItem.setVisible(true);
 					}
-*/
 
-					System.out.println("RESP: "+response);
 					TextView planTimeValue = (TextView) findViewById(R.id.viewNewPlanTime);
 					TextView planEndTimeValue = (TextView) findViewById(R.id.viewNewPlanEndTime);
 
@@ -369,27 +360,81 @@ public class ViewMyNewPlansActivity extends Activity {
 					+ " " + endAmPm);
 
 					TextView planLocationValue = (TextView) findViewById(R.id.viewNewPlanLocation);
-					//planLocationValue.setText(" " + plan.getLocation());
-
-					//List<String> members = plan.getMembersInvited();
-
-					/*if (members != null && !members.isEmpty()) {
-
-						Button membersAttending = (Button) findViewById(R.id.seeMembersAttendingButton);
+					
+					Button membersAttending = (Button) findViewById(R.id.seeMembersAttendingButton);
+					TextView rsvpLabel = (TextView) findViewById(R.id.rsvpNewLabel);
+					
+					SharedPreferences prefs = getSharedPreferences("Prefs",
+							Activity.MODE_PRIVATE);
+					SharedPreferences.Editor editor = prefs.edit();
+					editor.putString("centerPlanFlag", plan.getCenterPlanFlag());
+					editor.apply();
+					if("Y".equals(plan.getCenterPlanFlag())){
+						
+						
+						
+						planLocationValue.setText(" " + plan.getCenterName());
+						String planFile = plan.getPlanFile();
+						String[] membersArray = StringUtils.splitByWholeSeparator(planFile, ",");
+						int count=0;
+						for(String memberRsvp: membersArray){
+							if (!plan.getUserPhone().equals(phone)) {
+								if (memberRsvp.contains(phone)
+										&& memberRsvp.contains("Y")) {
+									rsvpLabel
+											.setText("You are going, Click here to");
+									rsvpPlanButton.setText("Say No");
+								} else {
+									rsvpLabel
+											.setText("Are you attending? Click here to");
+									rsvpPlanButton.setText("Say Yes");
+								}
+								rsvpPlanButton.setVisibility(Button.VISIBLE);
+							} else {
+								rsvpLabel.setVisibility(TextView.INVISIBLE);
+								rsvpPlanButton.setVisibility(Button.INVISIBLE);
+							}
+							
+							if(memberRsvp.contains("Y")){
+								count = count +1;
+							}
+						}
 						membersAttending.setText("Members Attending ("
-								+ String.valueOf(plan.getMemberNames().size()) + ") >>");
-						TextView rsvpLabel = (TextView) findViewById(R.id.rsvpNewLabel);
-
-						if (plan.getMemberNames().contains(phone)) {
+								+ String.valueOf(count) + ") >>");
+						
+					} else {
+						planLocationValue.setText(" " + plan.getDocName());
+						int count=0;
+						
+						if("Y".equals(docFlag) && "Y".equals(plan.getDocRsvp())){
 							rsvpLabel.setText("You are going, Click here to");
 							rsvpPlanButton.setText("Say No");
-						} else {
+						} else if ("Y".equals(docFlag) && "N".equals(plan.getDocRsvp())){
 							rsvpLabel
 									.setText("Are you attending? Click here to");
 							rsvpPlanButton.setText("Say Yes");
 						}
-						rsvpPlanButton.setVisibility(Button.VISIBLE);
-					}*/
+						
+						if("N".equals(docFlag) && "Y".equals(plan.getUserRsvp())){
+							rsvpLabel.setText("You are going, Click here to");
+							rsvpPlanButton.setText("Say No");
+						} else if ("N".equals(docFlag) && "N".equals(plan.getUserRsvp())){
+							rsvpLabel
+									.setText("Are you attending? Click here to");
+							rsvpPlanButton.setText("Say Yes");
+						}
+						
+						
+						if("Y".equals(plan.getUserRsvp())){
+							count = 1;
+						}
+						
+						if("Y".equals(plan.getDocRsvp())){
+							count = 2;
+						}
+						membersAttending.setText("Members Attending ("
+								+ String.valueOf(count) + ") >>");
+					}
 
 				}
 			}
@@ -397,33 +442,84 @@ public class ViewMyNewPlansActivity extends Activity {
 			if (response != null && query.contains("rsvpPlan")) {
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
-				xstream.alias("membersInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
-				xstream.alias("groupsInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null) {
-					/*List<String> members = plan.getMemberNames();
+					TextView planLocationValue = (TextView) findViewById(R.id.viewNewPlanLocation);
+					Button membersAttending = (Button) findViewById(R.id.seeMembersAttendingButton);
+					TextView rsvpLabel = (TextView) findViewById(R.id.rsvpNewLabel);
+					if ("Y".equals(plan.getCenterPlanFlag())) {
+						planLocationValue.setText(" " + plan.getCenterName());
+						String planFile = plan.getPlanFile();
+						String[] membersArray = StringUtils
+								.splitByWholeSeparator(planFile, ",");
+						int count = 0;
+						for (String memberRsvp : membersArray) {
+							if (!plan.getUserPhone().equals(phone)) {
+								if (memberRsvp.contains(phone)
+										&& memberRsvp.contains("Y")) {
+									rsvpLabel
+											.setText("You are going, Click here to");
+									rsvpPlanButton.setText("Say No");
+								} else {
+									rsvpLabel
+											.setText("Are you attending? Click here to");
+									rsvpPlanButton.setText("Say Yes");
+								}
+								rsvpPlanButton.setVisibility(Button.VISIBLE);
+							} else {
+								rsvpLabel.setVisibility(TextView.INVISIBLE);
+								rsvpPlanButton.setVisibility(Button.INVISIBLE);
+							}
 
-					if (members != null && !members.isEmpty()) {
-
-						Button membersAttending = (Button) findViewById(R.id.seeMembersAttendingButton);
+							if (memberRsvp.contains("Y")) {
+								count = count + 1;
+							}
+						}
 						membersAttending.setText("Members Attending ("
-								+ String.valueOf(members.size()) + ") >>");
-						TextView rsvpLabel = (TextView) findViewById(R.id.rsvpNewLabel);
-						if (members.contains(phone)) {
+								+ String.valueOf(count) + ") >>");
+						rsvpPlanButton.setTextColor(getResources().getColor(
+								R.color.button_text));
+
+					} else {
+						planLocationValue.setText(" " + plan.getDocName());
+						int count = 0;
+
+						if ("Y".equals(docFlag)
+								&& "Y".equals(plan.getDocRsvp())) {
 							rsvpLabel.setText("You are going, Click here to");
 							rsvpPlanButton.setText("Say No");
-						} else {
+						} else if ("Y".equals(docFlag)
+								&& "N".equals(plan.getDocRsvp())) {
 							rsvpLabel
 									.setText("Are you attending? Click here to");
 							rsvpPlanButton.setText("Say Yes");
 						}
+
+						if ("N".equals(docFlag)
+								&& "Y".equals(plan.getUserRsvp())) {
+							rsvpLabel.setText("You are going, Click here to");
+							rsvpPlanButton.setText("Say No");
+						} else if ("N".equals(docFlag)
+								&& "N".equals(plan.getUserRsvp())) {
+							rsvpLabel
+									.setText("Are you attending? Click here to");
+							rsvpPlanButton.setText("Say Yes");
+						}
+
+						if ("Y".equals(plan.getUserRsvp())) {
+							count = 1;
+						}
+
+						if ("Y".equals(plan.getDocRsvp())) {
+							count = 2;
+						}
+						membersAttending.setText("Members Attending ("
+								+ String.valueOf(count) + ") >>");
+						
 						rsvpPlanButton.setTextColor(getResources().getColor(
-								R.color.button_text));
-					}*/
+										R.color.button_text));
+						
+					}
 				}
 			}
 			pDlg.dismiss();

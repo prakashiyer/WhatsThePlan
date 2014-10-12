@@ -59,8 +59,7 @@ public class EditPlanActivity  extends FragmentActivity {
 			selectedPlanValue.setText(selectedPlan);
 			oldName = selectedPlan;
 
-			String searchQuery = "/fetchPlan?planName="
-					+ selectedPlan.replace(" ", "%20") +"&planIndex="+selectedPlanIndex;
+			String searchQuery = "/fetchPlan?planIndex="+selectedPlanIndex;
 
 			WebServiceClient restClient = new WebServiceClient(this);
 			restClient.execute(new String[] { searchQuery });
@@ -108,28 +107,18 @@ public class EditPlanActivity  extends FragmentActivity {
     		endHour = String.valueOf((Integer.valueOf(endHour) +12));
     	}
     	planEndTime = endHour+":"+endMin;
-    	
-		EditText planLocationEditText = (EditText) findViewById(R.id.editPlanLocationValue);
-		String planLocation = planLocationEditText.getText().toString();
-		
-		String selectedGroup = prefs.getString("selectedGroup", "");
-		String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 		String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
+		String centerPlanFlag = prefs.getString("centerPlanFlag", "");
+		String phone = prefs.getString("phone", "");
 
 		String[] planDates = WhatstheplanUtil.createLocalToGmtTime(planDate+" "+planTime+":00");
 		String[] planEndDates = WhatstheplanUtil.createLocalToGmtTime(planEndDate+" "+planEndTime+":00");
-		
-		String insertQuery = "/editPlan?newName=" + planName.replace(" ", "%20")
-				+ "&oldName=" + oldName.replace(" ", "%20")
-				+ "&planIndex=" + selectedPlanIndex
+		String insertQuery = "/editPlan?title=" + planName.replace(" ", "%20")+ "&phone=" + phone
+				+ "&id=" + selectedPlanIndex
 				+ "&date=" + planDates[0] + "&time="
-				+ planDates[1] + "&location=" + planLocation.replace(" ", "%20")
-				+ "&groupName=" + selectedGroup.replace(" ", "%20")
-				+ "&groupIndex=" + selectedGroupIndex
-				+ "&endDate=" + planEndDates[0] + "&endTime=" +planEndDates[1];
+				+ planDates[1] 
+				+ "&endDate=" + planEndDates[0] + "&endTime=" +planEndDates[1]+"&centerPlanFlag="+centerPlanFlag+"&cancelFlag=N";
 
-		TextView errorFieldValue = (TextView) findViewById(R.id.editPlanErrorField);
-		errorFieldValue.setText("");
 		WebServiceClient restClient = new WebServiceClient(this);
 		 restClient.execute(new String[] { insertQuery });
 		SharedPreferences.Editor editor = prefs.edit();
@@ -141,7 +130,7 @@ public class EditPlanActivity  extends FragmentActivity {
 			startPlanTime = WhatstheplanUtil.createGmtToLocalTime(planTime);
 		}
 		calendarHelper.execute(new String[] { startPlanTime[0] +" " + startPlanTime[1],
-				planName, planLocation,
+				planName, "",
 				"", "", "update",planDate, oldName,planEndDate,planEndTime});
 		Intent intent = new Intent(this, ViewMyNewPlansActivity.class);
 		startActivity(intent);
@@ -241,13 +230,6 @@ public class EditPlanActivity  extends FragmentActivity {
 			if (response != null && isFetchPlan) {
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
-				xstream.alias("memberNames", String.class);
-				xstream.addImplicitCollection(Plan.class, "memberNames");
-				xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
-				xstream.alias("membersInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
-				xstream.alias("groupsInvited", String.class);
-				xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
 				Plan plan = (Plan) xstream.fromXML(response);
 				if (plan != null) {
 					
@@ -300,7 +282,6 @@ public class EditPlanActivity  extends FragmentActivity {
 	            	planEndTimeValue
 							.setText(endHour+":"+endMin+" "+endAmPm);
 
-					EditText planLocationValue = (EditText) findViewById(R.id.editPlanLocationValue);
 					/*planLocationValue
 							.setText(plan.getLocation());*/
 				}

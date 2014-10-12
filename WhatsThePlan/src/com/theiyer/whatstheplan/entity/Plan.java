@@ -10,9 +10,11 @@ public class Plan {
 	private String userPhone;
 	private String userRsvp;
 	private String docPhone;
+	private String docName;
 	private String docRsvp;
 	private String centerPlanFlag;
 	private String centerId;
+	private String centerName;
 	private String planFile;
 
 	public Plan() {
@@ -104,6 +106,22 @@ public class Plan {
 
 	public void setPlanFile(String planFile) {
 		this.planFile = planFile;
+	}
+
+	public String getCenterName() {
+		return centerName;
+	}
+
+	public void setCenterName(String centerName) {
+		this.centerName = centerName;
+	}
+
+	public String getDocName() {
+		return docName;
+	}
+
+	public void setDocName(String docName) {
+		this.docName = docName;
 	}
 
 	

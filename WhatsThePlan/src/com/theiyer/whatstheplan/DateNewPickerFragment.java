@@ -32,7 +32,7 @@ public class DateNewPickerFragment extends DialogFragment implements
 
 	public void onDateSet(DatePicker view, int year, int month, int day) {
 		if (date == "start") {
-		TextView planDateEditText = (TextView) getActivity().findViewById(R.id.newPlanStartDate);
+		TextView planDateEditText = (TextView) getActivity().findViewById(R.id.appointmentStartDate);
 		String mon = String.valueOf(month+1);
 		String date = String.valueOf(day);
 		if(month+1 < 10){
@@ -44,7 +44,7 @@ public class DateNewPickerFragment extends DialogFragment implements
 		planDateEditText.setText(year+"-"+mon+"-"+date);
 		}
 		else if (date == "end") {
-			TextView planEndDateEditText = (TextView) getActivity().findViewById(R.id.newPlanEndDate);
+			TextView planEndDateEditText = (TextView) getActivity().findViewById(R.id.appointmentEndDate);
 			String mon = String.valueOf(month+1);
 			String date = String.valueOf(day);
 			if(month+1 < 10){

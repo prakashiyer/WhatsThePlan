@@ -33,7 +33,7 @@ public class TimeNewPickerFragment extends DialogFragment implements
 
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 		if (time == "start") {
-		TextView planTimeEditText = (TextView) getActivity().findViewById(R.id.newPlanStartTime);
+		TextView planTimeEditText = (TextView) getActivity().findViewById(R.id.appointmentStartTime);
 		String hour = String.valueOf(hourOfDay);
 		String min = String.valueOf(minute);
 		
@@ -56,7 +56,7 @@ public class TimeNewPickerFragment extends DialogFragment implements
 		planTimeEditText.setText(hour+":"+min+" "+ampm);
 		
 		} else if (time == "end") {
-		TextView planEndTimeEditText = (TextView) getActivity().findViewById(R.id.newPlanEndTime);
+		TextView planEndTimeEditText = (TextView) getActivity().findViewById(R.id.appointmentEndTime);
 		String hour = String.valueOf(hourOfDay);
 		String min = String.valueOf(minute);
 		
