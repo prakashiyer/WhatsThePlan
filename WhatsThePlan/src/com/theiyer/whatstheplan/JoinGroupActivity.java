@@ -34,6 +34,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.theiyer.whatstheplan.entity.Center;
 import com.theiyer.whatstheplan.entity.Group;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
@@ -42,7 +43,7 @@ public class JoinGroupActivity extends Activity {
 
 	private GridView list;
 	private GroupListAdapter adapter;
-	private List<Map<String, Group>> groupsList;
+	private List<Map<String, Center>> groupsList;
 	private String phone ;
 	private List<String> members;
 	private List<String> pendingMembers;
@@ -92,7 +93,7 @@ public class JoinGroupActivity extends Activity {
 		}
 	}
 
-	/** Called when the user clicks the Join Group button */
+	/** Called when the user clicks the button */
 	public void goFromJoinGroupToViewGroups(View view) {
 		Button button = (Button) findViewById(R.id.joinGroupButton);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
@@ -116,7 +117,7 @@ public class JoinGroupActivity extends Activity {
 		
 	}
 	
-	private class WebServiceClient extends AsyncTask<String, Integer, String> {
+	public class WebServiceClient extends AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
@@ -182,28 +183,27 @@ public class JoinGroupActivity extends Activity {
 				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
 				xstream.alias("pendingMembers", String.class);
 				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
-				Group group = (Group) xstream.fromXML(response);
-				if (group != null) {
-					groupsList = new ArrayList<Map<String, Group>>();
+				Center center = (Center) xstream.fromXML(response);
+				if (center != null) {
+					groupsList = new ArrayList<Map<String, Center>>();
 					list = (GridView) findViewById(R.id.joingroupList);
 					phone = prefs.getString("phone","");
-					members = group.getMembers();
-				    pendingMembers = group.getPendingMembers();
+					members = center.getMembers();
 				    
 				    TextView groupNameLabel= (TextView) findViewById(R.id.groupSearchResultsLabel);
 					TextView groupNameValue = (TextView) findViewById(R.id.groupSearchResultValue);
 					
-					Map<String, Group> groupDetails = new HashMap<String, Group>();
-					groupDetails.put(String.valueOf(group.getId()), group);
+					Map<String, Center> groupDetails = new HashMap<String, Center>();
+					groupDetails.put(String.valueOf(center.getId()), center);
 					groupsList.add(groupDetails);
 					adapter.setData(groupsList);
 					list.setAdapter(adapter);
 					groupNameLabel.setVisibility(TextView.VISIBLE);
-					groupNameValue.setText(group.getName());
+					groupNameValue.setText(center.getAdminName());
 					
 					//CHANGE THIS CODE
 					SharedPreferences.Editor editor = prefs.edit();
-					editor.putString("selectedGroupIndex", String.valueOf(group.getId()));
+					editor.putString("selectedGroupIndex", String.valueOf(center.getId()));
 					editor.apply();
 					
 					if(pendingMembers == null || (!pendingMembers.contains(phone) && !members.contains(phone))){

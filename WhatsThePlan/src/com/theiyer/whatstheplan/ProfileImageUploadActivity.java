@@ -75,7 +75,7 @@ public class ProfileImageUploadActivity extends Activity {
 	        WebImageRetrieveRestWebServiceClient imageRetrieveClient = new WebImageRetrieveRestWebServiceClient(this);
 			
 	        imageRetrieveClient.execute(
-					new String[] { "fetchUserImage", phone});
+					new String[] { "uploadUserImage", phone});
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
@@ -102,6 +102,8 @@ public class ProfileImageUploadActivity extends Activity {
 
 			restClient.execute(
 					new String[] { "uploadUserImage", phone, filePath });
+			Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
+			startActivity(intent);
 		}
 		
 	}

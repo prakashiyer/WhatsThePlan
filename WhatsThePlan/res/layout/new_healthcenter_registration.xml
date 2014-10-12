@@ -3,29 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:columnCount="1"
     tools:context=".NewHealthCenterSignUpActivity" >
-<LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_gravity="left|top"
-        android:layout_row="0"
-        android:gravity="center"
-        android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/welcomeNewUserSignUpLabel"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/left_margin"
-            android:layout_marginTop="@dimen/top_less_margin"
-            android:text="@string/welcome_New_User_SignUp_Value"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
-            android:textStyle="bold"
-            android:typeface="sans" />
-
-    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,29 +15,43 @@
         android:gravity="left"
         android:orientation="horizontal" >
 
-        <TextView
-            android:id="@+id/healthName"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="@dimen/top_no_margin"
-            android:textSize="@dimen/standard_text_size"
-            android:ems="10"
-            android:text="@string/name"
-            android:typeface="sans" />
-
         <EditText
             android:id="@+id/healthNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_less_margin"
+            android:layout_weight="0.56"
             android:ems="10"
+            android:hint="@string/centre_name_label"
             android:inputType="text"
-            android:hint="@string/user_name_label"
             android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
-
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="left|top"
+        android:layout_row="2"
+        android:gravity="left"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/adminName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/left_margin"
+            android:layout_marginTop="@dimen/top_less_margin"
+            android:layout_weight="0.67"
+            android:ems="10"
+            android:hint="@string/user_name_label"
+            android:inputType="text"
+            android:textSize="@dimen/standard_text_size"
+            android:typeface="sans" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,22 +61,13 @@
         android:gravity="left"
         android:orientation="horizontal" >
 
-        <TextView
-            android:id="@+id/healthPhoneText"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="@dimen/top_no_margin"
-            android:ems="10"
-            android:text="@string/address"
-            android:textSize="@dimen/standard_text_size"
-            android:typeface="sans" />
-
         <EditText
             android:id="@+id/healthaddress"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
+            android:layout_marginLeft="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_less_margin"
+            android:layout_weight="0.63"
             android:ems="10"
             android:hint="@string/address"
             android:inputType="textMultiLine"
@@ -90,8 +75,8 @@
             android:maxLines="4"
             android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
-
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -101,41 +86,49 @@
         android:gravity="left"
         android:orientation="horizontal" >
 
-        <TextView
-            android:id="@+id/healthCentrePhoneText"
-            android:layout_width="80dp"
-            android:layout_height="72dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="@dimen/top_no_margin"
-            android:ems="10"
-            android:text="@string/health_number"
-            android:textSize="@dimen/standard_text_size"
-            android:typeface="sans" />
-
         <EditText
             android:id="@+id/healthCentrePhoneValue"
             android:layout_width="290dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_less_margin"
             android:ems="10"
             android:hint="@string/user_phone_label"
             android:inputType="phone"
             android:textSize="@dimen/standard_text_size"
-            android:typeface="sans" />
+            android:typeface="sans" >
+
+            <requestFocus />
+        </EditText>
     </LinearLayout>
-    <Button
-    android:id="@+id/registerButton"
+<ImageView
+        android:id="@+id/healthcentrePicView"
+        android:layout_width="117dp"
+        android:layout_height="117dp"
+        android:layout_column="0"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginLeft="@dimen/left_margin"
+        android:layout_marginTop="@dimen/top_less_margin"
+        android:layout_row="5"
+        android:background="@drawable/image_border"
+        android:contentDescription="@string/upload_group_pic_description"
+        android:onClick="selectGroupImage"
+        android:src="@drawable/ic_image" />
+
+<Button
+    android:id="@+id/registerHealthButton"
     android:layout_width="250dp"
     android:layout_height="40dp"
     android:layout_column="0"
-    android:layout_gravity="center"
-    android:layout_marginTop="@dimen/top_no_margin"
-    android:layout_row="4"
+    android:layout_gravity="center_horizontal|top"
+    android:layout_marginTop="@dimen/top_less_margin"
+    android:layout_row="6"
     android:background="@drawable/button"
-    android:onClick="logNewUser"
-    android:text="@string/register_button_text_new"
+    android:onClick="onClickRegisterHealthCentre"
+    android:text="@string/register_button_text"
     android:textColor="@color/button_text"
     android:textSize="@dimen/standard_text_size"
     android:textStyle="bold"
     android:typeface="sans" />
+
 </GridLayout>

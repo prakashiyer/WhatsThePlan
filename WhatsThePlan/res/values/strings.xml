@@ -20,9 +20,10 @@
     <string name="register_button_text_new">Proceed to Register</string>
     <string name="admin_button_text">Proceed To View Group</string>
     <string name="login_button_text">Log In</string>
-    <string name="user_email_id_label">Email Id (eg. justmeet@gmail.com)</string>
+    <string name="user_email_id_label">Email Id (eg. healthmeet@gmail.com)</string>
     <string name="user_details_label">User Information:</string>
-    <string name="user_name_label">Name (eg. Prakash Iyer)</string>
+    <string name="user_name_label">Admin Name (eg. Prakash Iyer)</string>
+    <string name="centre_name_label">Centre Name (eg. Joy hospital)</string>
     <string name="user_address_label">Address </string>
     <string name="user_phone_label">10-digit Mobile Number</string>
     <string name="password_label">Password</string>
@@ -31,6 +32,8 @@
     <string name="join_group_button_text">Join this Group</string>
     <string name="invite_button_text">Invite selected friends</string>
     <string name="join_groups_button_text">Join a Group</string>
+    <string name="emergency_doctor_button">Doctor</string>
+    <string name="emergency_healthCentre_button">Health Centre</string>
     <string name="view_groups_button_text">View my Groups</string>
     <string name="create_button_text"> + </string>
     <string name="create_plans_button_text">Create a Plan</string>
@@ -38,6 +41,7 @@
     <string name="new_group_name_label">Enter a Group with unique name</string>
     <string name="register_group_button_text">Create this Group</string>
     <string name="group_search_hint">Enter a Group name</string>
+    <string name="doctor_search_hint">Enter a Doctor name</string>
     <string name="user_search_hint">Enter Contact name</string>
     <string name="doc_search_hint">Search by Doctor\'s name</string>
     <string name="center_search_hint">Search by Center\'s name</string>
@@ -122,6 +126,7 @@
     <string name="view_plan_date_label_till"> To </string>
     <string name="view_plan_location_label">  With</string>
     <string name="home_plan_label"> Home Plan</string>
+    <string name="emergency_label"> Emergency</string>
     <string name="groups_list_label"> Group List</string>
     <string name="group_member"> Member</string>
     <string name="settle_bill"> Settle</string>
@@ -130,7 +135,8 @@
     <string name="health_centre"> Health Centre</string>
     <string name="gender"> Gender : </string>
     <string name="blood"> Blood Group : </string>
-    <string name="name"> Name : </string>
+    <string name="health_name"> Health Centre Name : </string>
+    <string name="admin_name"> Admin Name : </string>
     <string name="phone"> Phone Number : </string>
 
 </resources>

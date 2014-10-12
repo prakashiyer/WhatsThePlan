@@ -1,6 +1,7 @@
 package com.theiyer.whatstheplan;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -10,6 +11,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import android.R.string;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActionBar;
@@ -26,7 +28,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -43,6 +44,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.theiyer.whatstheplan.entity.Plan;
+import com.theiyer.whatstheplan.entity.PlanList;
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
@@ -51,7 +54,32 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 	
 	private Context context;
 	private String genderVar;
+	private String doctorFlag;
+	public String getDoctorFlag() {
+		return doctorFlag;
+	}
+
+	public void setDoctorFlag(String doctorFlag) {
+		this.doctorFlag = doctorFlag;
+	}
+
+	public String getGenderVar() {
+		return genderVar;
+	}
+
+	public void setGenderVar(String genderVar) {
+		this.genderVar = genderVar;
+	}
+
 	private String bloodVar;
+
+	public String getBloodVar() {
+		return bloodVar;
+	}
+
+	public void setBloodVar(String bloodVar) {
+		this.bloodVar = bloodVar;
+	}
 
 	private static final String TAG = "Just Meet GCM";
 
@@ -61,8 +89,8 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 	 //TextView selGender;
 	 Spinner bloodGrp;
 	 //TextView selblood;
-	 private String[] genderString = { "Male", "Female" };
-	 private String[] bloodGrpString = { "A+", "B+", "B-", "A-", "O+" , "O-", "AB+", "AB-" };
+	 private String[] genderString = { "(Select)", "Male", "Female" };
+	 private String[] bloodGrpString = {"(Select)", "A+", "B+", "B-", "A-", "O+" , "O-", "AB+", "AB-" };
 	
 
 	@Override
@@ -78,7 +106,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 			aBar.setBackgroundDrawable(actionBckGrnd);
 			aBar.setTitle(" Individual Registration form");
 			context = getApplicationContext();
-			
+			setDoctorFlag("N");
 			System.out.println(genderString.length);
 			  //selGender = (TextView) findViewById(R.id.selGender);
 			  gender = (Spinner) findViewById(R.id.genderDrp);
@@ -109,15 +137,8 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 	/** Called when the user checks the change password */
 	public void enterDocCheck(View view) {
 		CheckBox checkBox = (CheckBox) findViewById(R.id.codeCheckBox);
-		if (checkBox.isChecked()) {
 			System.out.println("I Am A Doctor");
-			SharedPreferences prefs = getSharedPreferences("Prefs",
-					Activity.MODE_PRIVATE);
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.putString("doc", "doctor");
-			editor.apply();
-			}
-
+			setDoctorFlag("Y");
 	}
 	public void setDate(View v) {
 		Button button = (Button) findViewById(R.id.setDateOfBirth);
@@ -136,6 +157,12 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 
 		EditText phoneText = (EditText) findViewById(R.id.newUserPhoneValue);
 		String phone = phoneText.getText().toString();
+		
+		TextView dob = (TextView) findViewById(R.id.dateOfBirthText);
+		String dobText = dob.getText().toString();
+
+		EditText addressText = (EditText) findViewById(R.id.newUserAddressValue);
+		String address = addressText.getText().toString();
 
 		if (TextUtils.isEmpty(userName)) {
 			Toast.makeText(getApplicationContext(), "Don't you have a name?",
@@ -143,26 +170,38 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 		} else if (TextUtils.isEmpty(phone)) {
 			Toast.makeText(getApplicationContext(),
 					"Can I have your phone number?", Toast.LENGTH_LONG).show();
-		} else {			
-			String insertQuery = "/addUser?name="
-					+ userName.replace(" ", "%20") + "&phone=" + phone;
-
-			WebServiceClient restClient = new WebServiceClient(this);
-			restClient.execute(new String[] { insertQuery });
-			AccountManager am = AccountManager.get(this);
-			final Account account = new Account(phone,
-					WTPConstants.ACCOUNT_ADDRESS);
-			final Bundle bundle = new Bundle();
-			bundle.putString("userName", userName);
-			bundle.putString("phone", phone);
-			bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
-					account.name);
-			am.addAccountExplicitly(account, phone, bundle);
-			am.setAuthToken(account, "Full Access", phone);
+		} else if (TextUtils.isEmpty(dobText)) {			
+			Toast.makeText(getApplicationContext(),
+					"Can I have your date of birth?", Toast.LENGTH_LONG).show();
+		} else if (TextUtils.isEmpty(getGenderVar())) {			
+			Toast.makeText(getApplicationContext(),
+					"Can I have your gender?", Toast.LENGTH_LONG).show();
+		} else {
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putString("name", userName);
+			editor.putString("phone", phone);
+			editor.putString("dob", dobText);
+			editor.putString("gender", getGenderVar());
+			editor.putString("bloodGrp", getBloodVar());
+			editor.putString("Address", address);
+			editor.putString("doctor", getDoctorFlag());
+			editor.apply();
+			/*String userQuery = "/addUser?phone=234874&name=aapqr&bloodGroup=A&dob=1988-12-03&sex=M&address=acd&doctorFlag=Y&primaryCenterId=1&primaryDoctorId=1&centers=1,2";
+			String userQuery = "/addUser?phone="+phone+"&name="+userName
+					+"&bloodGroup=" + getBloodVar()
+					+"&dob=" + dobText
+					+"&sex=" + getGenderVar()
+					+"&address=" + address
+					+"&doctorFlag=" + getDoctorFlag()
+					+"&primaryCenterId="+
+					"&primaryDoctorId="+
+					"&centers=";
+			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
+			userRestClient.execute(new String[] { userQuery});*/
 			Intent intent = new Intent(this,
-					ProfileImageUploadActivity.class);
-			button.setTextColor(getResources().getColor(
-					R.color.button_text));
+					AddDoctorActivity.class);
 			startActivity(intent);
 		}
 	}
@@ -272,12 +311,12 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 		editor.apply();		
 	}
 	
-	public class WebServiceClient extends AsyncTask<String, Integer, String> {
+	/*public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
 
-		public WebServiceClient(Context mContext) {
+		public UserWebServiceClient(Context mContext) {
 			this.mContext = mContext;
 		}
 
@@ -301,7 +340,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 		@Override
 		protected String doInBackground(String... params) {
 			String path = WTPConstants.SERVICE_PATH+params[0];
-
+			
 			//HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
@@ -322,34 +361,21 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 		@Override
 		protected void onPostExecute(String response) {
 			if (response != null) {
-				XStream xstream = new XStream();
-				xstream.alias(WTPConstants.XS_USER, User.class);
-				xstream.alias(WTPConstants.XS_GROUP_NAMES, String.class);
-				xstream.addImplicitCollection(User.class,
-						WTPConstants.XS_GROUP_NAMES, WTPConstants.XS_GROUP_NAMES, String.class);
-				xstream.alias(WTPConstants.XS_PENDING_GROUP_NAMES, String.class);
-				xstream.addImplicitCollection(User.class,
-						WTPConstants.XS_PENDING_GROUP_NAMES, WTPConstants.XS_PENDING_GROUP_NAMES, String.class);
-				User user = (User) xstream
-						.fromXML(response);
-				if (user != null) {
-					
-					SharedPreferences prefs = getSharedPreferences("Prefs",
-							Activity.MODE_PRIVATE);
-					SharedPreferences.Editor editor = prefs.edit();
-					editor.putString("phone", user.getPhone());
-					editor.putString("userName", user.getName());
-					editor.apply();
-
-					
-
-					
-				} 
-			} 
+				    Log.i(TAG, response);
+				    XStream userXs = new XStream();
+					userXs.alias("UserInformation", User.class);
+					userXs.alias("centers", String.class);
+					userXs.addImplicitCollection(User.class, "centers",
+							"centers", String.class);
+					User user = (User) userXs.fromXML(response);
+					if (user != null && user.getName() != null) {
+						 Log.i(TAG, user.getName());
+							}
+			}
 			pDlg.dismiss();
 		}
 
-	}
+	}*/
 	
 	/**
 	 * Checks if we have a valid Internet Connection on the device.

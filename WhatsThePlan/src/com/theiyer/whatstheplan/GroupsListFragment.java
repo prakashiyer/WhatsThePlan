@@ -40,8 +40,8 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.theiyer.whatstheplan.entity.Group;
-import com.theiyer.whatstheplan.entity.GroupList;
+import com.theiyer.whatstheplan.entity.Center;
+import com.theiyer.whatstheplan.entity.CenterList;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
@@ -52,8 +52,8 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 	//ListView list;
 	GridView gridView;
 	GroupListAdapter adapter;
-	List<Map<String, Group>> groupsList;
-	List<Group> allGroups;
+	List<Map<String, Center>> centersList;
+	List<Center> allCenters;
 	String phone;
 	View rootView;
 	
@@ -82,7 +82,7 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 
 			phone = prefs.getString("phone", "");
 
-			String searchQuery = "/fetchExistingGroups?phone="
+			String searchQuery = "/fetchUserCenters?phone="
 					+ phone;
 			
 			WebServiceClient restClient = new WebServiceClient(activity);
@@ -118,9 +118,9 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 				"Prefs", Activity.MODE_PRIVATE);
 		String selectedGroup = "";
 		String selectedGroupIndex = "";
-		if(groupsList != null && !groupsList.isEmpty()){
-			Map<String,Group> selectedMap = groupsList.get(position);
-			for(Entry<String,Group> entry: selectedMap.entrySet()){
+		if(centersList != null && !centersList.isEmpty()){
+			Map<String, Center> selectedMap = centersList.get(position);
+			for(Entry<String, Center> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
 				selectedGroup = entry.getValue().getName();
@@ -131,10 +131,10 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 				break;
 			}
 			
-			for(Group group: allGroups){
+			for(Center center: allCenters){
 				
-				if(selectedGroup.equals(group.getName())){
-					if(phone.equals(group.getAdmin()) && group.getPendingMembers() != null && group.getPendingMembers().size() > 0){
+				if(selectedGroup.equals(center.getName())){
+					if(phone.equals(center.getAdminPhone())){
 						Intent intent = new Intent(activity, GroupAdminListActivity.class);
 						startActivity(intent);
 					} else {
@@ -248,29 +248,25 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 			
 			if (response != null) {
 				System.out.println("RESPONSE: "+response);
-				XStream groupsXstream = new XStream();
-				groupsXstream.alias("GroupList", GroupList.class);
-				groupsXstream.addImplicitCollection(GroupList.class, "groups");
-				groupsXstream.alias("groups", Group.class);
-				
-				groupsXstream.alias("members", String.class);
-				groupsXstream.addImplicitCollection(Group.class, "members","members",String.class);
-				groupsXstream.alias("planNames", String.class);
-				groupsXstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
-				groupsXstream.alias("pendingMembers", String.class);
-				groupsXstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
-				GroupList groupList = (GroupList) groupsXstream.fromXML(response);
-				if (groupList != null) {
-					groupsList = new ArrayList<Map<String, Group>>();
-					allGroups = groupList.getGroups();
-					if(allGroups != null && !allGroups.isEmpty()){
-						for(Group group: allGroups){
-							Map<String, Group> groupDetails = new HashMap<String, Group>();
-							groupDetails.put(String.valueOf(group.getId()), group);
-							groupsList.add(groupDetails);
+				XStream userXs = new XStream();
+			    userXs.alias("CenterList", CenterList.class);
+				userXs.addImplicitCollection(CenterList.class, "centers");
+			    userXs.alias("centers", Center.class);
+				userXs.alias("members", String.class);
+				userXs.addImplicitCollection(Center.class, "members",
+						"members", String.class);
+				CenterList centerList = (CenterList) userXs.fromXML(response);
+				if (centerList != null) {
+					centersList = new ArrayList<Map<String, Center>>();
+					allCenters = centerList.getCenters();
+					if(allCenters != null && !allCenters.isEmpty()){
+						for(Center center: allCenters){
+							Map<String, Center> groupDetails = new HashMap<String, Center>();
+							groupDetails.put(String.valueOf(center.getId()), center);
+							centersList.add(groupDetails);
 						}
-						if(!groupsList.isEmpty()){
-							adapter.setData(groupsList);
+						if(!centersList.isEmpty()){
+							adapter.setData(centersList);
 							gridView.setAdapter(adapter);
 						}
 					}					

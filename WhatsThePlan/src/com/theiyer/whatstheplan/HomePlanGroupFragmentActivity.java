@@ -1,43 +1,24 @@
 package com.theiyer.whatstheplan;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 
-import com.theiyer.whatstheplan.entity.Plan;
-import com.theiyer.whatstheplan.entity.PlanList;
-import com.theiyer.whatstheplan.util.WTPConstants;
-import com.thoughtworks.xstream.XStream;
 
 public class HomePlanGroupFragmentActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -63,6 +44,8 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	        		.setIcon(R.drawable.ic_plan).setTabListener(this));
 	        actionBar.addTab(actionBar.newTab().setText(R.string.groups_list_label)
 	        		.setIcon(R.drawable.ic_groupicon).setTabListener(this));
+	        actionBar.addTab(actionBar.newTab().setText(R.string.emergency_label)
+	        		.setIcon(R.drawable.ic_emergency).setTabListener(this));
 	        
 	        if(savedInstanceState != null) {
 		        int index = savedInstanceState.getInt("index");
@@ -74,6 +57,26 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			startActivity(intent);
 		}
 		
+	}
+	
+	public void callDoctor(View view) {
+
+		Button button = (Button) activity.findViewById(R.id.call_doc_button);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		Intent intent = new Intent(Intent.ACTION_DIAL);
+		intent.setData(Uri.parse("tel:9920701387"));
+		button.setTextColor(getResources().getColor(R.color.button_text));
+		startActivity(intent);
+	}
+	
+	public void callHealth(View view) {
+
+		Button button = (Button) activity.findViewById(R.id.call_doc_button);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		Intent intent = new Intent(Intent.ACTION_DIAL);
+		intent.setData(Uri.parse("tel:9833683989"));
+		button.setTextColor(getResources().getColor(R.color.button_text));
+		startActivity(intent);
 	}
 	
 	/** Called when the user clicks the create plan button */
@@ -301,6 +304,17 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			   	goupsList.setActivity(activity);
 			   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, goupsList).commit();
 			 }
+			 else if (tab.getPosition() == 2) {
+				   	/*EmergencyCallTabFragment callTab = new EmergencyCallTabFragment();
+				   	callTab.setActivity(activity);
+				   	System.out.println("step 3");
+				   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
+				   	System.out.println("step 4");*/
+				   	
+				   	HomePlanFragment homePlanFragment = new HomePlanFragment();
+			    	 homePlanFragment.setActivity(activity);
+				     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homePlanFragment).commit();
+			 }
 		}
 
 		@Override
@@ -315,6 +329,16 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			   	goupsList.setActivity(activity);
 			   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, goupsList).commit();
 			 }
+			 else if (tab.getPosition() == 2) {
+				 System.out.println("***** tab.getPosition() " + tab.getPosition());
+				   	EmergencyCallTabFragment callTab = new EmergencyCallTabFragment();
+				   	System.out.println("step 2");
+				   	callTab.setActivity(activity);
+				   	System.out.println("step 3");
+				   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
+				   	System.out.println("step 4");
+		     }
+			 
 		}
 
 
@@ -331,6 +355,11 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			   	goupsList.setActivity(activity);
 			   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, goupsList).commit();
 			 }
+			 else if (tab.getPosition() == 2) {
+				   	EmergencyCallTabFragment callTab = new EmergencyCallTabFragment();
+				   	callTab.setActivity(activity);
+				   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
+		     }
 		}
 		
 		@Override

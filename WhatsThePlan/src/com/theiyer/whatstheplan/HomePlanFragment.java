@@ -27,6 +27,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,7 +46,7 @@ import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class HomePlanFragment extends Fragment implements OnItemClickListener {
-	
+	private static final String TAG = "HomePlanFragment/HealthMeet";
 	Activity activity;
 	ListView planListView;
 	View rootView;
@@ -60,7 +61,7 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" Home");
+			aBar.setTitle(" Home Plan");
 			rootView = inflater.inflate(R.layout.home_plans, container, false);
 			
 			SharedPreferences prefs = activity.getSharedPreferences("Prefs",
@@ -216,17 +217,13 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 					}
 				} catch(Exception e){}
 				if (response != null && response.contains("PlanList")) {
+					System.out.println("Response ***** Plans ** " + response);
 					XStream xstream = new XStream();
 					xstream.alias("PlanList", PlanList.class);
 					xstream.alias("plans", Plan.class);
 					xstream.addImplicitCollection(PlanList.class, "plans");
-					xstream.alias("memberNames", String.class);
-					xstream.addImplicitCollection(Plan.class, "memberNames", "memberNames", String.class);
-					xstream.alias("membersInvited", String.class);
-					xstream.addImplicitCollection(Plan.class, "membersInvited", "membersInvited", String.class);
-					xstream.alias("groupsInvited", String.class);
-					xstream.addImplicitCollection(Plan.class, "groupsInvited", "groupsInvited", String.class);
 					PlanList planList = (PlanList) xstream.fromXML(response);
+
 					if (planList != null && planList.getPlans() != null) {
 
 						List<Plan> plans = planList.getPlans();
@@ -234,6 +231,7 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 						if (plans != null && !plans.isEmpty()) {
 						    plansResult = new ArrayList<Map<String, Plan>>();
 							for (Plan plan : plans) {
+								Log.i(TAG, plan.getTitle());
 								Map<String, Plan> planMap = new HashMap<String, Plan>();
 								planMap.put(String.valueOf(plan.getId()), plan);
 								plansResult.add(planMap);
