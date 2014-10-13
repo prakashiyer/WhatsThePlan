@@ -48,7 +48,7 @@ public class AppointmentActivity extends FragmentActivity {
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" New Plan");
+			aBar.setTitle(" New Appointment");
 
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
