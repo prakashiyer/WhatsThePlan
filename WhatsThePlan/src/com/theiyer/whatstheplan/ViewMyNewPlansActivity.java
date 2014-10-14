@@ -83,14 +83,9 @@ public class ViewMyNewPlansActivity extends Activity {
 
 	/** Called when the user clicks the see members button */
 	public void seeMembers(View view) {
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString("viewSelected", "members");
-		editor.apply();
 		Button button = (Button) findViewById(R.id.seeMembersAttendingButton);
 		button.setTextColor(getResources().getColor(R.color.click_button_1));
-		Intent intent = new Intent(this, ViewPlanMembersActivity.class);
+		Intent intent = new Intent(this, ViewAppointmentMembersActivity.class);
 		startActivity(intent);
 	}
 
