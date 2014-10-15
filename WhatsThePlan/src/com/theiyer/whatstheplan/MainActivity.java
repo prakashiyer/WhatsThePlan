@@ -64,19 +64,7 @@ public class MainActivity extends Activity {
 		aBar.setBackgroundDrawable(actionBckGrnd);
 		aBar.setTitle(" Network for doctors and patient");
 
-		context = this;
-		
-		String userQuery = "/fetchUpcomingPlans?phone=123";
-		//String userQuery = "/joinCenter?id=2&phone=123";
-		//String userQuery = "/fetchUserCenters?phone=123";
-		//String userQuery = "/searchCenter?name=as";
-		//String userQuery = "/fetchExistingCenters?centerList=345";
-		//String userQuery = "/editCenter?id=1&name=asd&adminName=asd&adminPhone=345&address=asff";
-		//String userQuery = "/fetchCenter?id=1";
-		/*WebImageRestWebServiceClient webImageRestWebServiceClient = new WebImageRestWebServiceClient(this);
-		webImageRestWebServiceClient.execute(new String[] {userQuery});*/
-		UserWebServiceClient userRestClient = new UserWebServiceClient(this);
-		userRestClient.execute(new String[] { userQuery});	
+		context = this;	
 		
 		AccountManager am = AccountManager.get(context); // "this" references the current Context
    		Account[] accounts = am.getAccountsByType(WTPConstants.ACCOUNT_ADDRESS);
@@ -86,15 +74,19 @@ public class MainActivity extends Activity {
                SharedPreferences.Editor editor = prefs.edit();
                editor.putString("userName", am.getUserData(account, "userName"));
                editor.putString("doctor", am.getUserData(account, "doctor"));
+               editor.putString("center", am.getUserData(account, "center"));
                editor.putString("phone", account.name);
                editor.apply();
                setTheme(R.style.AppTheme);
-               Log.i(TAG, "Logging as an existing user: "+account.name);
-               
-               
-               
-               Intent intent = new Intent(context, HomePlanGroupFragmentActivity.class);
-               startActivity(intent);
+               if (am.getUserData(account, "center") == "Y") {
+            	   Log.i(TAG, "Logging as an existing center: "+account.name);
+            	   Intent intent = new Intent(context, HomePlanGroupFragmentActivity.class);
+                   startActivity(intent);
+               } else {
+            	   Log.i(TAG, "Logging as an existing user: "+account.name);
+                   Intent intent = new Intent(context, HomePlanGroupFragmentActivity.class);
+                   startActivity(intent);
+               }
        	} else {
        		Log.i(TAG, "New User logs in");
        		

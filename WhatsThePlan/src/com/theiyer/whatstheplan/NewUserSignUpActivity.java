@@ -158,7 +158,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 		EditText phoneText = (EditText) findViewById(R.id.newUserPhoneValue);
 		String phone = phoneText.getText().toString();
 		
-		TextView dob = (TextView) findViewById(R.id.dateOfBirthText);
+		TextView dob = (TextView) findViewById(R.id.dateOfBirth);
 		String dobText = dob.getText().toString();
 
 		EditText addressText = (EditText) findViewById(R.id.newUserAddressValue);

@@ -128,7 +128,10 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 		String bloodGrp = prefs.getString("bloodGrp", "");
 		String address = prefs.getString("Address", "");
 		String doctor = prefs.getString("doctor", "");
-		String selectedDoctorId = prefs.getString("selectedDoctor", "");
+		String selectedDoctorId = prefs.getString("selectedDoctor", "0");
+		if (selectedHealthCenter == "") {
+			selectedHealthCenter = "0";
+		}
 		String userQuery = "/addUser?phone="+phone+"&name="+name
 				+"&bloodGroup=" + bloodGrp
 				+"&dob=" + dob

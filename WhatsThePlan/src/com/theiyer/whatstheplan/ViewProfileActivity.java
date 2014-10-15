@@ -48,15 +48,29 @@ public class ViewProfileActivity extends Activity {
 			welcomeStmnt.setText(userName + ", Your profile details!");
 
 			TextView userNameValue = (TextView) findViewById(R.id.viewProfileName);
-			userNameValue.setText(userName);
+			userNameValue.setText("Name: " +userName);
 			
 			String phone = prefs.getString("phone", "");
+			String name = prefs.getString("name", "");
+			String dob = prefs.getString("dob", "");
+			String gender = prefs.getString("gender", "");
+			String bloodGrp = prefs.getString("bloodGrp", "");
+			String address = prefs.getString("Address", "");
+			String doctor = prefs.getString("doctor", "");
+			System.out.println("Profile details : == " + phone + " : " + name+ " : " +dob+":" +gender+ ":" +bloodGrp+":"+address+":"+doctor);
 			TextView phoneValue = (TextView) findViewById(R.id.viewProfilePhone);
 			phoneValue.setText("Phone: " + phone);
-
-			WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
+			TextView dobValue = (TextView) findViewById(R.id.viewProfileDob);
+			dobValue.setText("Date of Birth: " + dob);
+			TextView genderValue = (TextView) findViewById(R.id.viewProfilegender);
+			genderValue.setText("Gender:" + gender);
+			TextView bloodGrpValue = (TextView) findViewById(R.id.viewProfilebloodGrp);
+			bloodGrpValue.setText("Blood Group: " + bloodGrp);
+			TextView addressValue = (TextView) findViewById(R.id.viewProfileaddress);
+			addressValue.setText("Address: " + address);
+			/*WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
 					this);
-			userImageClient.execute(new String[] { "fetchUserImage", phone });
+			userImageClient.execute(new String[] { "fetchUserImage", phone });*/
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
