@@ -64,9 +64,8 @@ public class ViewGroupMembersFragment extends Fragment {
 					Activity.MODE_PRIVATE);
 			
 
-			String selectedGroup = prefs.getString("selectedGroup", "");
-			String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
-			String searchQuery = "/fetchGroupUsers?groupName=" + selectedGroup.replace(" ", "%20")+"&groupIndex=" + selectedGroupIndex;
+			String centerId = prefs.getString("centerId", "");
+			String searchQuery = "/fetchCenterUsers?id=" + centerId;
 
 			
 			membersList = new ArrayList<Map<String, byte[]>>();
@@ -137,12 +136,9 @@ public class ViewGroupMembersFragment extends Fragment {
 				userXstream.alias("UserList", UserList.class);
 				userXstream.addImplicitCollection(UserList.class, "users");
 				userXstream.alias("users", User.class);
-				userXstream.alias("groupNames", String.class);
-				userXstream.addImplicitCollection(User.class, "groupNames",
-						"groupNames", String.class);
-				userXstream.alias("pendingGroupNames", String.class);
-				userXstream.addImplicitCollection(User.class,
-						"pendingGroupNames", "pendingGroupNames", String.class);
+				userXstream.alias("centers", String.class);
+				userXstream.addImplicitCollection(User.class, "centers",
+						"centers", String.class);
 				UserList userList = (UserList) userXstream.fromXML(response);
 				if (userList != null) {
 					
@@ -186,6 +182,10 @@ public class ViewGroupMembersFragment extends Fragment {
 		}
 
 		return true;
+	}
+	
+	public void setActivity(Activity activity) {
+		this.activity = activity;
 	}
 
 }

@@ -66,7 +66,6 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 			
 			SharedPreferences prefs = activity.getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
-
 			String phone = prefs.getString("phone", "");
 			String searchQuery = "/fetchUpcomingPlans?phone=" + phone;
 

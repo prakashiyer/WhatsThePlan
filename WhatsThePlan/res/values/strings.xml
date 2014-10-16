@@ -76,7 +76,7 @@
     <string name="settle_button_text">Settle Bills &gt;&gt;</string>
     <string name="accept_user_button_text">Accept</string>
     <string name="reject_user_button_text">Reject</string>
-    <string name="member_list_group_text">Group Members:</string>
+    <string name="member_list_group_text">Members</string>
     <string name="plan_member_list_label_text">Members Attending:</string>
     <string name="existing_member_list_label_text">Existing Members:</string>
     <string name="invite_list_label_text">Search and Invite friends:</string>

@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -25,6 +26,8 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	PlanListAdapter adapter;
 	List<Map<String, String>> plansResult;
 	Activity activity;
+	String centerFlag;
+	String docFlag;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,14 +41,26 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	        // Set up the action bar.
 	        final ActionBar actionBar = getActionBar();
 	        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+	        
+	        SharedPreferences prefs = activity.getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			centerFlag = prefs.getString("centerFlag", "");
+			docFlag = prefs.getString("docFlag", "");
 	   
 	        // For each of the sections in the app, add a tab to the action bar.
 	        actionBar.addTab(actionBar.newTab().setText(R.string.home_plan_label)
 	        		.setIcon(R.drawable.ic_plan).setTabListener(this));
-	        actionBar.addTab(actionBar.newTab().setText(R.string.groups_list_label)
-	        		.setIcon(R.drawable.ic_groupicon).setTabListener(this));
-	        actionBar.addTab(actionBar.newTab().setText(R.string.emergency_label)
-	        		.setIcon(R.drawable.ic_emergency).setTabListener(this));
+	        if(!"Y".equals(centerFlag) && !"Y".equals(docFlag)){
+	        	 actionBar.addTab(actionBar.newTab().setText(R.string.groups_list_label)
+	 	        		.setIcon(R.drawable.ic_groupicon).setTabListener(this));
+	 	        actionBar.addTab(actionBar.newTab().setText(R.string.emergency_label)
+	 	        		.setIcon(R.drawable.ic_emergency).setTabListener(this));
+	        }
+	        if("Y".equals(centerFlag)){
+	        	 actionBar.addTab(actionBar.newTab().setText(R.string.member_list_group_text)
+	 	        		.setIcon(R.drawable.ic_groupicon).setTabListener(this));
+	        }
+	       
 	        
 	        if(savedInstanceState != null) {
 		        int index = savedInstanceState.getInt("index");
@@ -300,20 +315,25 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homePlanFragment).commit();
 			 } 
 			 else if (tab.getPosition() == 1) {
-			   	GroupsListFragment goupsList = new GroupsListFragment();
-			   	goupsList.setActivity(activity);
-			   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, goupsList).commit();
+				 if(!"Y".equals(centerFlag) && !"Y".equals(docFlag)){
+					 GroupsListFragment goupsList = new GroupsListFragment();
+					 goupsList.setActivity(activity);
+					 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, goupsList).commit();
+				 }
+				 if("Y".equals(centerFlag)){
+					 ViewGroupMembersFragment members = new ViewGroupMembersFragment();
+					 members.setActivity(activity);
+					 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, members).commit();
+				 }
+			   	
+			   	
 			 }
 			 else if (tab.getPosition() == 2) {
-				   	/*EmergencyCallTabFragment callTab = new EmergencyCallTabFragment();
-				   	callTab.setActivity(activity);
-				   	System.out.println("step 3");
-				   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
-				   	System.out.println("step 4");*/
-				   	
-				   	HomePlanFragment homePlanFragment = new HomePlanFragment();
-			    	 homePlanFragment.setActivity(activity);
-				     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homePlanFragment).commit();
+				 if(!"Y".equals(centerFlag)){
+					 EmergencyCallTabFragment callTab = new EmergencyCallTabFragment();
+					   	callTab.setActivity(activity);
+					   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
+				 }
 			 }
 		}
 
@@ -325,18 +345,23 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homePlanFragment).commit();
 			 } 
 			 else if (tab.getPosition() == 1) {
+				 if(!"Y".equals(centerFlag) && !"Y".equals(docFlag)){
 			   	GroupsListFragment goupsList = new GroupsListFragment();
 			   	goupsList.setActivity(activity);
 			   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, goupsList).commit();
+				 }
+				 if("Y".equals(centerFlag)){
+					 ViewGroupMembersFragment members = new ViewGroupMembersFragment();
+					 members.setActivity(activity);
+					 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, members).commit();
+				 }
 			 }
 			 else if (tab.getPosition() == 2) {
-				 System.out.println("***** tab.getPosition() " + tab.getPosition());
+				 if(!"Y".equals(centerFlag)){
 				   	EmergencyCallTabFragment callTab = new EmergencyCallTabFragment();
-				   	System.out.println("step 2");
 				   	callTab.setActivity(activity);
-				   	System.out.println("step 3");
 				   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
-				   	System.out.println("step 4");
+				 }
 		     }
 			 
 		}
@@ -351,14 +376,23 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homePlanFragment).commit();
 			 } 
 			 else if (tab.getPosition() == 1) {
+				 if(!"Y".equals(centerFlag) && !"Y".equals(docFlag)){
 			   	GroupsListFragment goupsList = new GroupsListFragment();
 			   	goupsList.setActivity(activity);
 			   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, goupsList).commit();
+				 }
+				 if("Y".equals(centerFlag)){
+					 ViewGroupMembersFragment members = new ViewGroupMembersFragment();
+					 members.setActivity(activity);
+					 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, members).commit();
+				 }
 			 }
 			 else if (tab.getPosition() == 2) {
+				 if(!"Y".equals(centerFlag)){
 				   	EmergencyCallTabFragment callTab = new EmergencyCallTabFragment();
 				   	callTab.setActivity(activity);
 				   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
+				 }
 		     }
 		}
 		
