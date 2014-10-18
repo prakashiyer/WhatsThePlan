@@ -3,18 +3,33 @@ package com.theiyer.whatstheplan;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
+import com.theiyer.whatstheplan.entity.User;
+import com.theiyer.whatstheplan.util.WTPConstants;
+import com.thoughtworks.xstream.XStream;
+
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +43,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	Activity activity;
 	String centerFlag;
 	String docFlag;
+	private static final String TAG = "Health Meet/HomePlanFragment";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,6 +82,10 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		        int index = savedInstanceState.getInt("index");
 		        getActionBar().setSelectedNavigationItem(index);
 		    }
+	        String phone = prefs.getString("phone", "");
+	        String userQuery = "/fetchUser?phone="+phone;
+	        UserWebServiceClient userRestClient = new UserWebServiceClient(this);
+			userRestClient.execute(new String[] { userQuery});
 	        
 	    } else {
 			Intent intent = new Intent(this, RetryActivity.class);
@@ -73,7 +93,82 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		}
 		
 	}
-	
+	public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public UserWebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+			
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			if (response != null) {
+				    Log.i(TAG, response);
+				    XStream userXs = new XStream();
+					userXs.alias("UserInformation", User.class);
+					userXs.alias("centers", String.class);
+					userXs.addImplicitCollection(User.class, "centers",
+							"centers", String.class);
+					User user = (User) userXs.fromXML(response);
+					if (user != null && user.getName() != null) {
+						 Log.i(TAG, user.getName());
+						 SharedPreferences prefs = getSharedPreferences("Prefs",
+									Activity.MODE_PRIVATE);
+							SharedPreferences.Editor editor = prefs.edit();
+							editor.putString("userName", user.getName());
+							editor.putString("phone", user.getPhone());
+							editor.putString("dob", user.getDob());
+							editor.putString("gender", user.getSex());
+							editor.putString("bloodGrp", user.getBloodGroup());
+							editor.putString("Address", user.getAddress());
+							editor.putString("doctor", user.getDoctorFlag());
+							editor.apply();
+							}
+			}
+			pDlg.dismiss();
+		}
+
+	}
 	public void callDoctor(View view) {
 
 		Button button = (Button) activity.findViewById(R.id.call_doc_button);
@@ -165,8 +260,12 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		public boolean onCreateOptionsMenu(Menu menu) {
 			// Inflate the menu; this adds items to the action bar if it is present.
 			getMenuInflater().inflate(R.menu.main, menu);
-			MenuItem viewProfileItem = menu.findItem(R.id.viewProfile);
+			MenuItem viewProfileItem = menu.findItem(R.id.editProfile);
 			viewProfileItem.setVisible(true);
+			
+			getMenuInflater().inflate(R.menu.main, menu);
+			MenuItem editProfileItem = menu.findItem(R.id.viewProfile);
+			editProfileItem.setVisible(true);
 			
 			MenuItem changeProfilePicItem = menu.findItem(R.id.changeProfilePic);
 			changeProfilePicItem.setVisible(true);
@@ -184,6 +283,10 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			case (R.id.viewProfile):
 				Intent viewProfileIntent = new Intent(this, ViewProfileActivity.class);
 	            startActivity(viewProfileIntent);
+				return true;
+			case (R.id.editProfile):
+				Intent editProfileIntent = new Intent(this, EditProfileActivity.class);
+	            startActivity(editProfileIntent);
 				return true;
 			case (R.id.changeProfilePic):
 				Intent changeProfilePicIntent = new Intent(this, ProfileImageUploadActivity.class);

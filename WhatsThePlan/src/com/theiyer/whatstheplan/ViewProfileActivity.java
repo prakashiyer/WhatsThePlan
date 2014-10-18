@@ -22,13 +22,16 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
+import com.thoughtworks.xstream.XStream;
 
 public class ViewProfileActivity extends Activity {
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,7 +60,7 @@ public class ViewProfileActivity extends Activity {
 			String bloodGrp = prefs.getString("bloodGrp", "");
 			String address = prefs.getString("Address", "");
 			String doctor = prefs.getString("doctor", "");
-			System.out.println("Profile details : == " + phone + " : " + name+ " : " +dob+":" +gender+ ":" +bloodGrp+":"+address+":"+doctor);
+			System.out.println("Profile details : == " + phone + " : " + userName+ " : " +dob+":" +gender+ ":" +bloodGrp+":"+address+":"+doctor);
 			TextView phoneValue = (TextView) findViewById(R.id.viewProfilePhone);
 			phoneValue.setText("Phone: " + phone);
 			TextView dobValue = (TextView) findViewById(R.id.viewProfileDob);
