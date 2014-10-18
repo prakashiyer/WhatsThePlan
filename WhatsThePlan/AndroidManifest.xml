@@ -362,6 +362,11 @@
             android:label="@string/app_name" >
         </activity>
         <activity
+            android:name="com.theiyer.whatstheplan.EditProfileActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
             android:name="com.theiyer.whatstheplan.LeaveGroupActivity"
             android:screenOrientation="portrait"
             android:label="@string/app_name" >
