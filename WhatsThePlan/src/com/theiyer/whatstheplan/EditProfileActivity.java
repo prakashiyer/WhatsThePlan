@@ -53,31 +53,7 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 	 private Context context;
 		private String genderVar;
 		private String doctorFlag;
-		public String getDoctorFlag() {
-			return doctorFlag;
-		}
-
-		public void setDoctorFlag(String doctorFlag) {
-			this.doctorFlag = doctorFlag;
-		}
-
-		public String getGenderVar() {
-			return genderVar;
-		}
-
-		public void setGenderVar(String genderVar) {
-			this.genderVar = genderVar;
-		}
-
 		private String bloodVar;
-
-		public String getBloodVar() {
-			return bloodVar;
-		}
-
-		public void setBloodVar(String bloodVar) {
-			this.bloodVar = bloodVar;
-		}
 
 		private static final String TAG = "Health Meet/Edit";
 
@@ -235,11 +211,11 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 					  if ("Y".equals(user.getAddress())) {
 						  System.out.println("****** if doctor in EDIT " +user.getDoctorFlag());
 						  checkBox.setChecked(true);
-						  setDoctorFlag("Y");
+						  doctorFlag="Y";
 					  } else {
 						  System.out.println("***** else doctor in EDIT " +user.getDoctorFlag());
 						  checkBox.setChecked(false);
-						  setDoctorFlag("N");
+						  doctorFlag="N";
 					  }
 			}
 			pDlg.dismiss();
@@ -250,9 +226,9 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 	public void enterDocCheck(View view) {
 		System.out.println("I Am A Doctor : " + checkBox.isChecked());
 		if (checkBox.isChecked()) {
-		    setDoctorFlag("Y");
+		    doctorFlag="Y";
 		} else {
-			setDoctorFlag("N");
+			doctorFlag="N";
 		}
 	}
 	public void setDate(View v) {
@@ -286,17 +262,17 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 			editor.putString("name", userName);
 			editor.putString("phone", phone);
 			editor.putString("dob", dobText);
-			editor.putString("gender", getGenderVar());
-			editor.putString("bloodGrp", getBloodVar());
+			editor.putString("gender", genderVar);
+			editor.putString("bloodGrp", bloodVar);
 			editor.putString("Address", address);
-			editor.putString("doctor", getDoctorFlag());
+			editor.putString("doctor", doctorFlag);
 			editor.apply();
 			String userQuery = "/editUser?phone="+phone+"&name="+userName
-					+"&bloodGroup=" + getBloodVar()
+					+"&bloodGroup=" + bloodVar
 					+"&dob=" + dobText
-					+"&sex=" + getGenderVar()
+					+"&sex=" + genderVar
 					+"&address=" + address
-					+"&doctorFlag=" + getDoctorFlag()
+					+"&doctorFlag=" + doctorFlag
 					+"&primaryCenterId="+
 					"&primaryDoctorId="+
 					"&centers=";

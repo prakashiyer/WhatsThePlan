@@ -79,10 +79,9 @@ public class DeactivateAccountActivity extends Activity {
 		
 
 		String centerFlag = prefs.getString("centerFlag", "");
-		String centerId = prefs.getString("centerId", "");
 		String searchQuery = "";
 		if("Y".equals(centerFlag)){
-			searchQuery = "/deleteCenter?id=" + centerId;
+			searchQuery = "/deleteCenter?phone=" + phone;
 		} else {
 			searchQuery = "/deleteUser?phone=" + phone;
 		}
