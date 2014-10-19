@@ -48,12 +48,13 @@ public class JoinGroupActivity extends Activity implements
 OnItemClickListener {
 
 	private GridView centersGridView;
-	CentersGridAdapter adapter;
+	private CentersGridAdapter adapter;
 	private List<Map<String, Center>> centersList;
 	private List<Map<String, Center>> filteredList;
 	private String selectedCenterName;
 	private Context context;
 	private String selectedCenter;
+	private Button button;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,15 +76,12 @@ OnItemClickListener {
 			userNameValue.setText(userName + ", Search and join your center!");
 			
 			centersList = new ArrayList<Map<String, Center>>();
-			centersGridView = (GridView) findViewById(R.id.viewExistingCentersGrid);
+			centersGridView = (GridView) findViewById(R.id.joingroupList);
 			adapter = new CentersGridAdapter(this);
 			centersGridView.setOnItemClickListener(this);
 			context = this;
-			
-			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+			button = (Button) findViewById(R.id.joinGroupButton);
 			final SearchView searchView = (SearchView) findViewById(R.id.groupSearchView);
-			SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-			searchView.setSearchableInfo(searchableInfo);
 				
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
 				
@@ -156,6 +154,7 @@ OnItemClickListener {
 				adapter.setData(filteredList);
 				centersGridView.setAdapter(adapter);
 				centersGridView.setVisibility(GridView.VISIBLE);
+				button.setVisibility(Button.VISIBLE);
 				
 				break;
 			}
@@ -214,7 +213,7 @@ OnItemClickListener {
 		protected String doInBackground(String... params) {
 			String path = WTPConstants.SERVICE_PATH+params[0];
 
-			if(params[0].contains("searchGroup")){
+			if(params[0].contains("searchCenter")){
 				isSearchCall = true;
 			}
 			//HttpHost target = new HttpHost(TARGET_HOST);
@@ -256,11 +255,11 @@ OnItemClickListener {
 					}
 					
 					if (!centersList.isEmpty()) {
-						adapter.setData(centersList);
+						filteredList = new ArrayList<Map<String,Center>>();
+						filteredList.addAll(centersList);
+						adapter.setData(filteredList);
 						centersGridView.setAdapter(adapter);
 						centersGridView.setVisibility(GridView.VISIBLE);
-						Button button= (Button) findViewById(R.id.joinGroupButton);
-						button.setVisibility(Button.VISIBLE);
 					}
 				}
 			} else {

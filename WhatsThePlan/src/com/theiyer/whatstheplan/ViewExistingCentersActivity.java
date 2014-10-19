@@ -94,16 +94,11 @@ OnItemClickListener {
 			
 			@Override
 			public boolean onQueryTextSubmit(String query) {
-				if (!centersList.isEmpty()) {
-					
-					String searchQuery = "/searchCenter?name="
-							+ query.replace(" ", "%20");
+				String searchQuery = "/searchCenter?name="
+						+ query.replace(" ", "%20");
 
-					WebServiceClient restClient = new WebServiceClient(context);
-					restClient.execute(new String[] { searchQuery });
-					
-					
-				}
+				WebServiceClient restClient = new WebServiceClient(context);
+				restClient.execute(new String[] { searchQuery });
 				return true;
 			}
 			

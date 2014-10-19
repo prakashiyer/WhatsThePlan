@@ -191,7 +191,7 @@ OnItemClickListener {
 	public void goToCentersSelection(View view) {
 		Button button = (Button) findViewById(R.id.goToCentersSelectionButton);
 		button.setTextColor(getResources().getColor(R.color.click_button_1));
-		Intent intent = new Intent(this, ViewExistingCentersActivity.class);
+		Intent intent = new Intent(this, AppointmentActivity.class);
 		startActivity(intent);
 	}
 	
