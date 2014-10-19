@@ -25,6 +25,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -102,15 +103,15 @@ public class ViewMyNewPlansActivity extends Activity {
 		String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 		String docFlag = prefs.getString("docFlag", "");
 		String centerPlanFlag = prefs.getString("centerPlanFlag", "");
-		String rsvp = "no";
+		String rsvp = "N";
 
 		if (rsvpPlanButton.getText().equals("Say Yes")) {
-			rsvp = "yes";
+			rsvp = "Y";
 		}
 
-		String updateQuery = "/rsvpPlan?id="+selectedPlanIndex + "&phone"+phone+"&docFlag=" + docFlag
+		String updateQuery = "/rsvpPlan?id="+selectedPlanIndex + "&phone="+phone+"&docFlag=" + docFlag
 				+"&centerPlanFlag="+centerPlanFlag+ "&rsvp=" + rsvp;
-		if (rsvp == "no") { 
+		if ("N".equals(rsvp)) { 
 		CalendarHelper calendarHelper = new CalendarHelper(context);
 		calendarHelper.execute(new String[] { "",
 				selectedPlan, "", "", "", "delete"});
@@ -277,6 +278,7 @@ public class ViewMyNewPlansActivity extends Activity {
 			query = params[0];
 			String path = WTPConstants.SERVICE_PATH + query;
 			if (query.contains("fetchPlan") || query.contains("rsvpPlan")) {
+				Log.i("REQUEST",query);
 				phone = params[1];
 				docFlag = params[2];
 			}
@@ -301,6 +303,7 @@ public class ViewMyNewPlansActivity extends Activity {
 		@Override
 		protected void onPostExecute(String response) {
 			Button rsvpPlanButton = (Button) findViewById(R.id.rsvpNewPlanButton);
+			Log.i("RESPONSE",response);
 			if (response != null && query.contains("fetchPlan")) {
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
