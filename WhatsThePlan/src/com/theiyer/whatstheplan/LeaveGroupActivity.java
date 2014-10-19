@@ -15,6 +15,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,6 +24,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.theiyer.whatstheplan.util.WTPConstants;
@@ -38,17 +41,24 @@ public class LeaveGroupActivity extends Activity {
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" Group Exit Form");
+			aBar.setTitle(" Center Exit Form");
 
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String userName = prefs.getString("userName", "New User");
-			String selectedGroup = prefs.getString("selectedGroup", "New User");
+			String selectedCenterName = prefs.getString("selectedCenterName", "New User");
+			String selectedCenterId = prefs.getString("selectedCenterId", "New User");
 			TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeLeaveGroupLabel);
-			welcomeStmnt.setText(userName + ", You can exit this group.");
+			welcomeStmnt.setText(userName + ", You can exit this Center.");
+			
+			String searchQuery = "/fetchCenterImage?id=" + selectedCenterId;
+			
+			WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
+					this);
+			userImageClient.execute(new String[] { searchQuery });
 
 			TextView groupNameValue = (TextView) findViewById(R.id.leaveGroupName);
-			groupNameValue.setText("Group Name: " + selectedGroup);
+			groupNameValue.setText("Center: " + selectedCenterName);
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
@@ -64,11 +74,9 @@ public class LeaveGroupActivity extends Activity {
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		String phone = prefs.getString("phone", "");
-		String selectedGroup = prefs.getString("selectedGroup", "New User");
-		String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
-		String searchQuery = "/leaveGroup?phone=" + phone
-				+ "&groupName=" + selectedGroup.replace(" ", "%20")
-				+ "&groupIndex=" + selectedGroupIndex;
+		String selectedCenterId = prefs.getString("selectedCenterId", "New User");
+		String searchQuery = "/leaveCenter?phone=" + phone
+				+ "&id=" + selectedCenterId;
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(
 				new String[] { searchQuery });
@@ -131,6 +139,72 @@ public class LeaveGroupActivity extends Activity {
 			pDlg.dismiss();
 		}
 
+	}
+	
+	private class WebImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+
+		public WebImageRetrieveRestWebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			showProgressDialog();
+
+		}
+
+		@Override
+		protected byte[] doInBackground(String... params) {
+			String method = params[0];
+			String path = WTPConstants.SERVICE_PATH+"/"+method;
+
+			
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				byte[] byteresult = EntityUtils.toByteArray(results);
+				return byteresult;
+			} catch (Exception e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(byte[] response) {
+			
+			
+			if(response != null){
+				if (response != null) {
+					ImageView imgView = (ImageView) findViewById(R.id.leaveCenterPicThumbnail);
+					Bitmap img = BitmapFactory.decodeByteArray(response, 0,
+							response.length);
+					imgView.setImageBitmap(img);
+	        	}
+				
+			}
+			
+			pDlg.dismiss();
+		}
 	}
 	
 	/**

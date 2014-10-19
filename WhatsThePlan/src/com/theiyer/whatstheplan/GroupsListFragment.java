@@ -103,46 +103,26 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 		startActivity(intent);
 	}
 	
-	/** Called when the user clicks the Create group button */
-	public void createGroups(View view) {
-		Button button = (Button) activity.findViewById(R.id.createGroupBtn);
-		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		Intent intent = new Intent(activity, CreateGroupActivity.class);
-		
-		startActivity(intent);
-	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		SharedPreferences prefs = activity.getSharedPreferences(
 				"Prefs", Activity.MODE_PRIVATE);
-		String selectedGroup = "";
-		String selectedGroupIndex = "";
+		String selectedCenterPhone = "";
 		if(centersList != null && !centersList.isEmpty()){
 			Map<String, Center> selectedMap = centersList.get(position);
 			for(Entry<String, Center> entry: selectedMap.entrySet()){
-				
 				SharedPreferences.Editor editor = prefs.edit();
-				selectedGroup = entry.getValue().getName();
-				selectedGroupIndex = entry.getKey();
-				editor.putString("selectedGroup",selectedGroup);
-				editor.putString("selectedGroupIndex",selectedGroupIndex);
+				selectedCenterPhone = entry.getValue().getAdminPhone();
+				editor.putString("selectedCenterPhone",selectedCenterPhone);
+				editor.putString("selectedCenterName",entry.getValue().getName());
+				editor.putString("selectedCenterId",String.valueOf(entry.getValue().getId()));
 				editor.apply();
 				break;
 			}
 			
-			for(Center center: allCenters){
-				
-				if(selectedGroup.equals(center.getName())){
-					if(phone.equals(center.getAdminPhone())){
-						Intent intent = new Intent(activity, GroupAdminListActivity.class);
-						startActivity(intent);
-					} else {
-						Intent intent = new Intent(activity, ViewGroupNewPlanHistoryFragmentActivity.class);
-						startActivity(intent);
-					}
-				}
-			}
+			Intent intent = new Intent(activity, ViewCenterUpcomingPlansActivity.class);
+			startActivity(intent);
 		}
 	}
 	
@@ -155,9 +135,6 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 		
 		MenuItem changeProfilePicItem = menu.findItem(R.id.changeProfilePic);
 		changeProfilePicItem.setVisible(true);
-		
-		MenuItem joinGroupItem = menu.findItem(R.id.joinGroup);
-		joinGroupItem.setVisible(true);
 		
 		MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
 		deactivateAccountItem.setVisible(true);	
@@ -175,10 +152,6 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 		case (R.id.changeProfilePic):
 			Intent changeProfilePicIntent = new Intent(activity, ProfileImageUploadActivity.class);
             startActivity(changeProfilePicIntent);
-			return true;
-		case (R.id.joinGroup):
-			Intent joinGroupIntent = new Intent(activity, JoinGroupActivity.class);
-            startActivity(joinGroupIntent);
 			return true;
 		case (R.id.deactivateAccount):
 			Intent deactivateAccountIntent = new Intent(activity, DeactivateAccountActivity.class);

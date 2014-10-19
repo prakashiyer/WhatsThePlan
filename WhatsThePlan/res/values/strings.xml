@@ -111,7 +111,7 @@
     <string name="new_password_label">Type new password</string>
     <string name="retype_new_password_label">Re-type new password</string>
     <string name="change_password_button">Submit New Password</string>
-    <string name="leave_group_button">Exit this Group</string>
+    <string name="leave_group_button">Leave this Center</string>
     <string name="change_password_check_label">Change Password</string>
     <string name="enter_doc_check">I am a Doctor</string>
     <string name="delete_profile_check_label">Your account will be deleted and all the existing records too</string>

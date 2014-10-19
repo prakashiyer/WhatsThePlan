@@ -78,7 +78,16 @@ public class DeactivateAccountActivity extends Activity {
 		errorFieldValue.setText("");
 		
 
-		String searchQuery = "/deleteAccount?phone=" + phone;
+		String centerFlag = prefs.getString("centerFlag", "");
+		String centerId = prefs.getString("centerId", "");
+		String searchQuery = "";
+		if("Y".equals(centerFlag)){
+			searchQuery = "/deleteCenter?id=" + centerId;
+		} else {
+			searchQuery = "/deleteUser?id=" + phone;
+		}
+		
+		
 
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(

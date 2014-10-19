@@ -3,7 +3,9 @@ package com.theiyer.whatstheplan;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -28,25 +30,30 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.theiyer.whatstheplan.entity.Center;
-import com.theiyer.whatstheplan.entity.Group;
+import com.theiyer.whatstheplan.entity.CenterList;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
-public class JoinGroupActivity extends Activity {
+public class JoinGroupActivity extends Activity implements
+OnItemClickListener {
 
-	private GridView list;
-	private GroupListAdapter adapter;
-	private List<Map<String, Center>> groupsList;
-	private String phone ;
-	private List<String> members;
-	private List<String> pendingMembers;
+	private GridView centersGridView;
+	CentersGridAdapter adapter;
+	private List<Map<String, Center>> centersList;
+	private List<Map<String, Center>> filteredList;
+	private String selectedCenterName;
+	private Context context;
+	private String selectedCenter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,18 +65,61 @@ public class JoinGroupActivity extends Activity {
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" Group Membership");
+			aBar.setTitle(" Center Membership");
+			context = this;
 
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String userName = prefs.getString("userName", "New User");
 			TextView userNameValue = (TextView) findViewById(R.id.welcomeJoinGroupLabel);
-			userNameValue.setText(userName + ", Search and join your group!");
+			userNameValue.setText(userName + ", Search and join your center!");
+			
+			centersList = new ArrayList<Map<String, Center>>();
+			centersGridView = (GridView) findViewById(R.id.viewExistingCentersGrid);
+			adapter = new CentersGridAdapter(this);
+			centersGridView.setOnItemClickListener(this);
+			context = this;
 			
 			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 			final SearchView searchView = (SearchView) findViewById(R.id.groupSearchView);
 			SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
 			searchView.setSearchableInfo(searchableInfo);
+				
+			searchView.setOnQueryTextListener(new OnQueryTextListener() {
+				
+				@Override
+				public boolean onQueryTextSubmit(String query) {
+					
+					String searchQuery = "/searchCenter?name="
+							+ query.replace(" ", "%20");
+
+					WebServiceClient restClient = new WebServiceClient(context);
+					restClient.execute(new String[] { searchQuery });
+					return true;
+				}
+				
+				@Override
+				public boolean onQueryTextChange(String newText) {
+					if (!centersList.isEmpty()) {
+						
+						filteredList = new ArrayList<Map<String,Center>>();
+						for(Map<String, Center> centerMap: centersList){
+							for(Entry<String, Center> entry : centerMap.entrySet()){
+								Center center = entry.getValue();
+								if(center.getName().toLowerCase(Locale.ENGLISH).contains(newText.toLowerCase(Locale.ENGLISH))){
+									filteredList.add(centerMap);
+								}
+							}
+						}
+						
+						adapter.setData(filteredList);
+						centersGridView.setAdapter(adapter);
+						//memberListLabel.setVisibility(TextView.VISIBLE);
+						centersGridView.setVisibility(GridView.VISIBLE);						
+					}
+					return true;
+				}
+			});
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
@@ -78,41 +128,57 @@ public class JoinGroupActivity extends Activity {
 	}
 	
 	@Override
-	protected void onNewIntent(Intent intent) {
-		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			
-			String groupName = intent.getStringExtra(SearchManager.QUERY);
-			// Search Group Names and add to a list
-			String searchQuery = "/searchGroup?groupName=" + groupName.replace(" ", "%20");
-		    WebServiceClient restClient = new WebServiceClient(this);
-			TextView groupNameLabel= (TextView) findViewById(R.id.groupSearchResultsLabel);
-			groupNameLabel.setVisibility(TextView.INVISIBLE);
-			adapter = new GroupListAdapter(this);
-			restClient.execute(
-					new String[] { searchQuery });			
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		
+		for(Map<String, Center> selectedMap: centersList){
+			for (Entry<String, Center> entry : selectedMap.entrySet()) {
+				Center center = entry.getValue();
+				if(center.isSelected()){
+					center.setSelected(false);
+				}
+			}
+		}
+		
+		if (filteredList != null && !filteredList.isEmpty()) {
+			Map<String, Center> selectedMap = filteredList.get(position);
+
+			for (Entry<String, Center> entry : selectedMap.entrySet()) {
+				SharedPreferences prefs = getSharedPreferences("Prefs",
+						Activity.MODE_PRIVATE);
+				SharedPreferences.Editor editor = prefs.edit();
+				Center center = entry.getValue();
+				center.setSelected(true);
+				selectedCenter = String.valueOf(center.getId());
+				selectedCenterName = center.getName();
+				editor.putString("selectedCenterPhone", center.getAdminPhone());
+				editor.apply();
+				adapter.setData(filteredList);
+				centersGridView.setAdapter(adapter);
+				centersGridView.setVisibility(GridView.VISIBLE);
+				
+				break;
+			}
 		}
 	}
+
 
 	/** Called when the user clicks the button */
 	public void goFromJoinGroupToViewGroups(View view) {
 		Button button = (Button) findViewById(R.id.joinGroupButton);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		TextView groupNameValue = (TextView) findViewById(R.id.groupSearchResultValue);
-		String groupName = groupNameValue.getText().toString();
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		String phone = prefs.getString("phone", "");
-		String selectedGroupIndex = prefs.getString("selectedGroupIndex", "");
 
-		String joinQuery = "/joinGroup?groupName=" + groupName.replace(" ", "%20")
-				+ "&groupIndex=" + selectedGroupIndex
+		String joinQuery = "/joinCenter?id=" + selectedCenter
 				+ "&phone=" + phone;
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(
 				new String[] { joinQuery });
-		Toast.makeText(getApplicationContext(), "You can view this group once approved by the creator.",
+		Toast.makeText(getApplicationContext(), "You have been added to the Health Center "+selectedCenterName,
 				Toast.LENGTH_LONG).show();
-		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
+		Intent intent = new Intent(this, ViewCenterUpcomingPlansActivity.class);
 		startActivity(intent);
 		
 	}
@@ -171,59 +237,37 @@ public class JoinGroupActivity extends Activity {
 		@Override
 		protected void onPostExecute(String response) {
 			
-			SharedPreferences prefs = getSharedPreferences("Prefs",
-					Activity.MODE_PRIVATE);
 			if (response != null && isSearchCall) {
-				XStream xstream = new XStream();
-				xstream.alias("Group", Group.class);
-				
-				xstream.alias("members", String.class);
-				xstream.addImplicitCollection(Group.class, "members","members",String.class);
-				xstream.alias("planNames", String.class);
-				xstream.addImplicitCollection(Group.class, "planNames","planNames",String.class);
-				xstream.alias("pendingMembers", String.class);
-				xstream.addImplicitCollection(Group.class, "pendingMembers","pendingMembers",String.class);
-				Center center = (Center) xstream.fromXML(response);
-				if (center != null) {
-					groupsList = new ArrayList<Map<String, Center>>();
-					list = (GridView) findViewById(R.id.joingroupList);
-					phone = prefs.getString("phone","");
-					members = center.getMembers();
-				    
-				    TextView groupNameLabel= (TextView) findViewById(R.id.groupSearchResultsLabel);
-					TextView groupNameValue = (TextView) findViewById(R.id.groupSearchResultValue);
-					
-					Map<String, Center> groupDetails = new HashMap<String, Center>();
-					groupDetails.put(String.valueOf(center.getId()), center);
-					groupsList.add(groupDetails);
-					adapter.setData(groupsList);
-					list.setAdapter(adapter);
-					groupNameLabel.setVisibility(TextView.VISIBLE);
-					groupNameValue.setText(center.getAdminName());
-					
-					//CHANGE THIS CODE
-					SharedPreferences.Editor editor = prefs.edit();
-					editor.putString("selectedGroupIndex", String.valueOf(center.getId()));
-					editor.apply();
-					
-					if(pendingMembers == null || (!pendingMembers.contains(phone) && !members.contains(phone))){
-						Button joinButton = (Button) findViewById(R.id.joinGroupButton);
-						joinButton.setVisibility(Button.VISIBLE);
+				XStream centersXs = new XStream();
+			    centersXs.alias("CenterList", CenterList.class);
+				centersXs.addImplicitCollection(CenterList.class, "centers");
+			    centersXs.alias("centers", Center.class);
+				centersXs.alias("members", String.class);
+				centersXs.addImplicitCollection(Center.class, "members",
+						"members", String.class);
+				CenterList centerList = (CenterList) centersXs.fromXML(response);
+				if (centerList != null) {
+					List<Center> centers = centerList.getCenters();
+					if(centers != null && !centers.isEmpty())
+					for(Center center: centerList.getCenters()){
+						Map<String, Center> centerMap = new HashMap<String, Center>();
+						centerMap.put(String.valueOf(center.getId()), center);
+						centersList.add(centerMap);
 					}
 					
-					
-				} else {
-					Toast.makeText(mContext,
-							"Seems like an invalid group name", Toast.LENGTH_LONG)
-							.show();
+					if (!centersList.isEmpty()) {
+						adapter.setData(centersList);
+						centersGridView.setAdapter(adapter);
+						centersGridView.setVisibility(GridView.VISIBLE);
+						Button button= (Button) findViewById(R.id.joinGroupButton);
+						button.setVisibility(Button.VISIBLE);
+					}
 				}
-					 
 			} else {
-				setContentView(R.layout.join_group);
 				Toast.makeText(mContext,
 						"Seems like an invalid group name", Toast.LENGTH_LONG)
 						.show();
-			}
+			} 
 			pDlg.dismiss();
 		}
 

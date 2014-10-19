@@ -208,14 +208,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		startActivity(intent);
 	}
 	
-	/** Called when the user clicks the Create group button */
-	public void createGroups(View view) {
-		Button button = (Button) activity.findViewById(R.id.createGroupBtn);
-		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		Intent intent = new Intent(activity, CreateGroupActivity.class);
-		
-		startActivity(intent);
-	}
+	
 
 	/** Called when the user clicks the Create group button *//*
 	public void createGroups(View view) {

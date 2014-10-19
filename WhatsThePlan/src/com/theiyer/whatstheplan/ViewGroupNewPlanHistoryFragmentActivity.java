@@ -76,15 +76,7 @@ public class ViewGroupNewPlanHistoryFragmentActivity extends FragmentActivity im
 		
 		startActivity(intent);
 	}
-	
-	/** Called when the user clicks the Create group button */
-	public void createGroups(View view) {
-		Button button = (Button) activity.findViewById(R.id.createGroupBtn);
-		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		Intent intent = new Intent(activity, CreateGroupActivity.class);
-		
-		startActivity(intent);
-	}
+
 
 	 @Override
 		public boolean onCreateOptionsMenu(Menu menu) {
