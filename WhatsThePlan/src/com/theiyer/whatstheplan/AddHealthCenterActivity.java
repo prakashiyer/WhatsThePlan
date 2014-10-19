@@ -231,7 +231,7 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		if (filteredList != null && !filteredList.isEmpty()) {
-			Map<String, Center> selectedMap = filteredList.get(position);
+			/*Map<String, Center> selectedMap = filteredList.get(position);
 
 			for (Entry<String, Center> entry : selectedMap.entrySet()) {
 				SharedPreferences prefs = getSharedPreferences("Prefs",
@@ -259,6 +259,48 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 					healthGridView.setAdapter(adapter);
 					healthGridView.setVisibility(GridView.VISIBLE);
 				}
+				
+				break;
+			}
+		}*/
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			SharedPreferences.Editor editor = prefs.edit();
+			for(Map<String, Center> selectedMap: healthCenterList){
+				for (Entry<String, Center> entry : selectedMap.entrySet()) {
+					Center center = entry.getValue();
+					if(center.isSelected()){
+						center.setSelected(false);
+					}
+				}
+			}
+			for(Map<String, Center> selectedMap: filteredList){
+				for (Entry<String, Center> entry : selectedMap.entrySet()) {
+					Center center = entry.getValue();
+					if(center.isSelected()){
+						center.setSelected(false);
+						selectedHealthCenter = "";
+						editor.putString("selectedHealthCenter", selectedHealthCenter);
+						editor.apply();
+						adapter.setData(filteredList);
+						healthGridView.setAdapter(adapter);
+						healthGridView.setVisibility(GridView.VISIBLE);
+					}
+				}
+			}
+			Map<String, Center> selectedMap = filteredList.get(position);
+
+			for (Entry<String, Center> entry : selectedMap.entrySet()) {
+				
+				String selectedMember = entry.getKey();
+				Center center = entry.getValue();
+				center.setSelected(true);
+				selectedHealthCenter = selectedMember;
+				editor.putString("selectedHealthCenter", selectedHealthCenter);
+				editor.apply();
+				adapter.setData(filteredList);
+				healthGridView.setAdapter(adapter);
+				healthGridView.setVisibility(GridView.VISIBLE);
 				
 				break;
 			}
