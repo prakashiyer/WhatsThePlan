@@ -421,7 +421,7 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 					for(Center center: centerList.getCenters()){
 						Log.i(TAG, center.getName());
 						Map<String, Center> centerMap = new HashMap<String, Center>();
-						centerMap.put(String.valueOf(center.getId()), center);
+						centerMap.put(String.valueOf(center.getAdminPhone()), center);
 						healthCenterList.add(centerMap);
 					}
 					if (!healthCenterList.isEmpty()) {

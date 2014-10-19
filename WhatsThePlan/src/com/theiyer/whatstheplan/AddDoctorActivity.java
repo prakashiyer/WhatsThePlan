@@ -317,7 +317,7 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener{
 						for(User doctor: userList.getUsers()){
 							Log.i(TAG, doctor.getName());
 							Map<String, User> doctorMap = new HashMap<String, User>();
-							doctorMap.put(String.valueOf(doctor.getId()), doctor);
+							doctorMap.put(String.valueOf(doctor.getPhone()), doctor);
 							doctorList.add(doctorMap);
 						}
 						if (!doctorList.isEmpty()) {
