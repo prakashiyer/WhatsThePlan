@@ -111,6 +111,8 @@ public class ViewMyNewPlansActivity extends Activity {
 
 		String updateQuery = "/rsvpPlan?id="+selectedPlanIndex + "&phone="+phone+"&docFlag=" + docFlag
 				+"&centerPlanFlag="+centerPlanFlag+ "&rsvp=" + rsvp;
+		WebServiceClient restClient = new WebServiceClient(this);
+		restClient.execute(new String[] { updateQuery, phone, docFlag });
 		if ("N".equals(rsvp)) { 
 		CalendarHelper calendarHelper = new CalendarHelper(context);
 		calendarHelper.execute(new String[] { "",
@@ -133,8 +135,7 @@ public class ViewMyNewPlansActivity extends Activity {
 					//selectedPlan, plan.getLocation(),
 					String.valueOf(plan.getId()), phone, "create", "01:20", "2014-04-02" });
 		}
-		WebServiceClient restClient = new WebServiceClient(this);
-		restClient.execute(new String[] { updateQuery, phone, docFlag });
+		
 
 	}
 

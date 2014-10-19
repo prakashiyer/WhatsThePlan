@@ -203,7 +203,7 @@ public class ViewCenterUpcomingPlansActivity extends Activity implements OnItemC
 			for(Entry<String,Plan> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
-				//selectedPlan = entry.getValue().getName();
+				selectedPlan = entry.getValue().getTitle();
 				selectedPlanIndex = entry.getKey();
 				editor.putString("selectedPlan",selectedPlan);
 				editor.putString("selectedPlanIndex",selectedPlanIndex);
