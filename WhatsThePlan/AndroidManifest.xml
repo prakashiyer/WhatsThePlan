@@ -190,6 +190,16 @@
                 android:value="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" />
         </activity>
         
+        <activity
+            android:name="com.theiyer.whatstheplan.ViewCenterUpcomingPlansActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:parentActivityName="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.theiyer.whatstheplan.HomePlanGroupFragmentActivity" />
+        </activity>
+        
         <!-- Create Group page -->
         <activity
             android:name="com.theiyer.whatstheplan.CreateGroupActivity"
