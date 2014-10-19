@@ -97,14 +97,14 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			genderSpinner = (Spinner) findViewById(R.id.genderDrp);
-			ArrayAdapter<String> adapter_state = new ArrayAdapter<String>(context,
+			ArrayAdapter<String> adapter_state = new ArrayAdapter<String>(this,
 				    android.R.layout.simple_spinner_item, genderString);
 				  adapter_state
 				    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 				  genderSpinner.setAdapter(adapter_state);
 				  genderSpinner.setOnItemSelectedListener(this);
-				  bloodGroup = (Spinner) findViewById(R.id.bloodGrp);
-		   ArrayAdapter<String> adapter_state1 = new ArrayAdapter<String>(context,
+		   bloodGroup = (Spinner) findViewById(R.id.bloodGrp);
+		   ArrayAdapter<String> adapter_state1 = new ArrayAdapter<String>(this,
 				    android.R.layout.simple_spinner_item, bloodGrpString);
 				  adapter_state1
 				    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -32,7 +32,7 @@ import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewProfileActivity extends Activity {
-	private static final String TAG = "Health Meet/ViewProfile";
+	private static final String TAG = "Health Meet/ViewProfileActivity";
 	private String centerFlag;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
