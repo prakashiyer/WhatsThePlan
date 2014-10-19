@@ -39,6 +39,8 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.theiyer.whatstheplan.ViewProfileActivity.UserWebServiceClient;
+import com.theiyer.whatstheplan.entity.Center;
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
@@ -88,83 +90,160 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 			setContentView(R.layout.new_user_registration);
 			ActionBar aBar = getActionBar();
 			Resources res = getResources();
+			context = getApplicationContext();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
 			aBar.setTitle(" Individual Registration form");
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
+			genderSpinner = (Spinner) findViewById(R.id.genderDrp);
+			ArrayAdapter<String> adapter_state = new ArrayAdapter<String>(context,
+				    android.R.layout.simple_spinner_item, genderString);
+				  adapter_state
+				    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				  genderSpinner.setAdapter(adapter_state);
+				  genderSpinner.setOnItemSelectedListener(this);
+				  bloodGroup = (Spinner) findViewById(R.id.bloodGrp);
+		   ArrayAdapter<String> adapter_state1 = new ArrayAdapter<String>(context,
+				    android.R.layout.simple_spinner_item, bloodGrpString);
+				  adapter_state1
+				    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				  bloodGroup.setAdapter(adapter_state1);
+				  bloodGroup.setOnItemSelectedListener(this);
 			String userName = prefs.getString("userName", "New User");
 			
 			TextView userNameValue = (TextView) findViewById(R.id.newUserNameValue);
 			userNameValue.setText(userName);
 			
 			String phone = prefs.getString("phone", "");
-			String name = prefs.getString("name", "");
-			String dob = prefs.getString("dob", "");
-			String gender = prefs.getString("gender", "");
-			String bloodGrp = prefs.getString("bloodGrp", "");
-			String address = prefs.getString("Address", "");
-			String doctor = prefs.getString("doctor", "");
-			System.out.println("Profile details : == " + phone + " : " + name+ " : " +dob+":" +gender+ ":" +bloodGrp+":"+address+":"+doctor);
-			TextView phoneValue = (TextView) findViewById(R.id.newUserPhoneValue);
-			phoneValue.setText(phone);
-			TextView dobValue = (TextView) findViewById(R.id.dateOfBirth);
-			dobValue.setText(dob);			  
-			genderSpinner = (Spinner) findViewById(R.id.genderDrp);
-			ArrayAdapter<String> adapter_state = new ArrayAdapter<String>(this,
-				    android.R.layout.simple_spinner_item, genderString);
-				  adapter_state
-				    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				  genderSpinner.setAdapter(adapter_state);
-				  genderSpinner.setOnItemSelectedListener(this);
-			if ("Male".equals(gender)) {
-				System.out.println("********* IN EDIT PROFILE>>>"  + gender);
-				genderSpinner.setSelection(0);
-			} else {
-				System.out.println("********* IN EDIT PROFILE>>>" + gender);
-				genderSpinner.setSelection(1);
-			}
-			bloodGroup = (Spinner) findViewById(R.id.bloodGrp);
-			  ArrayAdapter<String> adapter_state1 = new ArrayAdapter<String>(this,
-			    android.R.layout.simple_spinner_item, bloodGrpString);
-			  adapter_state1
-			    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			  bloodGroup.setAdapter(adapter_state1);
-			  bloodGroup.setOnItemSelectedListener(this);
-			  if ("A-positive".equals(bloodGrp)) {
-				  bloodGroup.setSelection(0);
-			  } else if ("B-positive".equals(bloodGrp)) {
-				  bloodGroup.setSelection(1);
-			  } else if ("B-negative".equals(bloodGrp)) {
-				  bloodGroup.setSelection(2);
-			  } else if ("A-negative".equals(bloodGrp)) {
-				  bloodGroup.setSelection(3);
-			  } else if ("O-positive".equals(bloodGrp)) {
-				  bloodGroup.setSelection(4);
-			  } else if ("O-negative".equals(bloodGrp)) {
-				  bloodGroup.setSelection(5);
-			  } else if ("AB-positive".equals(bloodGrp)) {
-				  bloodGroup.setSelection(6);
-			  } else if ("AB-negative".equals(bloodGrp)) {
-				  bloodGroup.setSelection(7);
-			  }
-			  checkBox = (CheckBox) findViewById(R.id.codeCheckBox);
-			  TextView addressValue = (TextView) findViewById(R.id.newUserAddressValue);
-			  addressValue.setText(address);
-			  if ("Y".equals(doctor)) {
-				  System.out.println("****** if doctor in EDIT " +doctor);
-				  checkBox.setChecked(true);
-				  setDoctorFlag("Y");
-			  } else {
-				  System.out.println("***** else doctor in EDIT " +doctor);
-				  checkBox.setChecked(false);
-				  setDoctorFlag("N");
-			  }
+			String userQuery = "/fetchUser?phone="+phone;
+			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
+			userRestClient.execute(new String[] { userQuery});
+			
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
 		}
 		
+
+	}
+	public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
+
+		private Context mContext;
+		private ProgressDialog pDlg;
+		private String query;
+
+		public UserWebServiceClient(Context mContext) {
+			this.mContext = mContext;
+		}
+
+		private void showProgressDialog() {
+
+			pDlg = new ProgressDialog(mContext);
+			pDlg.setMessage("Processing ....");
+			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDlg.setCancelable(false);
+			pDlg.show();
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+		   showProgressDialog();
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String path = WTPConstants.SERVICE_PATH+params[0];
+			query = params[0];
+			
+			//HttpHost target = new HttpHost(TARGET_HOST);
+			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+			HttpClient client = new DefaultHttpClient();
+			HttpGet get = new HttpGet(path);
+			HttpEntity results = null;
+
+			try {
+				HttpResponse response = client.execute(target, get);
+				results = response.getEntity(); 
+				String result = EntityUtils.toString(results);
+				return result;
+			} catch (Exception e) {
+				
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String response) {
+			if (response != null && query.contains("fetchUser")) {
+				    Log.i(TAG, response);
+				    XStream userXs = new XStream();
+					userXs.alias("UserInformation", User.class);
+					userXs.alias("centers", String.class);
+					userXs.addImplicitCollection(User.class, "centers",
+							"centers", String.class);
+					User user = (User) userXs.fromXML(response);
+					if (user != null && user.getName() != null) {
+						 Log.i(TAG, user.getName());
+						 SharedPreferences prefs = getSharedPreferences("Prefs",
+									Activity.MODE_PRIVATE);
+							SharedPreferences.Editor editor = prefs.edit();
+							editor.putString("userName", user.getName());
+							editor.putString("phone", user.getPhone());
+							editor.putString("dob", user.getDob());
+							editor.putString("gender", user.getSex());
+							editor.putString("bloodGrp", user.getBloodGroup());
+							editor.putString("Address", user.getAddress());
+							editor.putString("doctor", user.getDoctorFlag());
+							editor.apply();
+							}
+					TextView phoneValue = (TextView) findViewById(R.id.newUserPhoneValue);
+					phoneValue.setText(user.getPhone());
+					TextView dobValue = (TextView) findViewById(R.id.dateOfBirth);
+					dobValue.setText(user.getDob());			  
+					
+					if ("Male".equals(user.getSex())) {
+						System.out.println("********* IN EDIT PROFILE>>>"  + user.getSex());
+						genderSpinner.setSelection(0);
+					} else {
+						System.out.println("********* IN EDIT PROFILE>>>" + user.getSex());
+						genderSpinner.setSelection(1);
+					}
+					  if ("A-positive".equals(user.getBloodGroup())) {
+						  bloodGroup.setSelection(0);
+					  } else if ("B-positive".equals(user.getBloodGroup())) {
+						  bloodGroup.setSelection(1);
+					  } else if ("B-negative".equals(user.getBloodGroup())) {
+						  bloodGroup.setSelection(2);
+					  } else if ("A-negative".equals(user.getBloodGroup())) {
+						  bloodGroup.setSelection(3);
+					  } else if ("O-positive".equals(user.getBloodGroup())) {
+						  bloodGroup.setSelection(4);
+					  } else if ("O-negative".equals(user.getBloodGroup())) {
+						  bloodGroup.setSelection(5);
+					  } else if ("AB-positive".equals(user.getBloodGroup())) {
+						  bloodGroup.setSelection(6);
+					  } else if ("AB-negative".equals(user.getBloodGroup())) {
+						  bloodGroup.setSelection(7);
+					  }
+					  checkBox = (CheckBox) findViewById(R.id.codeCheckBox);
+					  TextView addressValue = (TextView) findViewById(R.id.newUserAddressValue);
+					  addressValue.setText(user.getAddress());
+					  if ("Y".equals(user.getAddress())) {
+						  System.out.println("****** if doctor in EDIT " +user.getDoctorFlag());
+						  checkBox.setChecked(true);
+						  setDoctorFlag("Y");
+					  } else {
+						  System.out.println("***** else doctor in EDIT " +user.getDoctorFlag());
+						  checkBox.setChecked(false);
+						  setDoctorFlag("N");
+					  }
+			}
+			pDlg.dismiss();
+		}
 
 	}
 	/** Called when the user checks the change password */
@@ -221,20 +300,20 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 					+"&primaryCenterId="+
 					"&primaryDoctorId="+
 					"&centers=";
-			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
-			userRestClient.execute(new String[] { userQuery});
+			UserWebServiceClientNew userRestClientNew = new UserWebServiceClientNew(this);
+			userRestClientNew.execute(new String[] { userQuery});
 			Toast.makeText(getApplicationContext(), "User profile Updated.",
 					Toast.LENGTH_LONG).show();
 			Intent intent = new Intent(this,
 					HomePlanGroupFragmentActivity.class);
 			startActivity(intent);
 	}
-	public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
+	public class UserWebServiceClientNew extends AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
 
-		public UserWebServiceClient(Context mContext) {
+		public UserWebServiceClientNew(Context mContext) {
 			this.mContext = mContext;
 		}
 
