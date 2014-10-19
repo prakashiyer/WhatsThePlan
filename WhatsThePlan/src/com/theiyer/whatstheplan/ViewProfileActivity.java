@@ -39,6 +39,10 @@ public class ViewProfileActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		if(haveInternet(this)){
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			centerFlag = prefs.getString("centerFlag", "");
+			Log.i("Center FLAG", centerFlag);
 			if (!"Y".equals(centerFlag)) {
 			    setContentView(R.layout.view_profile);
 			} else {
@@ -50,27 +54,23 @@ public class ViewProfileActivity extends Activity {
 			aBar.setBackgroundDrawable(actionBckGrnd);
 			aBar.setTitle(" Profile Details");
 
-			SharedPreferences prefs = getSharedPreferences("Prefs",
-					Activity.MODE_PRIVATE);
-			String userName = prefs.getString("userName", "New User");
-			TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeViewProfileLabel);
-			welcomeStmnt.setText(userName + ", Your profile details!");
-
-			TextView userNameValue = (TextView) findViewById(R.id.viewProfileName);
-			userNameValue.setText("Name: " +userName);
 			
+			String userName = prefs.getString("userName", "New User");
 			String phone = prefs.getString("phone", "");
-			centerFlag = prefs.getString("centerFlag", "");
-			String userQuery = "/fetchUser?phone="+phone;
-			if("Y".equals(centerFlag)){
-			    userQuery = "/fetchCenterForAdmin?phone="+phone;
+			if (!"Y".equals(centerFlag)) {
+				TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeViewProfileLabel);
+				welcomeStmnt.setText(userName + ", Your profile details!");
+				
+				String userQuery = "/fetchUser?phone="+phone;
+				UserWebServiceClient userRestClient = new UserWebServiceClient(this);
+				userRestClient.execute(new String[] { userQuery});
 			} else {
-				WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
-						this);
-				userImageClient.execute(new String[] { "fetchUserImage", phone });
-			}
-			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
-			userRestClient.execute(new String[] { userQuery});
+				TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeViewProfileCenterLabel);
+				welcomeStmnt.setText(userName + ", Your profile details!");
+				String userQuery = "/fetchCenterForAdmin?phone="+phone;
+				UserWebServiceClient userRestClient = new UserWebServiceClient(this);
+				userRestClient.execute(new String[] { userQuery});
+			}			
 			
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
@@ -80,76 +80,7 @@ public class ViewProfileActivity extends Activity {
 
 	}
 
-	
-	private class WebImageRetrieveRestWebServiceClient extends AsyncTask<String, Integer, byte[]> {
 
-		private Context mContext;
-		private ProgressDialog pDlg;
-
-		public WebImageRetrieveRestWebServiceClient(Context mContext) {
-			this.mContext = mContext;
-		}
-
-		private void showProgressDialog() {
-
-			pDlg = new ProgressDialog(mContext);
-			pDlg.setMessage("Processing ....");
-			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDlg.setCancelable(false);
-			pDlg.show();
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			showProgressDialog();
-
-		}
-
-		@Override
-		protected byte[] doInBackground(String... params) {
-			String method = params[0];
-			String path = WTPConstants.SERVICE_PATH+"/"+method;
-
-			if("fetchUserImage".equals(method)){
-	        	path = path+"?phone="+params[1];
-	        } else {
-	        	path = path+"?groupName="+params[1];
-	        }
-			//HttpHost target = new HttpHost(TARGET_HOST);
-			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
-			HttpClient client = new DefaultHttpClient();
-			HttpGet get = new HttpGet(path);
-			HttpEntity results = null;
-
-			try {
-				
-				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
-				byte[] byteresult = EntityUtils.toByteArray(results);
-				return byteresult;
-			} catch (Exception e) {
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(byte[] response) {
-			
-			
-			if(response != null){
-				if (response != null) {
-					ImageView imgView = (ImageView) findViewById(R.id.viewProfilePicThumbnail);
-					Bitmap img = BitmapFactory.decodeByteArray(response, 0,
-							response.length);
-					imgView.setImageBitmap(img);
-	        	}
-				
-			}
-			
-			pDlg.dismiss();
-		}
-	}
 	public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
 
 		private Context mContext;
@@ -222,9 +153,11 @@ public class ViewProfileActivity extends Activity {
 							editor.putString("Address", user.getAddress());
 							editor.putString("doctor", user.getDoctorFlag());
 							editor.apply();
-							}
+							
 					TextView phoneValue = (TextView) findViewById(R.id.viewProfilePhone);
 					phoneValue.setText("Phone: " + user.getPhone());
+					TextView userNameValue = (TextView) findViewById(R.id.viewProfileName);
+					userNameValue.setText("Name: " +user.getName());
 					TextView dobValue = (TextView) findViewById(R.id.viewProfileDob);
 					dobValue.setText("Date of Birth: " + user.getDob());
 					TextView genderValue = (TextView) findViewById(R.id.viewProfilegender);
@@ -233,6 +166,14 @@ public class ViewProfileActivity extends Activity {
 					bloodGrpValue.setText("Blood Group: " + user.getBloodGroup());
 					TextView addressValue = (TextView) findViewById(R.id.viewProfileaddress);
 					addressValue.setText("Address: " + user.getAddress());
+					ImageView imgView = (ImageView) findViewById(R.id.viewProfilePicThumbnail);
+					byte[] image = user.getImage();
+					if(image != null){
+						Bitmap img = BitmapFactory.decodeByteArray(image, 0,
+								image.length);
+						imgView.setImageBitmap(img);
+					}
+					}
 			}
 			if (response != null && query.contains("fetchCenterForAdmin")) {
 			    Log.i(TAG, response);
@@ -252,7 +193,7 @@ public class ViewProfileActivity extends Activity {
 						editor.putString("adminPhone", center.getAdminName());
 						editor.putString("Address", center.getAddress());
 						editor.apply();
-						}
+		
 				TextView phoneValue = (TextView) findViewById(R.id.ViewProfileCenterPhone);
 				phoneValue.setText("Admin Phone: " + center.getAdminPhone());
 				TextView adminNameValue = (TextView) findViewById(R.id.ViewProfileCenterAdminName);
@@ -262,9 +203,13 @@ public class ViewProfileActivity extends Activity {
 				TextView addressValue = (TextView) findViewById(R.id.ViewProfileCenteraddress);
 				addressValue.setText("Address: " + center.getAddress());
 				ImageView imgView = (ImageView) findViewById(R.id.ViewProfileCenterPicThumbnail);
-				Bitmap img = BitmapFactory.decodeByteArray(center.getImage(), 0,
-						center.getImage().length);
-				imgView.setImageBitmap(img);
+				byte[] image = center.getImage();
+				if(image != null){
+					Bitmap img = BitmapFactory.decodeByteArray(image, 0,
+							image.length);
+					imgView.setImageBitmap(img);
+				}
+				}
 		}
 			pDlg.dismiss();
 		}

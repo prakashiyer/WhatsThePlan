@@ -73,8 +73,8 @@ public class MainActivity extends Activity {
    			SharedPreferences prefs = getSharedPreferences("Prefs", Activity.MODE_PRIVATE);
                SharedPreferences.Editor editor = prefs.edit();
                editor.putString("userName", am.getUserData(account, "userName"));
-               editor.putString("doctor", am.getUserData(account, "doctor"));
-               editor.putString("center", am.getUserData(account, "center"));
+               editor.putString("docFlag", am.getUserData(account, "doctor"));
+               editor.putString("centerFlag", am.getUserData(account, "center"));
                editor.putString("phone", account.name);
                editor.apply();
                setTheme(R.style.AppTheme);
