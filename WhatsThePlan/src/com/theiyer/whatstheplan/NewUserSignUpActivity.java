@@ -93,7 +93,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 			  gender.setAdapter(adapter_state);
 			  gender.setOnItemSelectedListener(this);
 			  
-			  System.out.println(bloodGrpString.length);
+			  System.out.println("blood group : " + bloodGrpString.length);
 			  //selblood = (TextView) findViewById(R.id.selblood);
 			  bloodGrp = (Spinner) findViewById(R.id.bloodGrp);
 			  ArrayAdapter<String> adapter_state1 = new ArrayAdapter<String>(this,

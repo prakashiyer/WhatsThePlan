@@ -152,7 +152,7 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 			  TextView addressValue = (TextView) findViewById(R.id.newUserAddressValue);
 			  addressValue.setText(address);
 			  if ("Y".equals(doctor)) {
-				  System.out.println("***** if doctor in EDIT " +doctor);
+				  System.out.println("****** if doctor in EDIT " +doctor);
 				  checkBox.setChecked(true);
 				  setDoctorFlag("Y");
 			  } else {
