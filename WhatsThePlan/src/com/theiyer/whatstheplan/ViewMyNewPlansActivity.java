@@ -154,8 +154,8 @@ public class ViewMyNewPlansActivity extends Activity {
 		MenuItem viewGroupsInvitedListItem = menu.findItem(R.id.viewGroupsInvitedList);
 		viewGroupsInvitedListItem.setVisible(true);*/
 		
-		MenuItem viewMembersInvitedListItem = menu.findItem(R.id.viewMembersInvitedList);
-		viewMembersInvitedListItem.setVisible(true);
+		/*MenuItem viewMembersInvitedListItem = menu.findItem(R.id.viewMembersInvitedList);
+		viewMembersInvitedListItem.setVisible(true);*/
 
 		return true;
 	}
@@ -225,12 +225,12 @@ public class ViewMyNewPlansActivity extends Activity {
 			startActivity(viewGroupsInvitedIntent);
 			return true;*/
 			
-		case (R.id.viewMembersInvitedList):
+		/*case (R.id.viewMembersInvitedList):
 			editor.putString("viewSelected", "membersInvited");
 			editor.apply();
 			Intent viewMembersInvitedIntent = new Intent(this, ViewPlanMembersActivity.class);
 			startActivity(viewMembersInvitedIntent);
-			return true;
+			return true;*/
 			
 		default:
 			return false;
@@ -400,7 +400,7 @@ public class ViewMyNewPlansActivity extends Activity {
 					} else {
 						planLocationValue.setText(" " + plan.getDocName());
 						int count=0;
-						
+						rsvpPlanButton.setVisibility(Button.VISIBLE);
 						if("Y".equals(docFlag) && "Y".equals(plan.getDocRsvp())){
 							rsvpLabel.setText("You are going, Click here to");
 							rsvpPlanButton.setText("Say No");
