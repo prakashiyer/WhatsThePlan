@@ -71,9 +71,9 @@ public class ViewProfileActivity extends Activity {
 			bloodGrpValue.setText("Blood Group: " + bloodGrp);
 			TextView addressValue = (TextView) findViewById(R.id.viewProfileaddress);
 			addressValue.setText("Address: " + address);
-			/*WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
+			WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
 					this);
-			userImageClient.execute(new String[] { "fetchUserImage", phone });*/
+			userImageClient.execute(new String[] { "fetchUserImage", phone });
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
