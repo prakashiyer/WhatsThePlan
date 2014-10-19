@@ -84,7 +84,7 @@ public class DeactivateAccountActivity extends Activity {
 		if("Y".equals(centerFlag)){
 			searchQuery = "/deleteCenter?id=" + centerId;
 		} else {
-			searchQuery = "/deleteUser?id=" + phone;
+			searchQuery = "/deleteUser?phone=" + phone;
 		}
 		
 		
@@ -94,7 +94,7 @@ public class DeactivateAccountActivity extends Activity {
 				new String[] { searchQuery });
 		
 		 AccountManager am = AccountManager.get(this);
-		 Account[] accounts = am.getAccountsByType("com.theiyer.whatstheplan");
+		 Account[] accounts = am.getAccountsByType(WTPConstants.ACCOUNT_ADDRESS);
 			if(accounts != null && accounts.length > 0){
 				Account account = accounts[0];
 				am.removeAccount(account, new OnTokenAcquired(),          // Callback called when a token is successfully acquired
