@@ -37,7 +37,7 @@
     <string name="emergency_healthCentre_button">Health Centre</string>
     <string name="view_groups_button_text">View my Groups</string>
     <string name="create_button_text"> + </string>
-    <string name="create_plans_button_text">Create a Plan</string>
+    <string name="create_plans_button_text">Create Appointment</string>
     <string name="view_plans_button_text">View my Plans</string>
     <string name="new_group_name_label">Enter a Group with unique name</string>
     <string name="register_group_button_text">Create this Group</string>

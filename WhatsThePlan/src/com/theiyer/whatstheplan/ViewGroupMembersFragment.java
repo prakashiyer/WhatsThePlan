@@ -143,9 +143,9 @@ public class ViewGroupMembersFragment extends Fragment {
 				if (userList != null) {
 					
 					List<User> users = userList.getUsers();
-					Log.i(TAG, "Got User list " +users.size());
+					
 					if(users != null){
-						
+						Log.i(TAG, "Got User list " +users.size());
 						for(User user: users){
 							Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
 							memberMap.put(user.getName(), user.getImage());
