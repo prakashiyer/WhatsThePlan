@@ -66,16 +66,11 @@ public class ProfileImageUploadActivity extends Activity {
 			aBar.setTitle(" Profile Photo Selection");
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
-			String phone = prefs.getString("phone", "");
 			context = getApplicationContext();
-			
 
 			imgView = (ImageView) findViewById(R.id.profilePicView);
 			
-	        WebImageRetrieveRestWebServiceClient imageRetrieveClient = new WebImageRetrieveRestWebServiceClient(this);
-			
-	        imageRetrieveClient.execute(
-					new String[] { "uploadUserImage", phone});
+	        
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);

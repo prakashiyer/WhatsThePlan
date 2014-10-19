@@ -44,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.theiyer.whatstheplan.AddHealthCenterActivity.UserWebServiceClient;
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.entity.PlanList;
 import com.theiyer.whatstheplan.entity.User;
@@ -55,31 +56,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 	private Context context;
 	private String genderVar;
 	private String doctorFlag;
-	public String getDoctorFlag() {
-		return doctorFlag;
-	}
-
-	public void setDoctorFlag(String doctorFlag) {
-		this.doctorFlag = doctorFlag;
-	}
-
-	public String getGenderVar() {
-		return genderVar;
-	}
-
-	public void setGenderVar(String genderVar) {
-		this.genderVar = genderVar;
-	}
-
 	private String bloodVar;
-
-	public String getBloodVar() {
-		return bloodVar;
-	}
-
-	public void setBloodVar(String bloodVar) {
-		this.bloodVar = bloodVar;
-	}
 
 	private static final String TAG = "Just Meet GCM";
 
@@ -106,8 +83,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 			aBar.setBackgroundDrawable(actionBckGrnd);
 			aBar.setTitle(" Individual Registration form");
 			context = getApplicationContext();
-			setDoctorFlag("N");
-			System.out.println(genderString.length);
+			doctorFlag = "N";
 			  //selGender = (TextView) findViewById(R.id.selGender);
 			  gender = (Spinner) findViewById(R.id.genderDrp);
 			  ArrayAdapter<String> adapter_state = new ArrayAdapter<String>(this,
@@ -137,8 +113,12 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 	/** Called when the user checks the change password */
 	public void enterDocCheck(View view) {
 		CheckBox checkBox = (CheckBox) findViewById(R.id.codeCheckBox);
-			System.out.println("I Am A Doctor");
-			setDoctorFlag("Y");
+		if(checkBox.isChecked()){
+			doctorFlag="Y";
+		} else {
+			doctorFlag="N";
+		}
+			
 	}
 	public void setDate(View v) {
 		Button button = (Button) findViewById(R.id.setDateOfBirth);
@@ -173,7 +153,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 		} else if (TextUtils.isEmpty(dobText)) {			
 			Toast.makeText(getApplicationContext(),
 					"Can I have your date of birth?", Toast.LENGTH_LONG).show();
-		} else if (TextUtils.isEmpty(getGenderVar())) {			
+		} else if (TextUtils.isEmpty(genderVar)) {			
 			Toast.makeText(getApplicationContext(),
 					"Can I have your gender?", Toast.LENGTH_LONG).show();
 		} else {
@@ -183,26 +163,33 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 			editor.putString("name", userName);
 			editor.putString("phone", phone);
 			editor.putString("dob", dobText);
-			editor.putString("gender", getGenderVar());
-			editor.putString("bloodGrp", getBloodVar());
+			editor.putString("gender", genderVar);
+			editor.putString("bloodGrp", bloodVar);
 			editor.putString("Address", address);
-			editor.putString("doctor", getDoctorFlag());
+			editor.putString("doctor", doctorFlag);
+			editor.putString("docFlag", doctorFlag);
+			editor.putString("centerFlag", "N");
 			editor.apply();
-			/*String userQuery = "/addUser?phone=234874&name=aapqr&bloodGroup=A&dob=1988-12-03&sex=M&address=acd&doctorFlag=Y&primaryCenterId=1&primaryDoctorId=1&centers=1,2";
-			String userQuery = "/addUser?phone="+phone+"&name="+userName
-					+"&bloodGroup=" + getBloodVar()
-					+"&dob=" + dobText
-					+"&sex=" + getGenderVar()
-					+"&address=" + address
-					+"&doctorFlag=" + getDoctorFlag()
-					+"&primaryCenterId="+
-					"&primaryDoctorId="+
-					"&centers=";
-			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
-			userRestClient.execute(new String[] { userQuery});*/
-			Intent intent = new Intent(this,
-					AddDoctorActivity.class);
-			startActivity(intent);
+			if("Y".equals(doctorFlag)){
+				String userQuery = "/addUser?phone="+phone+"&name="+userName.replace(" ", "%20")
+						+"&bloodGroup=" + bloodVar
+						+"&dob=" + dobText
+						+"&sex=" + genderVar
+						+"&address=" + address
+						+"&doctorFlag=" + doctorFlag
+						+"&primaryCenterId="+ "0"
+						+"&primaryDoctorId="+ "0"
+						+"&centers=" + "";
+				UserWebServiceClient userRestClient = new UserWebServiceClient(this);
+				userRestClient.execute(new String[] { userQuery});
+						
+				
+			} else {
+				Intent intent = new Intent(this,
+						AddDoctorActivity.class);
+				startActivity(intent);
+			}
+			
 		}
 	}
 
@@ -294,24 +281,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 
 	}
 	
-	/**
-	 * Stores the registration ID and app versionCode in the application's
-	 * {@code SharedPreferences}.
-	 * 
-	 * @param context
-	 *            application's context.
-	 * @param regId
-	 *            registration ID
-	 */
-	private void storeRegistrationId(Context context, String regId) {
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString("regId", regId);
-		editor.apply();		
-	}
-	
-	/*public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
+	public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
@@ -370,12 +340,44 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 					User user = (User) userXs.fromXML(response);
 					if (user != null && user.getName() != null) {
 						 Log.i(TAG, user.getName());
-							}
+						 AccountManager am = AccountManager.get(mContext);
+							final Account account = new Account(user.getPhone(),
+									WTPConstants.ACCOUNT_ADDRESS);
+							final Bundle bundle = new Bundle();
+							bundle.putString("userName", user.getName());
+							bundle.putString("phone", user.getPhone());
+							bundle.putString("doctor", doctorFlag);
+							bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
+									account.name);
+							am.addAccountExplicitly(account, user.getPhone(), bundle);
+							am.setAuthToken(account, "Full Access", user.getPhone());
+						 Toast.makeText(getApplicationContext(), "Congratulations! Your Profile has been activated.",
+									Toast.LENGTH_LONG).show();
+						 Intent intent = new Intent(mContext, ProfileImageUploadActivity.class);
+							startActivity(intent);
+					}
 			}
 			pDlg.dismiss();
 		}
 
-	}*/
+	}
+	
+	/**
+	 * Stores the registration ID and app versionCode in the application's
+	 * {@code SharedPreferences}.
+	 * 
+	 * @param context
+	 *            application's context.
+	 * @param regId
+	 *            registration ID
+	 */
+	private void storeRegistrationId(Context context, String regId) {
+		SharedPreferences prefs = getSharedPreferences("Prefs",
+				Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString("regId", regId);
+		editor.apply();		
+	}
 	
 	/**
 	 * Checks if we have a valid Internet Connection on the device.

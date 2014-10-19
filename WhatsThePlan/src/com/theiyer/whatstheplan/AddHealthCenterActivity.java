@@ -156,7 +156,7 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 		am.setAuthToken(account, "Full Access", phone);
 		Intent intent = new Intent(this, ProfileImageUploadActivity.class);
 		startActivity(intent);
-		Toast.makeText(getApplicationContext(), "You can view this group once approved by the creator.",
+		Toast.makeText(getApplicationContext(), "Congratulations! Your Profile has been activated.",
 				Toast.LENGTH_LONG).show();
 		
 		
