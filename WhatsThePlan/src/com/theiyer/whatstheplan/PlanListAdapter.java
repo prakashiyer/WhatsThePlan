@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.theiyer.whatstheplan.entity.Plan;
 
 import android.app.Activity;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class PlanListAdapter extends BaseAdapter {
@@ -96,6 +99,30 @@ public class PlanListAdapter extends BaseAdapter {
             	planDay.setText(" " +weekday+", "+monthStr+" "+dateStr +" ");
             	planTime.setText(" " +hour+":"+min+" "+ampm+ " ");
             	int members = 0;
+            	
+            	if("Y".equals(plan.getCenterPlanFlag())){
+            		String planFile = plan.getPlanFile();
+					if(!StringUtils.isEmpty(planFile)) {
+						String[] membersArray = StringUtils
+								.splitByWholeSeparator(planFile, ",");
+						
+						for (String memberRsvp : membersArray) {
+							if (memberRsvp.contains("Y")) {
+								members = members + 1;
+							}
+						}
+					}
+            	} else {
+            		if ("Y".equals(plan.getUserRsvp())) {
+                		members = 1;
+    				}
+
+    				if ("Y".equals(plan.getDocRsvp())) {
+    					members = 2;
+    				}
+            	}
+            	
+            	
             	/*if(plan.getMemberNames() != null){
             		members = plan.getMemberNames().size();
             	}*/

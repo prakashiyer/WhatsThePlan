@@ -444,32 +444,37 @@ public class ViewMyNewPlansActivity extends Activity {
 					TextView rsvpLabel = (TextView) findViewById(R.id.rsvpNewLabel);
 					if ("Y".equals(plan.getCenterPlanFlag())) {
 						planLocationValue.setText(" " + plan.getCenterName());
-						String planFile = plan.getPlanFile();
-						String[] membersArray = StringUtils
-								.splitByWholeSeparator(planFile, ",");
+						
 						int count = 0;
-						for (String memberRsvp : membersArray) {
-							if (!plan.getUserPhone().equals(phone)) {
-								if (memberRsvp.contains(phone)
-										&& memberRsvp.contains("Y")) {
-									rsvpLabel
-											.setText("You are going, Click here to");
-									rsvpPlanButton.setText("Say No");
+						String planFile = plan.getPlanFile();
+						if(!StringUtils.isEmpty(planFile)) {
+							String[] membersArray = StringUtils
+									.splitByWholeSeparator(planFile, ",");
+							
+							for (String memberRsvp : membersArray) {
+								if (!plan.getUserPhone().equals(phone)) {
+									if (memberRsvp.contains(phone)
+											&& memberRsvp.contains("Y")) {
+										rsvpLabel
+												.setText("You are going, Click here to");
+										rsvpPlanButton.setText("Say No");
+									} else {
+										rsvpLabel
+												.setText("Are you attending? Click here to");
+										rsvpPlanButton.setText("Say Yes");
+									}
+									rsvpPlanButton.setVisibility(Button.VISIBLE);
 								} else {
-									rsvpLabel
-											.setText("Are you attending? Click here to");
-									rsvpPlanButton.setText("Say Yes");
+									rsvpLabel.setVisibility(TextView.INVISIBLE);
+									rsvpPlanButton.setVisibility(Button.INVISIBLE);
 								}
-								rsvpPlanButton.setVisibility(Button.VISIBLE);
-							} else {
-								rsvpLabel.setVisibility(TextView.INVISIBLE);
-								rsvpPlanButton.setVisibility(Button.INVISIBLE);
-							}
 
-							if (memberRsvp.contains("Y")) {
-								count = count + 1;
+								if (memberRsvp.contains("Y")) {
+									count = count + 1;
+								}
 							}
 						}
+						
 						membersAttending.setText("Members Attending ("
 								+ String.valueOf(count) + ") >>");
 						rsvpPlanButton.setTextColor(getResources().getColor(
