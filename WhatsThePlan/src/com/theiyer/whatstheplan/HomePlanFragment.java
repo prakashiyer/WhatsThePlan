@@ -68,11 +68,17 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 					Activity.MODE_PRIVATE);
 
 			String phone = prefs.getString("phone", "");
+			String docFlag = prefs.getString("docFlag", "");
 			String searchQuery = "/fetchUpcomingPlans?phone=" + phone;
 
 			adapter = new PlanListAdapter(activity);
 			planListView = (ListView) rootView.findViewById(R.id.viewupcomingplansList);
 			planListView.setOnItemClickListener(this);
+			
+			Button button = (Button)  rootView.findViewById(R.id.createPlanBtn);
+			if("Y".equals(docFlag)){
+				button.setVisibility(Button.INVISIBLE);
+			}
 			
 			WebServiceClient restClient = new WebServiceClient(activity);
 			restClient.execute(new String[] { searchQuery });

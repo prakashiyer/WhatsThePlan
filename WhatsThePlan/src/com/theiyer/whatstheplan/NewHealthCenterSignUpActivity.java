@@ -77,7 +77,10 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 			aBar.setTitle(" Health Centre Registration form");
 			context = getApplicationContext();
 			imgView = (ImageView) findViewById(R.id.healthcentrePicView);
-		  }
+		  } else {
+				Intent intent = new Intent(this, RetryActivity.class);
+				startActivity(intent);
+			}
 	}
 	public void selectGroupImage(View view) {
 		try {
@@ -104,37 +107,21 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 		String adminPhone = adminPhoneText.getText().toString();
 		EditText adminAddressText = (EditText) findViewById(R.id.healthaddress);
 		String adminAddress = adminAddressText.getText().toString();
-
-		/*String joinQuery = "/addCenter?name=" + centreName.replace(" ", "%20")
-				+ "&adminName=" + adminName.replace(" ", "%20")
-				+ "&adminPhone=" + adminPhone
-				+ "&address=" + adminAddress
-				+ "&members=" + ""
-				+ "&image=" + filePath;
-		WebServiceClient restClient = new WebServiceClient(this);
-		restClient.execute(
-				new String[] { joinQuery });*/
+		SharedPreferences prefs = getSharedPreferences("Prefs",
+				Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString("name", centreName);
+		editor.putString("phone", adminPhone);
+		editor.putString("docFlag", "N");
+		editor.putString("centerFlag", "Y");
+		editor.apply();
 		WebImageRestWebServiceClient imageRestClient = new WebImageRestWebServiceClient(
 				this);
 
 		imageRestClient.execute(
 				new String[] { "addCenter", centreName, adminName, 
 						adminPhone, adminAddress, "", filePath });
-		AccountManager am = AccountManager.get(this);
-		final Account account = new Account(adminPhone,
-				WTPConstants.ACCOUNT_ADDRESS);
-		final Bundle bundle = new Bundle();
-		bundle.putString("userName", centreName);
-		bundle.putString("phone", adminPhone);
-		bundle.putString("center", "Y");
-		bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
-				account.name);
-		am.addAccountExplicitly(account, adminPhone, bundle);
-		am.setAuthToken(account, "Full Access", adminPhone);
-		Toast.makeText(getApplicationContext(), "You can view this group once approved by the creator.",
-				Toast.LENGTH_LONG).show();
-		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
-		startActivity(intent);
+		
 	}
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -261,6 +248,7 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 		        entity.addPart("address", new StringBody(params[4]));
 		        entity.addPart("members",  new StringBody(""));
 		        entity.addPart("image", new FileBody(new File(filePath)));
+		        
 		        post.setEntity(entity);
 
 		        HttpResponse response = client.execute(target, post);
@@ -285,14 +273,22 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 						"members", String.class);
 				Center center = (Center) userXs.fromXML(response);
 				if (center != null) {
-					byte[] image = center.getImage();
-					Bitmap img = BitmapFactory.decodeByteArray(image, 0,
-							image.length);
-
-					imgView.setImageBitmap(img);
-					Toast.makeText(getApplicationContext(),
-							"Selected Photo has been set", Toast.LENGTH_LONG)
-							.show();
+					AccountManager am = AccountManager.get(mContext);
+					final Account account = new Account(center.getAdminPhone(),
+							WTPConstants.ACCOUNT_ADDRESS);
+					final Bundle bundle = new Bundle();
+					bundle.putString("userName", center.getName());
+					bundle.putString("phone", center.getAdminPhone());
+					bundle.putString("center", "Y");
+					bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
+							account.name);
+					am.addAccountExplicitly(account, center.getAdminPhone(), bundle);
+					am.setAuthToken(account, "Full Access", center.getAdminPhone());
+					Toast.makeText(getApplicationContext(), "Congratulations! Your center is active now.",
+							Toast.LENGTH_LONG).show();
+					Intent intent = new Intent(mContext, HomePlanGroupFragmentActivity.class);
+					startActivity(intent);
+					
 				}
 				
 			}	

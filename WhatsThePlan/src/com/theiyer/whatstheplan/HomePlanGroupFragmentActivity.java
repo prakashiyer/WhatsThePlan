@@ -11,6 +11,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import com.theiyer.whatstheplan.entity.Center;
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
@@ -62,10 +63,12 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 					Activity.MODE_PRIVATE);
 			centerFlag = prefs.getString("centerFlag", "");
 			docFlag = prefs.getString("docFlag", "");
+			String phone = prefs.getString("phone", "");
 	   
 	        // For each of the sections in the app, add a tab to the action bar.
 	        actionBar.addTab(actionBar.newTab().setText(R.string.home_plan_label)
 	        		.setIcon(R.drawable.ic_plan).setTabListener(this));
+	        String userQuery = "/fetchUser?phone="+phone;
 	        if(!"Y".equals(centerFlag) && !"Y".equals(docFlag)){
 	        	 actionBar.addTab(actionBar.newTab().setText(R.string.groups_list_label)
 	 	        		.setIcon(R.drawable.ic_groupicon).setTabListener(this));
@@ -73,6 +76,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	 	        		.setIcon(R.drawable.ic_emergency).setTabListener(this));
 	        }
 	        if("Y".equals(centerFlag)){
+	        	userQuery = "/fetchCenterForAdmin?phone="+phone;
 	        	 actionBar.addTab(actionBar.newTab().setText(R.string.member_list_group_text)
 	 	        		.setIcon(R.drawable.ic_groupicon).setTabListener(this));
 	        }
@@ -82,8 +86,8 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		        int index = savedInstanceState.getInt("index");
 		        getActionBar().setSelectedNavigationItem(index);
 		    }
-	        String phone = prefs.getString("phone", "");
-	        String userQuery = "/fetchUser?phone="+phone;
+	        
+	        
 	        UserWebServiceClient userRestClient = new UserWebServiceClient(this);
 			userRestClient.execute(new String[] { userQuery});
 	        
@@ -97,6 +101,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 
 		private Context mContext;
 		private ProgressDialog pDlg;
+		private String query;
 
 		public UserWebServiceClient(Context mContext) {
 			this.mContext = mContext;
@@ -122,6 +127,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		@Override
 		protected String doInBackground(String... params) {
 			String path = WTPConstants.SERVICE_PATH+params[0];
+			query = params[0];
 			
 			//HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
@@ -142,7 +148,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 
 		@Override
 		protected void onPostExecute(String response) {
-			if (response != null) {
+			if (response != null && query.contains("fetchUser")) {
 				    Log.i(TAG, response);
 				    XStream userXs = new XStream();
 					userXs.alias("UserInformation", User.class);
@@ -165,6 +171,26 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 							editor.apply();
 							}
 			}
+			if (response != null && query.contains("fetchCenterForAdmin")) {
+			    Log.i(TAG, response);
+			    XStream userXs = new XStream();
+			    userXs.alias("Center", Center.class);
+				userXs.alias("members", String.class);
+				userXs.addImplicitCollection(Center.class, "members",
+						"members", String.class);
+				Center center = (Center) userXs.fromXML(response);
+				if (center != null && center.getName() != null) {
+					 Log.i(TAG, center.getName());
+					 SharedPreferences prefs = getSharedPreferences("Prefs",
+								Activity.MODE_PRIVATE);
+						SharedPreferences.Editor editor = prefs.edit();
+						editor.putString("userName", center.getName());
+						editor.putString("phone", center.getAdminPhone());
+						editor.putString("adminPhone", center.getAdminName());
+						editor.putString("Address", center.getAddress());
+						editor.apply();
+						}
+		}
 			pDlg.dismiss();
 		}
 
@@ -298,85 +324,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			}
 		}
 		
-		/*private class WebServiceClient extends AsyncTask<String, Integer, String> {
-
-			private Context mContext;
-			private ProgressDialog pDlg;
-
-			public WebServiceClient(Context mContext) {
-				this.mContext = mContext;
-			}
-
-			private void showProgressDialog() {
-
-				pDlg = new ProgressDialog(mContext);
-				pDlg.setMessage("Processing ....");
-				pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				pDlg.setCancelable(false);
-				pDlg.show();
-
-			}
-
-			@Override
-			protected void onPreExecute() {
-				
-			   showProgressDialog();
-
-			}
-
-			@Override
-			protected String doInBackground(String... params) {
-				String path = WTPConstants.SERVICE_PATH+params[0];
-
-				//HttpHost target = new HttpHost(TARGET_HOST);
-				HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
-				HttpClient client = new DefaultHttpClient();
-				HttpGet get = new HttpGet(path);
-				HttpEntity results = null;
-
-				try {
-					HttpResponse response = client.execute(target, get);
-					results = response.getEntity(); 
-					String result = EntityUtils.toString(results);
-					return result;
-				} catch (Exception e) {
-					
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(String response) {
-				super.onPostExecute(response);
-				if(pDlg.isShowing()) {
-					pDlg.dismiss();
-				}
-				if (response != null && response.contains("PlanList")) {
-					XStream xstream = new XStream();
-					xstream.alias("PlanList", PlanList.class);
-					xstream.alias("plans", Plan.class);
-					xstream.addImplicitCollection(PlanList.class, "plans");
-					xstream.alias("memberNames", String.class);
-					xstream.addImplicitCollection(Plan.class, "memberNames");
-					PlanList planList = (PlanList) xstream.fromXML(response);
-					if (planList != null && planList.getPlans() != null) {
-
-						List<Plan> plans = planList.getPlans();
-
-						if (plans != null && !plans.isEmpty()) {
-						    plansResult = new ArrayList<Map<String, String>>();
-							for (Plan plan : plans) {
-								Map<String, String> planMap = new HashMap<String, String>();
-								planMap.put(plan.getName(), plan.getStartTime());
-								plansResult.add(planMap);
-
-							}
-						}
-					}
-				}
-			}
-
-		}*/
+		
 
 		@Override
 		public void onBackPressed() {
