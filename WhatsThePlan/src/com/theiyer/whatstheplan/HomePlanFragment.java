@@ -52,6 +52,7 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 	View rootView;
 	PlanListAdapter adapter;
 	List<Map<String, Plan>> plansResult;
+	String centerFlag;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,6 +70,7 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 
 			String phone = prefs.getString("phone", "");
 			String docFlag = prefs.getString("docFlag", "");
+			centerFlag = prefs.getString("centerFlag", "");
 			String searchQuery = "/fetchUpcomingPlans?phone=" + phone;
 
 			adapter = new PlanListAdapter(activity);
@@ -96,9 +98,13 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 		
 		Button button = (Button) activity.findViewById(R.id.createPlanBtn);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		
-		Intent intent = new Intent(activity, ViewExistingMembersActivity.class);
-		startActivity(intent);
+		if("Y".equals(centerFlag)){
+			Intent intent = new Intent(activity, AppointmentActivity.class);
+			startActivity(intent);
+		} else {
+			Intent intent = new Intent(activity, ViewExistingMembersActivity.class);
+			startActivity(intent);
+		}
 	}
 	
 	@Override
@@ -112,7 +118,7 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 			for(Entry<String,Plan> entry: selectedMap.entrySet()){
 				
 				SharedPreferences.Editor editor = prefs.edit();
-				//selectedPlan = entry.getValue().getName();
+				selectedPlan = entry.getValue().getTitle();
 				selectedPlanIndex = entry.getKey();
 				System.out.println("Selected Plan: " +selectedPlan);
 				editor.putString("selectedPlan",selectedPlan);

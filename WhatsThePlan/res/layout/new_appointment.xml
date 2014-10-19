@@ -96,7 +96,7 @@
             android:layout_height="30dp"
             android:layout_marginTop="@dimen/top_no_margin"
             android:background="@drawable/create"
-            android:onClick="setAppointmentDate"
+            android:onClick="setDate"
             android:text="@string/date_button_text"
             android:textColor="@color/button_text"
             android:textSize="@dimen/standard_text_size"

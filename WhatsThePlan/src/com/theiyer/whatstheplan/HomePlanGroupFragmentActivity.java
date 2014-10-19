@@ -220,9 +220,13 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		
 		Button button = (Button) activity.findViewById(R.id.createPlanBtn);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		
-		Intent intent = new Intent(activity, ViewExistingMembersActivity.class);
-		startActivity(intent);
+		if("Y".equals(centerFlag)){
+			Intent intent = new Intent(activity, AppointmentActivity.class);
+			startActivity(intent);
+		} else {
+			Intent intent = new Intent(activity, ViewExistingMembersActivity.class);
+			startActivity(intent);
+		}
 	}
 	
 	/** Called when the user clicks the join group button */
