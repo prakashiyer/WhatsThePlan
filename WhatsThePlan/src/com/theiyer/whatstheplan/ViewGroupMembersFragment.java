@@ -64,8 +64,8 @@ public class ViewGroupMembersFragment extends Fragment {
 					Activity.MODE_PRIVATE);
 			
 
-			String centerId = prefs.getString("centerId", "");
-			String searchQuery = "/fetchCenterUsers?id=" + centerId;
+			String phone = prefs.getString("phone", "");
+			String searchQuery = "/fetchCenterUsers?phone=" + phone;
 
 			
 			membersList = new ArrayList<Map<String, byte[]>>();
