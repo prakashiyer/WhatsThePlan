@@ -224,7 +224,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			Intent intent = new Intent(activity, AppointmentActivity.class);
 			startActivity(intent);
 		} else {
-			Intent intent = new Intent(activity, ViewExistingMembersActivity.class);
+			Intent intent = new Intent(activity, ViewExistingDoctorsActivity.class);
 			startActivity(intent);
 		}
 	}
