@@ -62,12 +62,12 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 
 	private GoogleCloudMessaging gcm;
 	private String regid;
-	Spinner gender;
+	Spinner gender; 
 	 //TextView selGender;
 	 Spinner bloodGrp;
 	 //TextView selblood;
 	 private String[] genderString = { "(Select)", "Male", "Female" };
-	 private String[] bloodGrpString = {"(Select)", "A+", "B+", "B-", "A-", "O+" , "O-", "AB+", "AB-" };
+	 private String[] bloodGrpString = {"(Select)", "A-positive", "B-positive", "B-negative", "A-negative", "O-positive" , "O-negative", "AB-positive", "AB-negative" };
 	
 
 	@Override
@@ -170,6 +170,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 			editor.putString("docFlag", doctorFlag);
 			editor.putString("centerFlag", "N");
 			editor.apply();
+			System.out.println("****** bloodVar  ::  " + bloodVar);
 			if("Y".equals(doctorFlag)){
 				String userQuery = "/addUser?phone="+phone+"&name="+userName.replace(" ", "%20")
 						+"&bloodGroup=" + bloodVar

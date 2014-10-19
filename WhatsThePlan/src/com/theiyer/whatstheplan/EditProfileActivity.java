@@ -45,7 +45,7 @@ import com.thoughtworks.xstream.XStream;
 
 public class EditProfileActivity extends FragmentActivity implements OnItemSelectedListener {
 	private String[] genderString = { "Male", "Female" };
-	 private String[] bloodGrpString = {"A+", "B+", "B-", "A-", "O+" , "O-", "AB+", "AB-" };
+	 private String[] bloodGrpString = {"A-positive", "B-positive", "B-negative", "A-negative", "O-positive" , "O-negative", "AB-positive", "AB-negative"};
 	 Spinner genderSpinner;
 	 CheckBox checkBox;
 	 private Context context;
@@ -131,21 +131,21 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 			    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			  bloodGroup.setAdapter(adapter_state1);
 			  bloodGroup.setOnItemSelectedListener(this);
-			  if ("A+".equals(bloodGrp)) {
+			  if ("A-positive".equals(bloodGrp)) {
 				  bloodGroup.setSelection(0);
-			  } else if ("B+".equals(bloodGrp)) {
+			  } else if ("B-positive".equals(bloodGrp)) {
 				  bloodGroup.setSelection(1);
-			  } else if ("B-".equals(bloodGrp)) {
+			  } else if ("B-negative".equals(bloodGrp)) {
 				  bloodGroup.setSelection(2);
-			  } else if ("A-".equals(bloodGrp)) {
+			  } else if ("A-negative".equals(bloodGrp)) {
 				  bloodGroup.setSelection(3);
-			  } else if ("O+".equals(bloodGrp)) {
+			  } else if ("O-positive".equals(bloodGrp)) {
 				  bloodGroup.setSelection(4);
-			  } else if ("O-".equals(bloodGrp)) {
+			  } else if ("O-negative".equals(bloodGrp)) {
 				  bloodGroup.setSelection(5);
-			  } else if ("AB+".equals(bloodGrp)) {
+			  } else if ("AB-positive".equals(bloodGrp)) {
 				  bloodGroup.setSelection(6);
-			  } else if ("AB-".equals(bloodGrp)) {
+			  } else if ("AB-negative".equals(bloodGrp)) {
 				  bloodGroup.setSelection(7);
 			  }
 			  checkBox = (CheckBox) findViewById(R.id.codeCheckBox);
