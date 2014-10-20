@@ -123,11 +123,8 @@ public class EmergencyCallTabFragment extends Fragment {
 							editor.putString("Address", user.getAddress());*/
 							editor.putString("doctorPhone", user.getPrimaryDoctorId());
 							editor.putString("centerPhone", user.getPrimaryCenterId());
+							editor.apply();
 							System.out.println("centerPhone in WebS " + user.getPrimaryCenterId());
-							String centerPhone = prefs.getString("centerPhone", "");
-							String doctorPhone = prefs.getString("doctorPhone", "");
-							System.out.println("******** centerPhone in emergency: " + centerPhone);
-							System.out.println("******** doctorPhone in emergency: " + doctorPhone);
 							}
 			}
 			pDlg.dismiss();
