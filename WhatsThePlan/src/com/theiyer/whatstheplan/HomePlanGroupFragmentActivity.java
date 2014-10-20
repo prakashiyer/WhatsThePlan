@@ -209,8 +209,14 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	            startActivity(viewProfileIntent);
 				return true;
 			case (R.id.editProfile):
-				Intent editProfileIntent = new Intent(this, EditProfileActivity.class);
-	            startActivity(editProfileIntent);
+				if("Y".equals(centerFlag)){
+					Intent editProfileIntent = new Intent(this, EditCenterProfileActivity.class);
+		            startActivity(editProfileIntent);
+				} else {
+					Intent editProfileIntent = new Intent(this, EditProfileActivity.class);
+		            startActivity(editProfileIntent);
+				}
+				
 				return true;
 			case (R.id.changeProfilePic):
 				Intent changeProfilePicIntent = new Intent(this, ProfileImageUploadActivity.class);
