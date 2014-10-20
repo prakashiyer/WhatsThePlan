@@ -69,7 +69,7 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 			context = getApplicationContext();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" Individual Registration form");
+			aBar.setTitle(" Edit Profile");
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			genderSpinner = (Spinner) findViewById(R.id.genderDrp);
