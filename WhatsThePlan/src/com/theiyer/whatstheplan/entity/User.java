@@ -3,8 +3,6 @@ package com.theiyer.whatstheplan.entity;
 import java.util.List;
 
 public class User {
-	
-
 	private int id;
 	private String name;
 	private String phone;
@@ -13,8 +11,8 @@ public class User {
 	private String sex;
 	private String address;
 	private String doctorFlag;
-	private int primaryCenterId;
-	private int primaryDoctorId;
+	private String primaryCenterId;
+	private String primaryDoctorId;
 	private byte[] image;
 	private List<String> centers;
 	private boolean selected;
@@ -96,19 +94,19 @@ public class User {
 		this.doctorFlag = doctorFlag;
 	}
 
-	public int getPrimaryCenterId() {
+	public String getPrimaryCenterId() {
 		return primaryCenterId;
 	}
 
-	public void setPrimaryCenterId(int primaryCenterId) {
+	public void setPrimaryCenterId(String primaryCenterId) {
 		this.primaryCenterId = primaryCenterId;
 	}
 
-	public int getPrimaryDoctorId() {
+	public String getPrimaryDoctorId() {
 		return primaryDoctorId;
 	}
 
-	public void setPrimaryDoctorId(int primaryDoctorId) {
+	public void setPrimaryDoctorId(String primaryDoctorId) {
 		this.primaryDoctorId = primaryDoctorId;
 	}
 

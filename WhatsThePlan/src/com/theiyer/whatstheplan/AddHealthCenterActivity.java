@@ -78,7 +78,7 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 			healthCenterList = new ArrayList<Map<String, Center>>();
 			filteredList = new ArrayList<Map<String, Center>>();
 			healthGridView = (GridView) findViewById(R.id.viewhealthCenterGrid);
-			System.out.println("HEATH GRID VIEW " + healthGridView);
+			System.out.println("HEATH GRID VIEW : " + healthGridView);
 			adapter = new CenterGridAdapter(this);
 			healthGridView.setOnItemClickListener(this);
 			selectedHealthCenter = "";
@@ -128,10 +128,12 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 		String bloodGrp = prefs.getString("bloodGrp", "");
 		String address = prefs.getString("Address", "");
 		String doctor = prefs.getString("doctor", "");
-		String selectedDoctorId = prefs.getString("selectedDoctor", "0");
+		String selectedDoctor = prefs.getString("selectedDoctor", "0");
 		if (selectedHealthCenter == "") {
 			selectedHealthCenter = "0";
 		}
+		System.out.println("selectedDoctor : " + selectedDoctor);
+		System.out.println("selectedHealthCenter : " + selectedHealthCenter);
 		String userQuery = "/addUser?phone="+phone+"&name="+name
 				+"&bloodGroup=" + bloodGrp
 				+"&dob=" + dob
@@ -139,7 +141,7 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 				+"&address=" + address
 				+"&doctorFlag=" + doctor
 				+"&primaryCenterId="+ selectedHealthCenter
-				+"&primaryDoctorId="+ selectedDoctorId
+				+"&primaryDoctorId="+ selectedDoctor
 				+"&centers=" + "";
 		UserWebServiceClient userRestClient = new UserWebServiceClient(this);
 		userRestClient.execute(new String[] { userQuery});
@@ -292,10 +294,10 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 
 			for (Entry<String, Center> entry : selectedMap.entrySet()) {
 				
-				String selectedMember = entry.getKey();
+				//String selectedMember = entry.getKey();
 				Center center = entry.getValue();
 				center.setSelected(true);
-				selectedHealthCenter = selectedMember;
+				selectedHealthCenter = center.getAdminPhone();
 				editor.putString("selectedHealthCenter", selectedHealthCenter);
 				editor.apply();
 				adapter.setData(filteredList);
@@ -421,7 +423,7 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 					for(Center center: centerList.getCenters()){
 						Log.i(TAG, center.getName());
 						Map<String, Center> centerMap = new HashMap<String, Center>();
-						centerMap.put(String.valueOf(center.getAdminPhone()), center);
+						centerMap.put(String.valueOf(center.getId()), center);
 						healthCenterList.add(centerMap);
 					}
 					if (!healthCenterList.isEmpty()) {

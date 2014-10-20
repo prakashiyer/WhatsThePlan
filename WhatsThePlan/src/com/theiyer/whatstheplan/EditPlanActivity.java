@@ -58,8 +58,8 @@ public class EditPlanActivity  extends FragmentActivity {
 			TextView selectedPlanValue = (TextView) findViewById(R.id.editPlanTitleValue);
 			selectedPlanValue.setText(selectedPlan);
 			oldName = selectedPlan;
-
-			String searchQuery = "/fetchPlan?planIndex="+selectedPlanIndex;
+			System.out.println("****selectedPlanIndex ID: ******" + selectedPlanIndex);
+			String searchQuery = "/fetchPlan?id="+selectedPlanIndex;
 
 			WebServiceClient restClient = new WebServiceClient(this);
 			restClient.execute(new String[] { searchQuery });
@@ -126,10 +126,14 @@ public class EditPlanActivity  extends FragmentActivity {
 		editor.apply();
 		CalendarHelper calendarHelper = new CalendarHelper(this);
 		String[] startPlanTime = null;
+		System.out.println("***planTime " + planTime);
 		if(planTime != null) {
 			startPlanTime = WhatstheplanUtil.createGmtToLocalTime(planTime);
 		}
-		calendarHelper.execute(new String[] { startPlanTime[0] +" " + startPlanTime[1],
+		System.out.println("startPlanTime " + startPlanTime.toString());
+		System.out.println("startPlanTime[0] " + startPlanTime[0]);
+		System.out.println("startPlanTime[1] " + startPlanTime[1]);
+		calendarHelper.execute(new String[] { planTime,
 				planName, "",
 				"", "", "update",planDate, oldName,planEndDate,planEndTime});
 		Intent intent = new Intent(this, ViewMyNewPlansActivity.class);
@@ -228,6 +232,7 @@ public class EditPlanActivity  extends FragmentActivity {
 		@Override
 		protected void onPostExecute(String response) {
 			if (response != null && isFetchPlan) {
+				System.out.println("**** EDIT PLAN response : " + response);
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
 				Plan plan = (Plan) xstream.fromXML(response);

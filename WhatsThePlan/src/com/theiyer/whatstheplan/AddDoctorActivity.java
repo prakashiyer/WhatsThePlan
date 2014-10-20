@@ -190,10 +190,10 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener{
 
 				for (Entry<String, User> entry : selectedMap.entrySet()) {
 					
-					String selectedMember = entry.getKey();
+					//String selectedMember = entry.getKey();
 					User user = entry.getValue();
 					user.setSelected(true);
-					selectedDoctor = selectedMember;
+					selectedDoctor = user.getPhone();
 					editor.putString("selectedDoctor", selectedDoctor);
 					editor.apply();
 					adapter.setData(filteredList);
@@ -317,7 +317,7 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener{
 						for(User doctor: userList.getUsers()){
 							Log.i(TAG, doctor.getName());
 							Map<String, User> doctorMap = new HashMap<String, User>();
-							doctorMap.put(String.valueOf(doctor.getPhone()), doctor);
+							doctorMap.put(String.valueOf(doctor.getId()), doctor);
 							doctorList.add(doctorMap);
 						}
 						if (!doctorList.isEmpty()) {

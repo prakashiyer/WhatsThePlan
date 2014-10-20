@@ -117,7 +117,7 @@ public class AppointmentActivity extends FragmentActivity {
 		
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(new String[] { insertQuery, phone });
-
+   
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString("selectedPlan", planName);
 		editor.apply();
@@ -239,7 +239,7 @@ public class AppointmentActivity extends FragmentActivity {
 					}
 					calendarHelper.execute(new String[] { startPlanTime[0] +" " + startPlanTime[1],
 							//plan.getName(), plan.getLocation(),
-							String.valueOf(plan.getId()), phone, "create", planEndTime, planEndDate});
+							String.valueOf(plan.getTitle()),"","","","create", planEndTime, planEndDate});
 					SharedPreferences prefs = getSharedPreferences("Prefs",
 							Activity.MODE_PRIVATE);
 					SharedPreferences.Editor editor = prefs.edit();
