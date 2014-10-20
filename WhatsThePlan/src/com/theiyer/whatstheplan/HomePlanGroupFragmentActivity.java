@@ -44,6 +44,8 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	Activity activity;
 	String centerFlag;
 	String docFlag;
+	String doctorPhone;
+	String centerPhone;
 	private static final String TAG = "Health Meet/HomePlanFragment";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,10 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 					Activity.MODE_PRIVATE);
 			centerFlag = prefs.getString("centerFlag", "");
 			docFlag = prefs.getString("docFlag", "");
+			centerPhone = prefs.getString("centerPhone", "123");
+			doctorPhone = prefs.getString("doctorPhone", "456");
+			System.out.println("******** centerPhone : " + centerPhone);
+			System.out.println("******** doctorPhone : " + doctorPhone);
 			String phone = prefs.getString("phone", "");
 	   
 	        // For each of the sections in the app, add a tab to the action bar.
@@ -101,7 +107,8 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		Button button = (Button) activity.findViewById(R.id.call_doc_button);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
 		Intent intent = new Intent(Intent.ACTION_DIAL);
-		intent.setData(Uri.parse("tel:9920701387"));
+		System.out.println("emergency.doctorPhone : " + doctorPhone);
+		intent.setData(Uri.parse("tel:"+ doctorPhone));
 		button.setTextColor(getResources().getColor(R.color.button_text));
 		startActivity(intent);
 	}
@@ -111,7 +118,8 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		Button button = (Button) activity.findViewById(R.id.call_doc_button);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
 		Intent intent = new Intent(Intent.ACTION_DIAL);
-		intent.setData(Uri.parse("tel:9833683989"));
+		System.out.println("emergency.centerPhone : " + centerPhone);
+		intent.setData(Uri.parse("tel:"+ centerPhone));
 		button.setTextColor(getResources().getColor(R.color.button_text));
 		startActivity(intent);
 	}
@@ -209,8 +217,14 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	            startActivity(viewProfileIntent);
 				return true;
 			case (R.id.editProfile):
-				Intent editProfileIntent = new Intent(this, EditProfileActivity.class);
-	            startActivity(editProfileIntent);
+				if("Y".equals(centerFlag)){
+					Intent editProfileIntent = new Intent(this, EditCenterProfileActivity.class);
+		            startActivity(editProfileIntent);
+				} else {
+					Intent editProfileIntent = new Intent(this, EditProfileActivity.class);
+		            startActivity(editProfileIntent);
+				}
+				
 				return true;
 			case (R.id.changeProfilePic):
 				Intent changeProfilePicIntent = new Intent(this, ProfileImageUploadActivity.class);
