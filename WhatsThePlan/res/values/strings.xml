@@ -106,7 +106,11 @@
     <string name="action_view_users">View Users</string>
     <string name="action_view_groups_invited">Groups Invited</string>
     <string name="action_view_members_invited">Members Invited</string>
-    <string name="action_about_us_desc">About this application:\n\nWe are happy to present you with Just Meet - "Live for today, Plan for tomorrow, Party for tonight!"\n\nFeatures:\n # Create a group\n # Plan events with your friends\n # See upcoming Plans\n # View your group activity\n # Settle bills for recent plan history\n\nKeep exploring! We would love to hear from you. Email your feedback to prakashk16@gmail.com</string>
+    <string name="action_about_us_title">About this application:\n\n</string>
+     <string name="action_about_us_feature_title">Features:\n</string>
+    <string name="action_about_us_text">We are happy to present you with HealthMeet - Health care made easy.  Connecting people,  doctors and health centres.  Medical services are now just a few clicks away.\n\n</string>
+    <string name="action_about_us_features">#Individual or health center registration\n #Select your preferred doctor and health center\n #Fix an appointment\n Doctors can confirm/deny appointments\n # See upcoming Appointments\n #Emergency button with easy access to primary doctor or health center administrator\n #Appointments get organised and stored in the calendar\n #Doctors and individuals get notifications about appointment requests instantly. \n # Allows health center to set up events and notify all members.\n</string>
+    <string name="action_about_us_sign">Keep exploring! We would be happy to hear from you.</string>
     <string name="old_password_label">Type existing password</string>
     <string name="new_password_label">Type new password</string>
     <string name="retype_new_password_label">Re-type new password</string>

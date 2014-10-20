@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -176,8 +177,8 @@ public class EditProfileActivity extends FragmentActivity implements OnItemSelec
 							editor.putString("doctor", user.getDoctorFlag());
 							editor.apply();
 							}
-					TextView phoneValue = (TextView) findViewById(R.id.newUserPhoneValue);
-					phoneValue.setText(user.getPhone());
+					LinearLayout phoneValue = (LinearLayout) findViewById(R.id.newUserPhoneLayout);
+					phoneValue.setVisibility(TextView.INVISIBLE);
 					TextView dobValue = (TextView) findViewById(R.id.dateOfBirth);
 					dobValue.setText(user.getDob());			  
 					

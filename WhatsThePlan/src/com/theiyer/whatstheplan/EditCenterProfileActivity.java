@@ -271,7 +271,7 @@ public class EditCenterProfileActivity extends FragmentActivity {
 					TextView adminName = (TextView) findViewById(R.id.adminName);
 					adminName.setText(center.getAdminName());			  
 					TextView healthCentrePhoneValue = (TextView) findViewById(R.id.healthCentrePhoneValue);
-					healthCentrePhoneValue.setText(center.getAdminPhone());
+					healthCentrePhoneValue.setVisibility(TextView.INVISIBLE);
 					TextView healthaddress = (TextView) findViewById(R.id.healthaddress);
 					healthaddress.setText(center.getAddress());
 					byte[] image = center.getImage();

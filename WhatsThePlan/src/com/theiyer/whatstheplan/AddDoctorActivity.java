@@ -47,10 +47,8 @@ import com.thoughtworks.xstream.XStream;
 public class AddDoctorActivity extends Activity implements OnItemClickListener{
 	
 		private GridView doctorGridView;
-		private int lastPos;
 		private DoctorGridAdapter adapter;
 		private List<Map<String, User>> doctorList;
-		private Context context;
 		private List<Map<String, User>> filteredList;
 		private String selectedDoctor;
 
@@ -80,11 +78,7 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener{
 				System.out.println("HEATH GRID VIEW " + doctorGridView);
 				adapter = new DoctorGridAdapter(this);
 				doctorGridView.setOnItemClickListener(this);
-				selectedDoctor = "";
-				context = this;
-				
-				
-				
+				selectedDoctor = "";				
 				
 				SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 				final SearchView searchView = (SearchView) findViewById(R.id.DoctorSearchView);
@@ -130,37 +124,6 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener{
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			if (filteredList != null && !filteredList.isEmpty()) {
-
-				/*for (Entry<String, User> entry : selectedMap.entrySet()) {
-					SharedPreferences prefs = getSharedPreferences("Prefs",
-							Activity.MODE_PRIVATE);
-					SharedPreferences.Editor editor = prefs.edit();
-					User doctor = entry.getValue();
-					if(doctor.isSelected()){
-						doctor.setSelected(false);
-						selectedDoctor = entry.getKey();
-						System.out.println("***** doctor " + entry.getKey());
-						editor.putString("selectedDoctor", selectedDoctor);
-						editor.apply();
-						System.out.println("selected doctor****: " +selectedDoctor);
-						adapter.setData(filteredList);
-						doctorGridView.setAdapter(adapter);
-						lastPos = position;
-						doctorGridView.setSelection((int)(doctorGridView.getAdapter()).getItemId(lastPos));
-						//memberListLabel.setVisibility(TextView.VISIBLE);
-						doctorGridView.setVisibility(GridView.VISIBLE);
-					} else {
-						doctor.setSelected(true);
-						editor.putString("selectedDoctor", selectedDoctor);
-						System.out.println("selected doctor: " +selectedDoctor);
-						editor.apply();
-						adapter.setData(filteredList);
-						doctorGridView.setAdapter(adapter);
-						doctorGridView.setVisibility(GridView.VISIBLE);
-					}
-					
-					break;
-				}*/
 				SharedPreferences prefs = getSharedPreferences("Prefs",
 						Activity.MODE_PRIVATE);
 				SharedPreferences.Editor editor = prefs.edit();
@@ -189,8 +152,6 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener{
 				Map<String, User> selectedMap = filteredList.get(position);
 
 				for (Entry<String, User> entry : selectedMap.entrySet()) {
-					
-					//String selectedMember = entry.getKey();
 					User user = entry.getValue();
 					user.setSelected(true);
 					selectedDoctor = user.getPhone();
@@ -219,25 +180,6 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener{
 				adapter = new DoctorGridAdapter(this);
 				restClient.execute(
 						new String[] { searchQuery });
-				
-				/*if (!healthCenterList.isEmpty()) {
-					String query = intent.getStringExtra(SearchManager.QUERY);
-					List<Map<String, Center>> filteredList = new ArrayList<Map<String,Center>>();
-					for(Map<String, Center> centerEntry: healthCenterList){
-						for(Entry<String, Center> entry : centerEntry.entrySet()){
-							Center healthCenter = entry.getValue();
-							if(healthCenter.getName().toLowerCase(Locale.ENGLISH).contains(query.toLowerCase(Locale.ENGLISH))){
-								filteredList.add(centerEntry);
-							}
-						}
-					}
-					
-					adapter.setData(filteredList);
-					doctorGridView.setAdapter(adapter);
-					doctorGridView.setVisibility(GridView.VISIBLE);
-					
-					
-				}*/
 			}
 		}
 		

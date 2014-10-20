@@ -1,5 +1,6 @@
 package com.theiyer.whatstheplan;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.theiyer.whatstheplan.entity.CenterList;
 import com.theiyer.whatstheplan.entity.Center;
 import com.theiyer.whatstheplan.entity.User;
@@ -48,12 +50,14 @@ import com.thoughtworks.xstream.XStream;
 
 public class AddHealthCenterActivity extends Activity implements OnItemClickListener{
 	private GridView healthGridView;
-	private int lastPos;
 	private CenterGridAdapter adapter;
 	private List<Map<String, Center>> healthCenterList;
-	private Context context;
 	private List<Map<String, Center>> filteredList;
 	private String selectedHealthCenter;
+	private Context context;
+
+	private GoogleCloudMessaging gcm;
+	private String regid;
 
 	private static final String TAG = "Health Meet Health Center search";
 	
@@ -64,6 +68,7 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 		if (haveInternet(this)) {
 			setContentView(R.layout.add_health_centre);
 			ActionBar aBar = getActionBar();
+			context = getApplicationContext();
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
@@ -82,11 +87,7 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 			adapter = new CenterGridAdapter(this);
 			healthGridView.setOnItemClickListener(this);
 			selectedHealthCenter = "";
-			context = this;
-			
-			
-			
-			
+
 			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 			final SearchView searchView = (SearchView) findViewById(R.id.healthCentreSearchView);
 			SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
@@ -97,17 +98,6 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 			if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 				onNewIntent(intent);
 			}
-			/*String name = prefs.getString("name", "");
-			
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.putString("selectedHealthCenter", selectedHealthCenter);
-			editor.apply();*/
-			
-			/*String searchQuery = "/fetchExistingGroups?name="
-					+ name;
-
-			WebServiceClient restClient = new WebServiceClient(this);
-			restClient.execute(new String[] { searchQuery });*/
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
@@ -129,6 +119,9 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 		String address = prefs.getString("Address", "");
 		String doctor = prefs.getString("doctor", "");
 		String selectedDoctor = prefs.getString("selectedDoctor", "0");
+		gcm = GoogleCloudMessaging.getInstance(context);
+		Asyncer syncer = new Asyncer();
+		syncer.execute(new String[] {phone});
 		if (selectedHealthCenter == "") {
 			selectedHealthCenter = "0";
 		}
@@ -160,8 +153,85 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 		startActivity(intent);
 		Toast.makeText(getApplicationContext(), "Congratulations! Your Profile has been activated.",
 				Toast.LENGTH_LONG).show();
-		
-		
+	}
+	/**
+	 * For GCM registration and storage
+	 * @author Dell
+	 *
+	 */
+	private class Asyncer extends AsyncTask<String, Integer, String> {
+
+		@Override
+		protected void onPreExecute() {
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String msg = "";
+			if (gcm == null) {
+				gcm = GoogleCloudMessaging.getInstance(context);
+			}
+			try {
+				Log.i(TAG, "Registering GCM");
+				regid = gcm.register(WTPConstants.SENDER_ID);
+			} catch (IOException ex) {
+				msg = "Error :" + ex.getMessage();
+				Log.e(TAG, msg);
+				
+				ex.printStackTrace();
+				// If there is an error, don't just keep trying to register.
+				// Require the user to click a button again, or perform
+				// exponential back-off.
+			}
+			msg = "Device registered, registration ID=" + regid;
+			Log.i(TAG, msg);
+
+			if (regid != null && regid != "") {
+				// Persist the regID - no need to register again.
+				storeRegistrationId(context, regid);
+
+				// Store the reg id in server
+
+				String path = WTPConstants.SERVICE_PATH+"/addRegId?regId="
+						+ regid + "&phone="+params[0];
+                
+				// HttpHost target = new HttpHost(TARGET_HOST);
+				HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+				HttpClient client = new DefaultHttpClient();
+				HttpGet get = new HttpGet(path);
+				try {
+					client.execute(target, get);
+				} catch (Exception e) {
+
+				}
+			}
+
+			return msg;
+		}
+
+		@Override
+		protected void onPostExecute(String msg) {
+			
+		}
+
+	}
+	
+	/**
+	 * Stores the registration ID and app versionCode in the application's
+	 * {@code SharedPreferences}.
+	 * 
+	 * @param context
+	 *            application's context.
+	 * @param regId
+	 *            registration ID
+	 */
+	private void storeRegistrationId(Context context, String regId) {
+		SharedPreferences prefs = getSharedPreferences("Prefs",
+				Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString("regId", regId);
+		editor.apply();		
 	}
 	public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
 
@@ -233,38 +303,6 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		if (filteredList != null && !filteredList.isEmpty()) {
-			/*Map<String, Center> selectedMap = filteredList.get(position);
-
-			for (Entry<String, Center> entry : selectedMap.entrySet()) {
-				SharedPreferences prefs = getSharedPreferences("Prefs",
-						Activity.MODE_PRIVATE);
-				SharedPreferences.Editor editor = prefs.edit();
-				Center healthCenter = entry.getValue();
-				if(healthCenter.isSelected()){
-					healthCenter.setSelected(false);
-					selectedHealthCenter = entry.getKey();
-					System.out.println("***** selectedHealthCenter " + entry.getKey());
-					editor.putString("selectedHealthCenter", selectedHealthCenter);
-					editor.apply();
-					adapter.setData(filteredList);
-					healthGridView.setAdapter(adapter);
-					lastPos = position;
-					healthGridView.setSelection((int)(healthGridView.getAdapter()).getItemId(lastPos));
-					//memberListLabel.setVisibility(TextView.VISIBLE);
-					healthGridView.setVisibility(GridView.VISIBLE);
-				} else {
-					healthCenter.setSelected(true);
-					editor.putString("selectedHealthCenter", selectedHealthCenter);
-					System.out.println("selected Health: " +selectedHealthCenter);
-					editor.apply();
-					adapter.setData(filteredList);
-					healthGridView.setAdapter(adapter);
-					healthGridView.setVisibility(GridView.VISIBLE);
-				}
-				
-				break;
-			}
-		}*/
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			SharedPreferences.Editor editor = prefs.edit();
@@ -293,8 +331,6 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 			Map<String, Center> selectedMap = filteredList.get(position);
 
 			for (Entry<String, Center> entry : selectedMap.entrySet()) {
-				
-				//String selectedMember = entry.getKey();
 				Center center = entry.getValue();
 				center.setSelected(true);
 				selectedHealthCenter = center.getAdminPhone();
@@ -323,25 +359,6 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 			adapter = new CenterGridAdapter(this);
 			restClient.execute(
 					new String[] { searchQuery });
-			
-			/*if (!healthCenterList.isEmpty()) {
-				String query = intent.getStringExtra(SearchManager.QUERY);
-				List<Map<String, Center>> filteredList = new ArrayList<Map<String,Center>>();
-				for(Map<String, Center> centerEntry: healthCenterList){
-					for(Entry<String, Center> entry : centerEntry.entrySet()){
-						Center healthCenter = entry.getValue();
-						if(healthCenter.getName().toLowerCase(Locale.ENGLISH).contains(query.toLowerCase(Locale.ENGLISH))){
-							filteredList.add(centerEntry);
-						}
-					}
-				}
-				
-				adapter.setData(filteredList);
-				healthGridView.setAdapter(adapter);
-				healthGridView.setVisibility(GridView.VISIBLE);
-				
-				
-			}*/
 		}
 	}
 	
