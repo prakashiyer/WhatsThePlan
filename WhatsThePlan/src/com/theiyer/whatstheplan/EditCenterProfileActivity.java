@@ -62,9 +62,9 @@ public class EditCenterProfileActivity extends FragmentActivity {
 	private Bitmap bitmap;
 	private ImageView imgView;
 	private static final int PICK_IMAGE = 1;
-		private static final String TAG = "Health Meet/Edit";
+	private Context context;
+    private static final String TAG = "Health Meet/Edit";
 
-		 Spinner bloodGroup;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -79,12 +79,13 @@ public class EditCenterProfileActivity extends FragmentActivity {
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String userName = prefs.getString("userName", "New User");
-			
+			context = this;
 			TextView userNameValue = (TextView) findViewById(R.id.healthNameText);
 			userNameValue.setText(userName);
 			
 			Button button = (Button) findViewById(R.id.registerHealthButton);
 			button.setText("Edit Center");
+			imgView = (ImageView) findViewById(R.id.healthcentrePicView);
 			
 			String phone = prefs.getString("phone", "");
 			String userQuery = "/fetchCenterForAdmin?phone="+phone;
@@ -273,7 +274,6 @@ public class EditCenterProfileActivity extends FragmentActivity {
 					healthCentrePhoneValue.setText(center.getAdminPhone());
 					TextView healthaddress = (TextView) findViewById(R.id.healthaddress);
 					healthaddress.setText(center.getAddress());
-					ImageView imgView = (ImageView) findViewById(R.id.healthcentrePicView);
 					byte[] image = center.getImage();
 					if(image != null){
 						Bitmap img = BitmapFactory.decodeByteArray(image, 0,
@@ -304,8 +304,9 @@ public class EditCenterProfileActivity extends FragmentActivity {
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		String id = prefs.getString("centerId","New User");
+		Log.i("Center Id", id);
 		WebImageRestWebServiceClient imageRestClient = new WebImageRestWebServiceClient(
-				this);
+				context);
 
 		imageRestClient.execute(
 				new String[] { "editCenter", id,healthName, adminName, 
@@ -316,7 +317,7 @@ public class EditCenterProfileActivity extends FragmentActivity {
 	}
 	
 	
-	public class WebImageRestWebServiceClient extends AsyncTask<String, Integer, String> {
+	private class WebImageRestWebServiceClient extends AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
@@ -346,6 +347,7 @@ public class EditCenterProfileActivity extends FragmentActivity {
 			
 			String method = params[0];
 			String path = WTPConstants.SERVICE_PATH+"/"+method;
+			Log.i("EDIT Center",path);
 
 			//HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
@@ -368,7 +370,7 @@ public class EditCenterProfileActivity extends FragmentActivity {
 				String result = EntityUtils.toString(results);
 				return result;
 			} catch (Exception e) {
-				
+				e.printStackTrace();
 			}
 			return null;
 		}
