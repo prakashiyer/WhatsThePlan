@@ -124,7 +124,7 @@ public class EmergencyCallTabFragment extends Fragment {
 							editor.putString("doctorPhone", user.getPrimaryDoctorId());
 							editor.putString("centerPhone", user.getPrimaryCenterId());
 							editor.apply();
-							System.out.println("centerPhone in WebS " + user.getPrimaryCenterId());
+							System.out.println("centerPhone in WebService " + user.getPrimaryCenterId());
 							}
 			}
 			pDlg.dismiss();

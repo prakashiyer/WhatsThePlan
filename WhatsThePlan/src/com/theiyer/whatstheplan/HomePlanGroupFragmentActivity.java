@@ -104,7 +104,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		SharedPreferences prefs = activity.getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		String doctorPhone = prefs.getString("doctorPhone", "456");
-		System.out.println("emergency.doctorPhone : " + doctorPhone);
+		System.out.println("emergency.doctorPhone :*** " + doctorPhone);
 		intent.setData(Uri.parse("tel:"+ doctorPhone));
 		button.setTextColor(getResources().getColor(R.color.button_text));
 		startActivity(intent);
@@ -118,7 +118,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		SharedPreferences prefs = activity.getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		String centerPhone = prefs.getString("centerPhone", "123");
-		System.out.println("emergency.centerPhone : " + centerPhone);
+		System.out.println("emergency.centerPhone :*** " + centerPhone);
 		intent.setData(Uri.parse("tel:"+ centerPhone));
 		button.setTextColor(getResources().getColor(R.color.button_text));
 		startActivity(intent);
