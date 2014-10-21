@@ -296,9 +296,7 @@ public class EditCenterProfileActivity extends FragmentActivity {
 		TextView healthNameText = (TextView) findViewById(R.id.healthNameText);
 		String healthName = healthNameText.getText().toString();
 		TextView adminNameText = (TextView) findViewById(R.id.adminName);
-		String adminName = adminNameText.getText().toString();			  
-		TextView healthCentrePhoneValue = (TextView) findViewById(R.id.healthCentrePhoneValue);
-		String healthCenterPhone = healthCentrePhoneValue.getText().toString();
+		String adminName = adminNameText.getText().toString();		
 		TextView healthaddress = (TextView) findViewById(R.id.healthaddress);
 		String healthAdd = healthaddress.getText().toString();
 		SharedPreferences prefs = getSharedPreferences("Prefs",
@@ -310,7 +308,7 @@ public class EditCenterProfileActivity extends FragmentActivity {
 
 		imageRestClient.execute(
 				new String[] { "editCenter", id,healthName, adminName, 
-						healthCenterPhone, healthAdd, filePath });
+						 healthAdd, filePath });
 		
 			
 			
@@ -359,9 +357,13 @@ public class EditCenterProfileActivity extends FragmentActivity {
 				entity.addPart("id", new StringBody(params[1]));
 		        entity.addPart("name", new StringBody(params[2]));
 		        entity.addPart("adminName", new StringBody(params[3]));
-		        entity.addPart("adminPhone", new StringBody(params[4]));
-		        entity.addPart("address", new StringBody(params[5]));
-		        entity.addPart("image", new FileBody(new File(filePath)));
+		        entity.addPart("address", new StringBody(params[4]));
+		        
+		        if(filePath != null){
+		        	entity.addPart("image", new FileBody(new File(filePath)));
+		        }
+		        
+		        
 		        
 		        post.setEntity(entity);
 
