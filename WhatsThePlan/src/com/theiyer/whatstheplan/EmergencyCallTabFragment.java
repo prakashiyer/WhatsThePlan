@@ -24,7 +24,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EmergencyCallTabFragment extends Fragment {
 	Activity activity;
@@ -121,9 +123,23 @@ public class EmergencyCallTabFragment extends Fragment {
 							editor.putString("gender", user.getSex());
 							editor.putString("bloodGrp", user.getBloodGroup());
 							editor.putString("Address", user.getAddress());*/
-							editor.putString("doctorPhone", user.getPrimaryDoctorId());
-							editor.putString("centerPhone", user.getPrimaryCenterId());
+						    String docPhone = user.getPrimaryDoctorId();
+						    String centerPhone = user.getPrimaryCenterId();
+							editor.putString("doctorPhone", docPhone);
+							editor.putString("centerPhone", centerPhone);
 							editor.apply();
+							if (docPhone != null && docPhone == "") {
+								Button button = (Button) activity.findViewById(R.id.call_doc_button);
+								button.setVisibility(TextView.INVISIBLE);
+								Toast.makeText(context, "Please select a primary doctor using the menu option",
+										Toast.LENGTH_LONG).show();
+							}
+							if (centerPhone != null && centerPhone == "") {
+								Button button = (Button) activity.findViewById(R.id.call_health);
+								button.setVisibility(TextView.INVISIBLE);
+								Toast.makeText(context, "Please select a primary health center using the menu option",
+										Toast.LENGTH_LONG).show();
+							}
 							System.out.println("centerPhone in WebService " + user.getPrimaryCenterId());
 							}
 			}

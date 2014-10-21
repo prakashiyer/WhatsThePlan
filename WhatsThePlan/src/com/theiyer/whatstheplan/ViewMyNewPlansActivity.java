@@ -131,9 +131,15 @@ public class ViewMyNewPlansActivity extends Activity {
 			if(planTime != null) {
 				startPlanTime = WhatstheplanUtil.createGmtToLocalTime(planTime);
 			}
+			String[] endPlanTime = null;
+			String planEndTime = plan.getStartTime();
+			if(planEndTime != null) {
+				endPlanTime = WhatstheplanUtil.createGmtToLocalTime(planEndTime);
+			}
+			
 			calendarHelper.execute(new String[] { startPlanTime[0] +" " + startPlanTime[1],
-					//selectedPlan, plan.getLocation(),
-					String.valueOf(plan.getId()), phone, "create", "01:20", "2014-04-02" });
+					//plan.getName(), plan.getLocation(),
+					String.valueOf(plan.getId()),plan.getTitle(),"","","create", endPlanTime[1], endPlanTime[0] });
 		}
 		
 

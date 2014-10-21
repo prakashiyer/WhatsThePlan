@@ -22,6 +22,7 @@
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_less_margin"
             android:ems="10"
+            android:maxLength="10"
             android:hint="@string/user_phone_label"
             android:inputType="phone"
             android:textSize="@dimen/standard_text_size"

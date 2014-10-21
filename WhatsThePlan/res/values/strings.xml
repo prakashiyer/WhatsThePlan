@@ -35,6 +35,8 @@
     <string name="join_groups_button_text">Join a Group</string>
     <string name="emergency_doctor_button">Doctor</string>
     <string name="emergency_healthCentre_button">Health Centre</string>
+    <string name="emergency_police_button">Police</string>
+    <string name="emergency_ambu_button">Ambulance</string>
     <string name="view_groups_button_text">View my Groups</string>
     <string name="create_button_text"> + </string>
     <string name="create_plans_button_text">Create Appointment</string>
@@ -52,7 +54,7 @@
     <string name="new_prescription_title_label">Type a Prescription title</string>
     <string name="appointment_title_label">Appointment title</string>
     <string name="new_plan_time_label">Date &amp; Time:</string>
-    <string name="prescription_days">Number Of Days</string>
+    <string name="prescription_days">  Number Of Days</string>
     <string name="days">Number Of Days</string>
     <string name="new_plan_location_label">Type Location address</string>
     <string name="new_prescription_description">Type medicine name</string>
@@ -141,6 +143,7 @@
     <string name="view_plan_location_label">  With</string>
     <string name="home_plan_label"> Home Plan</string>
     <string name="emergency_label"> Emergency</string>
+    <string name="prescription_label"> Precription</string>
     <string name="groups_list_label"> Group List</string>
     <string name="group_member"> Member</string>
     <string name="settle_bill"> Settle</string>

@@ -79,8 +79,8 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	 	        		.setIcon(R.drawable.ic_groupicon).setTabListener(this));
 	 	        actionBar.addTab(actionBar.newTab().setText(R.string.emergency_label)
 	 	        		.setIcon(R.drawable.ic_emergency).setTabListener(this));
-	 	       actionBar.addTab(actionBar.newTab()
-	 	        		.setIcon(R.drawable.ic_plan).setTabListener(this));
+	 	       actionBar.addTab(actionBar.newTab().setText(R.string.prescription_label)
+	 	        		.setIcon(R.drawable.ic_prescription).setTabListener(this));
 	        }
 	        if("Y".equals(centerFlag)){
 	        	 actionBar.addTab(actionBar.newTab().setText(R.string.member_list_group_text)
@@ -114,6 +114,24 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		String doctorPhone = prefs.getString("doctorPhone", "456");
 		System.out.println("emergency.doctorPhone :*** " + doctorPhone);
 		intent.setData(Uri.parse("tel:"+ doctorPhone));
+		button.setTextColor(getResources().getColor(R.color.button_text));
+		startActivity(intent);
+	}
+	public void callAmbu(View view) {
+
+		Button button = (Button) activity.findViewById(R.id.call_doc_button);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		Intent intent = new Intent(Intent.ACTION_DIAL);
+		intent.setData(Uri.parse("tel:102"));
+		button.setTextColor(getResources().getColor(R.color.button_text));
+		startActivity(intent);
+	}
+	public void callPolice(View view) {
+
+		Button button = (Button) activity.findViewById(R.id.call_police);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		Intent intent = new Intent(Intent.ACTION_DIAL);
+		intent.setData(Uri.parse("tel:100"));
 		button.setTextColor(getResources().getColor(R.color.button_text));
 		startActivity(intent);
 	}
@@ -308,7 +326,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 
 		@Override
 		public void onTabReselected(Tab tab, FragmentTransaction ft) {
-			if (tab.getPosition() == 0) {
+			/*if (tab.getPosition() == 0) {
 		    	 HomePlanFragment homePlanFragment = new HomePlanFragment();
 		    	 homePlanFragment.setActivity(activity);
 			     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homePlanFragment).commit();
@@ -340,7 +358,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 					   	callTab.setActivity(activity);
 					   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
 				 }
-			 }
+			 }*/
 		}
 
 		@Override
@@ -382,7 +400,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 
 		@Override
 		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-			if (tab.getPosition() == 0) {
+			/*if (tab.getPosition() == 0) {
 		    	 HomePlanFragment homePlanFragment = new HomePlanFragment();
 		    	 homePlanFragment.setActivity(activity);
 			     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homePlanFragment).commit();
@@ -412,7 +430,7 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 					   	callTab.setActivity(activity);
 					   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
 				 }
-			 }
+			 }*/
 		}
 		
 		@Override

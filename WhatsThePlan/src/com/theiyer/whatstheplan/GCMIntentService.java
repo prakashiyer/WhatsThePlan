@@ -125,7 +125,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     		editor.apply();
     		contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewGroupMembersActivity.class), 0);
-        } else if (msg.contains("expense")) {
+        } /*else if (msg.contains("expense")) {
         	String groupName = null;
         	String planName = null;
         	String temp[] = msg.split("'");
@@ -139,7 +139,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     		editor.apply();
     		contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ExpenseReportActivity.class), 0);
-        }
+        }*/
 
         System.out.println("Print notification !!!!");
         mBuilder.setContentIntent(contentIntent);

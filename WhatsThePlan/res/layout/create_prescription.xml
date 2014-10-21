@@ -59,22 +59,23 @@
         android:gravity="center"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/medTimeLabel"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/left_margin"
-            android:layout_marginTop="@dimen/top_less_margin"
-            android:text="@string/new_plan_time_label"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
-            android:textStyle="bold"
-            android:typeface="sans" />
+         <TextView
+             android:id="@+id/medTimeLabel"
+             android:layout_width="310dp"
+             android:layout_height="wrap_content"
+             android:layout_marginLeft="@dimen/left_margin"
+             android:layout_marginTop="@dimen/top_less_margin"
+             android:text="@string/new_plan_time_label"
+             android:textAppearance="?android:attr/textAppearanceMedium"
+             android:textSize="@dimen/standard_text_size"
+             android:textStyle="bold"
+             android:typeface="sans" />
+
     </LinearLayout>
     
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
         android:layout_column="0"
         android:layout_gravity="left|top"
         android:layout_row="3"
@@ -83,21 +84,21 @@
 
         <TextView
             android:id="@+id/medDateValue"
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
+            android:layout_width="168dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_no_margin"
             android:ems="10"
             android:hint="@string/new_plan_date_hint"
             android:textSize="@dimen/standard_text_size"
-            android:typeface="sans" >
-        </TextView>
+            android:typeface="sans" />
 
         <Button
             android:id="@+id/medDateButton"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:layout_marginTop="@dimen/top_no_margin"
-            android:background="@drawable/create"
+            android:background="@drawable/button"
             android:onClick="setMedDate"
             android:text="@string/date_button_text"
             android:textColor="@color/button_text"
@@ -105,7 +106,6 @@
             android:textStyle="bold"
             android:typeface="sans" />
     </LinearLayout>
-    
 
     <GridLayout
         android:layout_width="match_parent"
@@ -119,7 +119,7 @@
 
         <CheckBox
             android:id="@+id/morningId"
-            android:layout_width="158dp"
+            android:layout_width="112dp"
             android:layout_height="40dp"
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_row="1"
@@ -130,7 +130,7 @@
 
         <CheckBox
             android:id="@+id/eveningId"
-            android:layout_width="146dp"
+            android:layout_width="131dp"
             android:layout_height="40dp"
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_row="5"
@@ -141,7 +141,7 @@
 
         <CheckBox
             android:id="@+id/nightId"
-            android:layout_width="146dp"
+            android:layout_width="94dp"
             android:layout_height="40dp"
             android:layout_column="1"
             android:layout_gravity="left|top"
@@ -154,7 +154,7 @@
 
         <CheckBox
             android:id="@+id/afternoonId"
-            android:layout_width="156dp"
+            android:layout_width="110dp"
             android:layout_height="40dp"
             android:layout_column="1"
             android:layout_gravity="left|top"
@@ -175,17 +175,18 @@
             android:layout_row="0"
             android:ems="10"
             android:inputType="phone"
+            android:maxLength="2"
             android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
 
         <TextView
             android:id="@+id/numberOfDays"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="154dp"
+            android:layout_height="34dp"
             android:layout_column="0"
-            android:layout_gravity="center_horizontal|top"
+            android:layout_gravity="bottom"
             android:layout_marginLeft="@dimen/left_margin"
-            android:layout_marginTop="@dimen/top_less_margin"
+            android:layout_marginTop="@dimen/top_margin"
             android:layout_row="0"
             android:text="@string/prescription_days"
             android:textAppearance="?android:attr/textAppearanceMedium"
