@@ -65,7 +65,7 @@
      <string name="end_time_button_text">End Time</string>
      <string name="end_date_button_text">End Date</string>
     <string name="register_plan_button_text">Register Plan</string>
-    <string name="add_prescription_button_text">Add prescription</string>
+    <string name="add_prescription_button_text">Add Prescription</string>
     <string name="register_appointment_button_text">Register Appointment</string>
     <string name="edit_plan_button_text">Edit Plan</string>
     <string name="delete_plan_button_text">Delete Plan</string>

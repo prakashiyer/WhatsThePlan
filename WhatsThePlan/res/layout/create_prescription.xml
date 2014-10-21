@@ -4,38 +4,31 @@
     android:layout_height="match_parent"
     android:columnCount="1" >
 
+  
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="left|top"
         android:layout_row="0"
         android:gravity="center"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/welcomeCreatePlanLabel"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/left_margin"
-            android:layout_marginTop="@dimen/top_margin"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/standard_text_size"
-            android:textStyle="bold"
-            android:typeface="sans" />
-
-        <TextView
-            android:id="@+id/createPlanErrorField"
+        <EditText
+            android:id="@+id/medTitleValue"
             android:layout_width="290dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/left_margin"
-            android:layout_marginTop="@dimen/top_no_margin"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FF0000"
+            android:layout_marginTop="@dimen/top_margin"
+            android:ems="10"
+            android:hint="@string/new_prescription_title_label"
+            android:inputType="text"
+            android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
-
     </LinearLayout>
 
+   
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,18 +39,18 @@
         android:orientation="vertical" >
 
         <EditText
-            android:id="@+id/newPlanTitleValue"
+            android:id="@+id/medValue"
             android:layout_width="290dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_no_margin"
+            android:layout_marginTop="@dimen/top_margin"
             android:ems="10"
-            android:hint="@string/new_prescription_title_label"
-            android:inputType="text"
+            android:hint="@string/new_prescription_description"
+            android:inputType="textPostalAddress"
             android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
     </LinearLayout>
 
-    <LinearLayout
+     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_column="0"
@@ -67,7 +60,7 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/newPlanTimeLabel"
+            android:id="@+id/medTimeLabel"
             android:layout_width="290dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/left_margin"
@@ -78,7 +71,7 @@
             android:textStyle="bold"
             android:typeface="sans" />
     </LinearLayout>
-
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -89,7 +82,7 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:id="@+id/newPlanDateValue"
+            android:id="@+id/medDateValue"
             android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/top_no_margin"
@@ -100,45 +93,26 @@
         </TextView>
 
         <Button
-            android:id="@+id/setDateButton"
+            android:id="@+id/medDateButton"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:layout_marginTop="@dimen/top_no_margin"
             android:background="@drawable/create"
-            android:onClick="setDate"
+            android:onClick="setMedDate"
             android:text="@string/date_button_text"
             android:textColor="@color/button_text"
             android:textSize="@dimen/standard_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_gravity="left|top"
-        android:layout_row="7"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <EditText
-            android:id="@+id/planLocationValue"
-            android:layout_width="290dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_less_margin"
-            android:ems="10"
-            android:hint="@string/new_prescription_description"
-            android:inputType="textPostalAddress"
-            android:textSize="@dimen/standard_text_size"
-            android:typeface="sans" />
-    </LinearLayout>
+    
 
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="center_horizontal|top"
-        android:layout_row="9"
+        android:layout_row="4"
         android:columnCount="2"
         android:gravity="center"
         android:orientation="vertical" >
@@ -150,7 +124,6 @@
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_row="1"
             android:ems="10"
-            android:onClick="enterDocCheck"
             android:text="@string/morning_text"
             android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
@@ -162,7 +135,6 @@
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_row="5"
             android:ems="10"
-            android:onClick="enterDocCheck"
             android:text="@string/evening_text"
             android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
@@ -176,7 +148,6 @@
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_row="5"
             android:ems="10"
-            android:onClick="enterDocCheck"
             android:text="@string/night_text"
             android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
@@ -190,7 +161,6 @@
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_row="1"
             android:ems="10"
-            android:onClick="enterDocCheck"
             android:text="@string/afternoon_text"
             android:textSize="@dimen/standard_text_size"
             android:typeface="sans" />
@@ -230,7 +200,7 @@
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_gravity="center_horizontal|top"
-        android:layout_row="10"
+        android:layout_row="5"
         android:gravity="center"
         android:orientation="vertical" >
 
@@ -240,7 +210,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/top_less_margin"
             android:background="@drawable/button"
-            android:onClick="goFromCreatePlanToViewPlans"
+            android:onClick="addPrescription"
             android:text="@string/add_prescription_button_text"
             android:textColor="@color/button_text"
             android:textSize="@dimen/standard_text_size"
