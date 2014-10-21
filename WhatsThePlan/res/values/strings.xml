@@ -49,9 +49,13 @@
     <string name="email_search_hint">Enter a Name or Email Id</string>
     <string name="group_search_results_label">Search Results:</string>
     <string name="new_plan_title_label">Type a Plan title</string>
+    <string name="new_prescription_title_label">Type a Prescription title</string>
     <string name="appointment_title_label">Appointment title</string>
     <string name="new_plan_time_label">Date &amp; Time:</string>
+    <string name="prescription_days">Number Of Days</string>
+    <string name="days">Number Of Days</string>
     <string name="new_plan_location_label">Type Location address</string>
+    <string name="new_prescription_description">Type medicine name</string>
     <string name="address">Address</string>
     <string name="date_button_text">Start Date</string>
     <string name="date_of_birth">Date Of Birth</string>
@@ -61,6 +65,7 @@
      <string name="end_time_button_text">End Time</string>
      <string name="end_date_button_text">End Date</string>
     <string name="register_plan_button_text">Register Plan</string>
+    <string name="add_prescription_button_text">Add prescription</string>
     <string name="register_appointment_button_text">Register Appointment</string>
     <string name="edit_plan_button_text">Edit Plan</string>
     <string name="delete_plan_button_text">Delete Plan</string>
@@ -118,6 +123,10 @@
     <string name="leave_group_button">Leave this Center</string>
     <string name="change_password_check_label">Change Password</string>
     <string name="enter_doc_check">I am a Doctor</string>
+    <string name="morning_text">Morning</string>
+    <string name="afternoon_text">Afternoon</string>
+    <string name="evening_text">Evening</string>
+    <string name="night_text">Night</string>
     <string name="delete_profile_check_label">Your account will be deleted and all the existing records too</string>
     <string name="delete_profile_button">Delete Account</string>
     <string name="upload_profile_pic_description">Upload Profile pic</string>
