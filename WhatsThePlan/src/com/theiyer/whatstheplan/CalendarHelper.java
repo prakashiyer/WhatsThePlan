@@ -104,7 +104,49 @@ public class CalendarHelper extends AsyncTask<String, String, String> {
         long eventID = 0;
         Calendar calendar = Calendar.getInstance();
         Calendar endCalendar = Calendar.getInstance();
-        if (params[5] == "create") {
+        
+        
+        if (params[3] == "prescription") {
+        	String date = params[0];
+            int year = Integer.valueOf(date.substring(0,4));
+            int month = Integer.valueOf(date.substring(5,7)) - 1;
+            int day = Integer.valueOf(date.substring(8,10));
+            int hour = Integer.valueOf(date.substring(11,13));
+            int min = Integer.valueOf(date.substring(14,16));
+        calendar.set(year, month, day, hour, min);
+       
+        long setDate = calendar.getTimeInMillis();
+        Log.i(DEBUG_TAG, "DATE: " + setDate);
+        calendar.add(Calendar.MINUTE, 15);
+        long end = calendar.getTimeInMillis();
+        Log.i(DEBUG_TAG, "In addEvent()");
+    	ContentValues l_event = new ContentValues();
+    	l_event.put(Events.CALENDAR_ID, getCalendars().id);
+    	Log.i(DEBUG_TAG, "Calendar ID :" + getCalendars().id);
+    	l_event.put(Events.TITLE, params[1]);
+    	l_event.put(Events.DESCRIPTION, params[2]);
+    	l_event.put(Events.DTSTART, setDate);
+    	l_event.put(Events.DTEND, end);
+    	l_event.put("allDay", 0);
+    	l_event.put("eventStatus", 1);
+    	l_event.put(Events.RRULE, "FREQ=DAILY;COUNT="+params[4]);
+    	l_event.put(Events.EVENT_TIMEZONE,TimeZone.getDefault().getID());
+    	
+    	Uri l_eventUri;
+    	if (Build.VERSION.SDK_INT >= 8) {
+    		l_eventUri = Uri.parse("content://com.android.calendar/events");
+    	} else {
+    		l_eventUri = Uri.parse("content://calendar/events");
+    	}
+    	Uri l_uri = cr.insert(l_eventUri, l_event);
+    	Log.i(DEBUG_TAG,"URI to setCalendar : " + l_uri.toString());
+    	eventID = Long.parseLong(l_uri.getLastPathSegment());
+        ContentValues reminders = new ContentValues();
+        reminders.put(Reminders.EVENT_ID, eventID);
+        reminders.put(Reminders.METHOD, Reminders.METHOD_ALERT);
+        reminders.put(Reminders.MINUTES, 15);
+        cr.insert(Reminders.CONTENT_URI, reminders);
+        }else if (params[5] == "create") {
         	String date = params[0];
     		String endTime = params[6];
     		String endDate = params[7];

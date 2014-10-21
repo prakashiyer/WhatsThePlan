@@ -29,12 +29,17 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class HomePlanGroupFragmentActivity extends FragmentActivity implements ActionBar.TabListener {
@@ -74,11 +79,14 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	 	        		.setIcon(R.drawable.ic_groupicon).setTabListener(this));
 	 	        actionBar.addTab(actionBar.newTab().setText(R.string.emergency_label)
 	 	        		.setIcon(R.drawable.ic_emergency).setTabListener(this));
+	 	       actionBar.addTab(actionBar.newTab()
+	 	        		.setIcon(R.drawable.ic_plan).setTabListener(this));
 	        }
 	        if("Y".equals(centerFlag)){
 	        	 actionBar.addTab(actionBar.newTab().setText(R.string.member_list_group_text)
 	 	        		.setIcon(R.drawable.ic_groupicon).setTabListener(this));
 	        }
+	       
 	       
 	        
 	        if(savedInstanceState != null) {
@@ -138,6 +146,73 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 		}
 	}
 	
+	/** Called when the user clicks the Add Prescription button */
+	public void addPrescription(View view) {
+
+		Button button = (Button) activity.findViewById(R.id.addPrescription);
+		button.setTextColor(getResources().getColor(R.color.click_button_1));
+		
+		EditText titleText = (EditText) activity.findViewById(R.id.medTitleValue);
+		String title = titleText.getText().toString();
+		
+		EditText medicineText = (EditText) activity.findViewById(R.id.medValue);
+		String medicine = medicineText.getText().toString();
+		
+		EditText daysText = (EditText) activity.findViewById(R.id.numberOfDaysPrescription);
+		String days = daysText.getText().toString();
+
+		TextView planDateEditText = (TextView) activity.findViewById(R.id.medDateValue);
+		String planDate = planDateEditText.getText().toString();
+
+		CheckBox morningCheck = (CheckBox) activity.findViewById(R.id.morningId);
+		if(morningCheck.isChecked()){
+			CalendarHelper calendarHelper = new CalendarHelper(activity);
+			calendarHelper.execute(new String[] { planDate+" 09:00",
+					title, medicine, "prescription", days,""});	
+		}
+		
+		CheckBox afternoonCheck = (CheckBox) activity.findViewById(R.id.afternoonId);
+		if(afternoonCheck.isChecked()){
+			CalendarHelper calendarHelper = new CalendarHelper(activity);
+			calendarHelper.execute(new String[] { planDate+" 13:00",
+					title, medicine, "prescription", days,""});	
+		}
+		
+		CheckBox eveningCheck = (CheckBox) activity.findViewById(R.id.eveningId);
+		if(eveningCheck.isChecked()){
+			CalendarHelper calendarHelper = new CalendarHelper(activity);
+			calendarHelper.execute(new String[] { planDate+" 17:00",
+					title, medicine, "prescription", days,""});	
+		}
+		
+		CheckBox nightCheck = (CheckBox) activity.findViewById(R.id.nightId);
+		if(nightCheck.isChecked()){
+			CalendarHelper calendarHelper = new CalendarHelper(activity);
+			calendarHelper.execute(new String[] { planDate+" 21:00",
+					title, medicine, "prescription", days,""});	
+		}
+		
+		Toast.makeText(activity.getApplicationContext(), "The medicine prescription has been added to your Google calendar.",
+				Toast.LENGTH_LONG).show();
+		
+		button.setTextColor(getResources().getColor(R.color.button_text));
+		
+		AddPrescriptionActivity callTab = new AddPrescriptionActivity();
+	   	callTab.setActivity(activity);
+	   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
+		
+			
+	}
+	
+	public void setMedDate(View v) {
+		Button button = (Button) activity.findViewById(R.id.medDateButton);
+		button.setTextColor(getResources().getColor(R.color.click_button_2));
+		DialogFragment newFragment = new DateNewPickerFragment("prescription");
+		newFragment.show(getSupportFragmentManager(), "datePicker");
+		button.setTextColor(getResources().getColor(R.color.button_text));
+		
+	}
+	
 	/** Called when the user clicks the join group button */
 	public void joinGroups(View view) {
 		Button button = (Button) activity.findViewById(R.id.joinGroupBtn);
@@ -148,45 +223,6 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 	}
 	
 	
-
-	/** Called when the user clicks the Create group button *//*
-	public void createGroups(View view) {
-		Button button = (Button) findViewById(R.id.createGroupBtn);
-		button.setTextColor(getResources().getColor(R.color.click_button_2));
-		Intent intent = new Intent(this, CreateGroupActivity.class);
-		
-		startActivity(intent);
-	}*/
-	
-	/** Called when the user clicks the view group button *//*
-	public void viewGroups(View view) {
-		
-		Button button = (Button) findViewById(R.id.viewGroupBtn);
-		button.setTextColor(getResources().getColor(R.color.click_button_1));
-		
-		Intent intent = new Intent(this, GroupsListActivity.class);
-		startActivity(intent);
-	}*/
-	
-	/*@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		SharedPreferences prefs = getSharedPreferences(
-				"Prefs", Activity.MODE_PRIVATE);
-		String selectedPlan = "";
-		if(plansResult != null && !plansResult.isEmpty()){
-			Map<String,String> selectedMap = plansResult.get(position);
-			for(Entry<String,String> entry: selectedMap.entrySet()){
-				
-				SharedPreferences.Editor editor = prefs.edit();
-				selectedPlan = entry.getKey();
-				editor.putString("selectedPlan",selectedPlan);
-				editor.apply();
-				break;
-			}
-			Intent intent = new Intent(this, ViewMyPlansActivity.class);
-			startActivity(intent);		
-		}
-	}*/
 	
 	 @Override
 		public boolean onCreateOptionsMenu(Menu menu) {
@@ -195,7 +231,6 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			MenuItem viewProfileItem = menu.findItem(R.id.editProfile);
 			viewProfileItem.setVisible(true);
 			
-			getMenuInflater().inflate(R.menu.main, menu);
 			MenuItem editProfileItem = menu.findItem(R.id.viewProfile);
 			editProfileItem.setVisible(true);
 			
@@ -203,7 +238,8 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			changeProfilePicItem.setVisible(true);
 			
 			MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
-			deactivateAccountItem.setVisible(true);		
+			deactivateAccountItem.setVisible(true);	
+			
 			
 			return true;
 		}
@@ -296,6 +332,13 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 					 EmergencyCallTabFragment callTab = new EmergencyCallTabFragment();
 					   	callTab.setActivity(activity);
 					   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
+				 } 
+			 }
+			 else if (tab.getPosition() == 3) {
+				 if(!"Y".equals(centerFlag) && !"Y".equals(docFlag)){
+					 AddPrescriptionActivity callTab = new AddPrescriptionActivity();
+					   	callTab.setActivity(activity);
+					   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
 				 }
 			 }
 		}
@@ -324,9 +367,15 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 				   	EmergencyCallTabFragment callTab = new EmergencyCallTabFragment();
 				   	callTab.setActivity(activity);
 				   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
-				 }
+				 } 
 		     }
-			 
+			 else if (tab.getPosition() == 3) {
+				 if(!"Y".equals(centerFlag) && !"Y".equals(docFlag)){
+					 AddPrescriptionActivity callTab = new AddPrescriptionActivity();
+					   	callTab.setActivity(activity);
+					   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
+				 }
+			 }
 		}
 
 
@@ -357,6 +406,13 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 				   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
 				 }
 		     }
+			 else if (tab.getPosition() == 3) {
+				 if(!"Y".equals(centerFlag) && !"Y".equals(docFlag)){
+					 AddPrescriptionActivity callTab = new AddPrescriptionActivity();
+					   	callTab.setActivity(activity);
+					   	getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, callTab).commit();
+				 }
+			 }
 		}
 		
 		@Override
