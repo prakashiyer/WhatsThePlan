@@ -262,7 +262,7 @@ OnItemClickListener {
 						centersGridView.setVisibility(GridView.VISIBLE);
 					}
 				}
-			} else {
+			} else if(response == null && isSearchCall) {
 				Toast.makeText(mContext,
 						"Seems like an invalid group name", Toast.LENGTH_LONG)
 						.show();
