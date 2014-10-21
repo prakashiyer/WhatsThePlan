@@ -74,7 +74,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
         .setSmallIcon(R.drawable.ic_launcher)
-        .setContentTitle("Just Meet")
+        .setContentTitle("Health Meet")
         .setStyle(new NotificationCompat.BigTextStyle()
         .bigText(msg))
         .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)

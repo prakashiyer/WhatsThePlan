@@ -58,7 +58,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 	private String doctorFlag;
 	private String bloodVar;
 
-	private static final String TAG = "Just Meet GCM";
+	private static final String TAG = "Health Meet GCM";
 
 	private GoogleCloudMessaging gcm;
 	private String regid;
