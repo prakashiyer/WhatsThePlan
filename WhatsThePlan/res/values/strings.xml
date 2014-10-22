@@ -6,6 +6,7 @@
     <string name="action_view_profile">View Profile</string>
     <string name="action_edit_profile">Edit Profile</string>
    <string name="action_add_doctor">Edit primary Doctor</string>
+   <string name="action_add_center">Edit primary Center</string>
     <string name="action_change_profile_pic">Change Profile Pic</string>
     <string name="action_change_group_pic">Change Group Pic</string>
     <string name="action_invite_group">Invite Members</string>
