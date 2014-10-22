@@ -169,6 +169,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 			editor.putString("doctor", doctorFlag);
 			editor.putString("docFlag", doctorFlag);
 			editor.putString("centerFlag", "N");
+			editor.putString("newUser", "Y");
 			editor.apply();
 			System.out.println("****** bloodVar  ::  " + bloodVar);
 			if("Y".equals(doctorFlag)){

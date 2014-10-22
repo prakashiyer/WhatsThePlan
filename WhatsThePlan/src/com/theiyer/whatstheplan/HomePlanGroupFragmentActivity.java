@@ -249,6 +249,9 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			MenuItem viewProfileItem = menu.findItem(R.id.editProfile);
 			viewProfileItem.setVisible(true);
 			
+			MenuItem addDoctorItem = menu.findItem(R.id.addDoctor);
+			addDoctorItem.setVisible(true);
+			
 			MenuItem editProfileItem = menu.findItem(R.id.viewProfile);
 			editProfileItem.setVisible(true);
 			
@@ -269,6 +272,15 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements A
 			case (R.id.viewProfile):
 				Intent viewProfileIntent = new Intent(this, ViewProfileActivity.class);
 	            startActivity(viewProfileIntent);
+				return true;
+			case (R.id.addDoctor):
+				SharedPreferences prefs = getSharedPreferences("Prefs",
+						Activity.MODE_PRIVATE);
+				SharedPreferences.Editor editor = prefs.edit();
+				editor.putString("newUser", "N");
+				editor.apply();
+				Intent addDoctorIntent = new Intent(this, AddDoctorActivity.class);
+	            startActivity(addDoctorIntent);
 				return true;
 			case (R.id.editProfile):
 				if("Y".equals(centerFlag)){

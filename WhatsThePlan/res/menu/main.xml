@@ -13,6 +13,12 @@
         android:title="@string/action_edit_profile" android:visible="false">
     </item>
     <item
+        android:id="@+id/addDoctor"
+        android:orderInCategory="15"
+        android:showAsAction="never"
+        android:title="@string/action_add_doctor" android:visible="false">
+    </item>
+    <item
         android:id="@+id/changeProfilePic"
         android:orderInCategory="2"
         android:showAsAction="never"

@@ -58,7 +58,7 @@ public class ViewGroupMembersFragment extends Fragment {
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" Group Members");
+			aBar.setTitle(" Center Members");
 
 			SharedPreferences prefs = activity.getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);

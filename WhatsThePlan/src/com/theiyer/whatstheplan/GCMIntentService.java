@@ -95,9 +95,9 @@ public class GCMIntentService extends GCMBaseIntentService {
         } else if(msg.contains("deleted")) {
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, HomePlanGroupFragmentActivity.class), 0);
-        } else if(msg.contains("attending")) {
+        } else if(msg.contains("appointment")) {
         	String planName = null;
-        	String temp[] = msg.split("'");
+        	String temp[] = msg.split(":");
         	planName = temp[1];
         	System.out.println("***** Plan Name in GCM (RSVP): " + planName);
         	SharedPreferences.Editor editor = prefs.edit();
@@ -115,16 +115,16 @@ public class GCMIntentService extends GCMBaseIntentService {
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewMyNewPlansActivity.class), 0);
-        } else if (msg.contains("left the group")) {
-        	String groupName = null;
+        } else if (msg.contains("left the center")) {
+        	String phone = null;
         	String temp[] = msg.split("'");
-        	groupName = temp[1];
-        	System.out.println("***** Group Name in GCM (left): " + groupName);
+        	phone = temp[1];
+        	System.out.println("***** center phone in GCM (left): " + phone);
         	SharedPreferences.Editor editor = prefs.edit();
-    		editor.putString("selectedGroup", groupName);
+    		editor.putString("phone", phone);
     		editor.apply();
     		contentIntent = PendingIntent.getActivity(this, 0,
-                    new Intent(this, ViewGroupMembersActivity.class), 0);
+                    new Intent(this, ViewGroupMembersFragment.class), 0);
         } /*else if (msg.contains("expense")) {
         	String groupName = null;
         	String planName = null;

@@ -35,20 +35,6 @@
         android:orientation="vertical" >
 
         <Button
-            android:id="@+id/call_doc_button"
-            android:layout_width="240dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/top_margin"
-            android:background="@drawable/create"
-            android:gravity="center"
-            android:onClick="callDoctor"
-            android:text="@string/emergency_doctor_button"
-            android:textColor="@color/button_text"
-            android:textSize="@dimen/standard_text_size"
-            android:textStyle="bold"
-            android:typeface="sans" />
-
-        <Button
             android:id="@+id/call_health"
             android:layout_width="240dp"
             android:layout_height="wrap_content"
@@ -87,6 +73,21 @@
             android:textSize="@dimen/standard_text_size"
             android:textStyle="bold"
             android:typeface="sans" />
+
+        <Button
+            android:id="@+id/call_doc_button"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/top_margin"
+            android:background="@drawable/create"
+            android:gravity="center"
+            android:onClick="callDoctor"
+            android:text="@string/emergency_doctor_button"
+            android:textColor="@color/button_text"
+            android:textSize="@dimen/standard_text_size"
+            android:textStyle="bold"
+            android:typeface="sans" />
+
     </LinearLayout>
 
 </GridLayout>

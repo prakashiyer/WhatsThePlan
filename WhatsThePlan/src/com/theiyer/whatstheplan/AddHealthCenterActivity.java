@@ -42,6 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.theiyer.whatstheplan.AddDoctorActivity.UserWebServiceClient;
 import com.theiyer.whatstheplan.entity.CenterList;
 import com.theiyer.whatstheplan.entity.Center;
 import com.theiyer.whatstheplan.entity.User;
@@ -77,9 +78,13 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String userName = prefs.getString("name", "New User");
+			String newUserFlag = prefs.getString("newUser", "N");
 			TextView userNameValue = (TextView) findViewById(R.id.welcomeAddHealthCentreLabel);
 			userNameValue.setText(userName + ", Search and join your Health Centre!");
-
+			if ("N".equals(newUserFlag)) {
+				Button button = (Button) findViewById(R.id.registerButton);
+				button.setText("Update Health Center");
+			}
 			healthCenterList = new ArrayList<Map<String, Center>>();
 			filteredList = new ArrayList<Map<String, Center>>();
 			healthGridView = (GridView) findViewById(R.id.viewhealthCenterGrid);
@@ -125,34 +130,44 @@ public class AddHealthCenterActivity extends Activity implements OnItemClickList
 		if (selectedHealthCenter == "") {
 			selectedHealthCenter = "0";
 		}
-		System.out.println("selectedDoctor : " + selectedDoctor);
-		System.out.println("selectedHealthCenter : " + selectedHealthCenter);
-		String userQuery = "/addUser?phone="+phone+"&name="+name
-				+"&bloodGroup=" + bloodGrp
-				+"&dob=" + dob
-				+"&sex=" + gender
-				+"&address=" + address
-				+"&doctorFlag=" + doctor
-				+"&primaryCenterId="+ selectedHealthCenter
-				+"&primaryDoctorId="+ selectedDoctor
-				+"&centers=" + "";
-		UserWebServiceClient userRestClient = new UserWebServiceClient(this);
-		userRestClient.execute(new String[] { userQuery});
-		AccountManager am = AccountManager.get(this);
-		final Account account = new Account(phone,
-				WTPConstants.ACCOUNT_ADDRESS);
-		final Bundle bundle = new Bundle();
-		bundle.putString("userName", name);
-		bundle.putString("phone", phone);
-		bundle.putString("doctor", doctor);
-		bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
-				account.name);
-		am.addAccountExplicitly(account, phone, bundle);
-		am.setAuthToken(account, "Full Access", phone);
-		Intent intent = new Intent(this, ProfileImageUploadActivity.class);
-		startActivity(intent);
-		Toast.makeText(getApplicationContext(), "Congratulations! Your Profile has been activated.",
-				Toast.LENGTH_LONG).show();
+		String newUserFlag = prefs.getString("newUser", "N");
+		if ("Y".equals(newUserFlag)) {
+			System.out.println("selectedDoctor : " + selectedDoctor);
+			System.out.println("selectedHealthCenter : " + selectedHealthCenter);
+			String userQuery = "/addUser?phone="+phone+"&name="+name
+					+"&bloodGroup=" + bloodGrp
+					+"&dob=" + dob
+					+"&sex=" + gender
+					+"&address=" + address
+					+"&doctorFlag=" + doctor
+					+"&primaryCenterId="+ selectedHealthCenter
+					+"&primaryDoctorId="+ selectedDoctor
+					+"&centers=" + "";
+			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
+			userRestClient.execute(new String[] { userQuery});
+			AccountManager am = AccountManager.get(this);
+			final Account account = new Account(phone,
+					WTPConstants.ACCOUNT_ADDRESS);
+			final Bundle bundle = new Bundle();
+			bundle.putString("userName", name);
+			bundle.putString("phone", phone);
+			bundle.putString("doctor", doctor);
+			bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
+					account.name);
+			am.addAccountExplicitly(account, phone, bundle);
+			am.setAuthToken(account, "Full Access", phone);
+			Intent intent = new Intent(this, ProfileImageUploadActivity.class);
+			startActivity(intent);
+			Toast.makeText(getApplicationContext(), "Congratulations! Your Profile has been activated.",
+					Toast.LENGTH_LONG).show();
+		} else if ("N".equals(newUserFlag)) {
+			String userQuery = "/addCenter?phone="+phone
+					+"&primaryCenterId="+ selectedHealthCenter;
+			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
+			userRestClient.execute(new String[] { userQuery});
+			Toast.makeText(getApplicationContext(), "Selected Center has been added as your primary center.",
+					Toast.LENGTH_LONG).show();
+		}
 	}
 	/**
 	 * For GCM registration and storage

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -39,6 +41,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.theiyer.whatstheplan.NewUserSignUpActivity.UserWebServiceClient;
 import com.theiyer.whatstheplan.entity.UserList;
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
@@ -71,7 +74,11 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener{
 				String userName = prefs.getString("name", "New User");
 				TextView userNameValue = (TextView) findViewById(R.id.welcomeAddDoctorLabel);
 				userNameValue.setText(userName + ", Search and select your doctor!");
-
+				String newUserFlag = prefs.getString("newUser", "N");
+				if ("N".equals(newUserFlag)) {
+					Button button = (Button) findViewById(R.id.registerButtonDoctor);
+					button.setText("Update Doctor");
+				}
 				doctorList = new ArrayList<Map<String, User>>();
 				filteredList = new ArrayList<Map<String, User>>();
 				doctorGridView = (GridView) findViewById(R.id.viewhealthCenterGrid);
@@ -110,14 +117,97 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener{
 		
 		/** Called when the user clicks the Join Group button */
 		public void goFromJoinGroupToViewGroups(View view) {
-			Button button = (Button) findViewById(R.id.registerButton);
+			Button button = (Button) findViewById(R.id.registerButtonDoctor);
 			button.setTextColor(getResources().getColor(R.color.click_button_2));
 
-			Toast.makeText(getApplicationContext(), "Selected Doctor Added to your account",
+			Toast.makeText(getApplicationContext(), "Selected Doctor has been added to your account",
 					Toast.LENGTH_LONG).show();
-			Intent intent = new Intent(this, AddHealthCenterActivity.class);
-			startActivity(intent);
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			String newUserFlag = prefs.getString("newUser", "N");
+			String phone = prefs.getString("phone", "");
+			String selectedDoctor = prefs.getString("selectedDoctor", "");
+			if ("Y".equals(newUserFlag)) {
+				Intent intent = new Intent(this, AddHealthCenterActivity.class);
+				startActivity(intent);
+			} else if ("N".equals(newUserFlag)) {
+				String userQuery = "/addDoctor?phone="+phone
+						+"&primaryDoctorId="+ selectedDoctor;
+				UserWebServiceClient userRestClient = new UserWebServiceClient(this);
+				userRestClient.execute(new String[] { userQuery});
+			}
 			
+			
+		}
+		
+		public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
+
+			private Context mContext;
+			private ProgressDialog pDlg;
+
+			public UserWebServiceClient(Context mContext) {
+				this.mContext = mContext;
+			}
+
+			private void showProgressDialog() {
+
+				pDlg = new ProgressDialog(mContext);
+				pDlg.setMessage("Processing ....");
+				pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				pDlg.setCancelable(false);
+				pDlg.show();
+
+			}
+
+			@Override
+			protected void onPreExecute() {
+				
+			   showProgressDialog();
+
+			}
+
+			@Override
+			protected String doInBackground(String... params) {
+				String path = WTPConstants.SERVICE_PATH+params[0];
+				
+				//HttpHost target = new HttpHost(TARGET_HOST);
+				HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+				HttpClient client = new DefaultHttpClient();
+				HttpGet get = new HttpGet(path);
+				HttpEntity results = null;
+
+				try {
+					HttpResponse response = client.execute(target, get);
+					results = response.getEntity(); 
+					String result = EntityUtils.toString(results);
+					return result;
+				} catch (Exception e) {
+					
+				}
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(String response) {
+				if (response != null) {
+					    Log.i(TAG, response);
+					    XStream userXs = new XStream();
+						userXs.alias("UserInformation", User.class);
+						userXs.alias("centers", String.class);
+						userXs.addImplicitCollection(User.class, "centers",
+								"centers", String.class);
+						User user = (User) userXs.fromXML(response);
+						if (user != null && user.getName() != null) {
+							 Log.i(TAG, user.getName());
+							 Toast.makeText(getApplicationContext(), "Selected doctor has been added as your primary doctor.",
+										Toast.LENGTH_LONG).show();
+							 Intent intent = new Intent(mContext, HomePlanGroupFragmentActivity.class);
+								startActivity(intent);
+						}
+				}
+				pDlg.dismiss();
+			}
+
 		}
 		
 		//@Override
