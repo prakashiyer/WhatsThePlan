@@ -62,6 +62,7 @@ OnItemClickListener {
 			membersGridView = (GridView) findViewById(R.id.viewattendingmemberGrid);
 			adapter = new MemberGridAdapter(this);
 			context = this;
+			membersGridView.setOnItemClickListener(this);
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
