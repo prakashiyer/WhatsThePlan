@@ -1,6 +1,5 @@
 package com.theiyer.whatstheplan;
 
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -9,18 +8,19 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import com.theiyer.whatstheplan.entity.User;
-import com.theiyer.whatstheplan.util.WTPConstants;
-import com.thoughtworks.xstream.XStream;
-
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,32 +28,52 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.theiyer.whatstheplan.entity.User;
+import com.theiyer.whatstheplan.util.WTPConstants;
+import com.thoughtworks.xstream.XStream;
+
 public class EmergencyCallTabFragment extends Fragment {
 	Activity activity;
 	View rootView = null;
-	Context context;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		context = getActivity();
 		super.onCreate(savedInstanceState);
+		
 		activity = this.getActivity();
-			rootView = inflater.inflate(R.layout.emergency_tab, container,
-					false);
+		if(activity != null && haveInternet(activity)){
+			ActionBar aBar = activity.getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Emergency Contacts");
+			rootView = inflater.inflate(R.layout.emergency_tab, container, false);
 
 			SharedPreferences prefs = activity.getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
-			String name = prefs.getString("userName", "");
-			TextView textView = (TextView) rootView.findViewById(R.id.emergencyTabLabel);
-			textView.setText(name + ", Find your emergency numbers below.");
+			String selectedDoctor = prefs.getString("selectedDoctor", "");
+			String selectedHealthCenter = prefs.getString("selectedHealthCenter", "");
 			String phone = prefs.getString("phone", "");
-			String userQuery = "/fetchUser?phone="+phone;
-			UserWebServiceClientem userRestClient = new UserWebServiceClientem(context);
-			userRestClient.execute(new String[] { userQuery});
-			return rootView;
+			
+			if("".equals(selectedDoctor) || "".equals(selectedHealthCenter)){
+				String userQuery = "/fetchUser?phone=" + phone;
+				UserWebServiceClientem userRestClient = new UserWebServiceClientem(
+						activity);
+				userRestClient.execute(new String[] { userQuery });
+			}
+			
+			
+		} else {
+			Intent intent = new Intent(activity, RetryActivity.class);
+			startActivity(intent);
+		}
+		return rootView;
+		
 	}
-	public class UserWebServiceClientem extends AsyncTask<String, Integer, String> {
+
+	public class UserWebServiceClientem extends
+			AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
@@ -75,17 +95,17 @@ public class EmergencyCallTabFragment extends Fragment {
 
 		@Override
 		protected void onPreExecute() {
-			
-		   showProgressDialog();
+
+			showProgressDialog();
 
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
-			String path = WTPConstants.SERVICE_PATH+params[0];
+			String path = WTPConstants.SERVICE_PATH + params[0];
 			query = params[0];
-			
-			//HttpHost target = new HttpHost(TARGET_HOST);
+
+			// HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
 			HttpGet get = new HttpGet(path);
@@ -93,60 +113,79 @@ public class EmergencyCallTabFragment extends Fragment {
 
 			try {
 				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
+				results = response.getEntity();
 				String result = EntityUtils.toString(results);
 				return result;
 			} catch (Exception e) {
-				
+
 			}
 			return null;
 		}
- 
+
 		@Override
 		protected void onPostExecute(String response) {
 			SharedPreferences prefs = activity.getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			if (response != null && query.contains("fetchUser")) {
-				    System.out.println("EmergencyTab : response" + response);
-				    XStream userXs = new XStream();
-					userXs.alias("UserInformation", User.class);
-					userXs.alias("centers", String.class);
-					userXs.addImplicitCollection(User.class, "centers",
-							"centers", String.class);
-					User user = (User) userXs.fromXML(response);
-					if (user != null && user.getName() != null) {
-						 Log.i("EmergencyTab", user.getName());
-						 SharedPreferences.Editor editor = prefs.edit();
-							/*editor.putString("userName", user.getName());
-							editor.putString("phone", user.getPhone());
-							editor.putString("dob", user.getDob());
-							editor.putString("gender", user.getSex());
-							editor.putString("bloodGrp", user.getBloodGroup());
-							editor.putString("Address", user.getAddress());*/
-						    String docPhone = user.getPrimaryDoctorId();
-						    String centerPhone = user.getPrimaryCenterId();
-							editor.putString("doctorPhone", docPhone);
-							editor.putString("centerPhone", centerPhone);
-							editor.apply();
-							if (docPhone != null && docPhone == "") {
-								Button button = (Button) activity.findViewById(R.id.call_doc_button);
-								button.setVisibility(TextView.INVISIBLE);
-								Toast.makeText(context, "Please select a primary doctor using the menu option",
-										Toast.LENGTH_LONG).show();
-							}
-							if (centerPhone != null && centerPhone == "") {
-								Button button = (Button) activity.findViewById(R.id.call_health);
-								button.setVisibility(TextView.INVISIBLE);
-								Toast.makeText(context, "Please select a primary health center using the menu option",
-										Toast.LENGTH_LONG).show();
-							}
-							System.out.println("centerPhone in WebService " + user.getPrimaryCenterId());
-							}
+				XStream userXs = new XStream();
+				userXs.alias("UserInformation", User.class);
+				userXs.alias("centers", String.class);
+				userXs.addImplicitCollection(User.class, "centers", "centers",
+						String.class);
+				User user = (User) userXs.fromXML(response);
+				if (user != null && user.getName() != null) {
+					SharedPreferences.Editor editor = prefs.edit();
+					String docPhone = user.getPrimaryDoctorId();
+					String centerPhone = user.getPrimaryCenterId();
+					editor.putString("selectedDoctor", docPhone);
+					editor.putString("selectedHealthCenter", centerPhone);
+					editor.apply();
+					if (docPhone != null && docPhone == "") {
+						Button button = (Button) activity
+								.findViewById(R.id.call_doc_button);
+						button.setVisibility(TextView.INVISIBLE);
+						Toast.makeText(
+								activity,
+								"Please select a primary doctor using the menu option",
+								Toast.LENGTH_SHORT).show();
+					}
+					if (centerPhone != null && centerPhone == "") {
+						Button button = (Button) activity
+								.findViewById(R.id.call_health);
+						button.setVisibility(TextView.INVISIBLE);
+						Toast.makeText(
+								activity,
+								"Please select a primary health center using the menu option",
+								Toast.LENGTH_SHORT).show();
+					}
+				}
 			}
 			pDlg.dismiss();
 		}
 
 	}
+	
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * 
+	 * @param ctx
+	 * @return True if device has internet
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
+	}
+
 	public void setActivity(Activity activity) {
 		this.activity = activity;
 	}

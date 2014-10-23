@@ -26,25 +26,20 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.theiyer.whatstheplan.entity.Group;
 import com.theiyer.whatstheplan.entity.Plan;
 import com.theiyer.whatstheplan.entity.PlanList;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewCenterUpcomingPlansActivity extends Activity implements OnItemClickListener {
-
-	private static final String TAG = "ViewCenterUpcomingPlansActivity";
 	
 	private Activity activity;
 	PlanListAdapter adapter;
@@ -112,8 +107,6 @@ public class ViewCenterUpcomingPlansActivity extends Activity implements OnItemC
 		@Override
 		protected String doInBackground(String... params) {
 			String path = WTPConstants.SERVICE_PATH+params[0];
-
-			//HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
 			HttpGet get = new HttpGet(path);
@@ -134,7 +127,6 @@ public class ViewCenterUpcomingPlansActivity extends Activity implements OnItemC
 		protected void onPostExecute(String response) {
 
 			if (response != null && response.contains("PlanList")) {
-				Log.i(TAG, response);
 				XStream xstream = new XStream();
 				xstream.alias("PlanList", PlanList.class);
 				xstream.alias("plans", Plan.class);
@@ -157,14 +149,28 @@ public class ViewCenterUpcomingPlansActivity extends Activity implements OnItemC
 							planListView.setVisibility(ListView.VISIBLE);
 							adapter.setData(plansResult);
 							planListView.setAdapter(adapter);
+							TextView planLabel = (TextView) findViewById(R.id.upcomingGroupPlanListLabel);
+							planLabel.setVisibility(TextView.INVISIBLE);
 							// Click event for single list row
+						} else {
+							planListView.setVisibility(ListView.INVISIBLE);
+							TextView planLabel = (TextView) findViewById(R.id.upcomingGroupPlanListLabel);
+							planLabel.setText("No upcoming plans for this center.");
 						}
-					}  
+					} else {
+						planListView.setVisibility(ListView.INVISIBLE);
+						TextView planLabel = (TextView) findViewById(R.id.upcomingGroupPlanListLabel);
+						planLabel.setText("No upcoming plans for this center.");
+					} 
 				} else {
 					planListView.setVisibility(ListView.INVISIBLE);
 					TextView planLabel = (TextView) findViewById(R.id.upcomingGroupPlanListLabel);
 					planLabel.setText("No upcoming plans for this center.");
 				}
+			} else {
+				planListView.setVisibility(ListView.INVISIBLE);
+				TextView planLabel = (TextView) findViewById(R.id.upcomingGroupPlanListLabel);
+				planLabel.setText("No upcoming plans for this center.");
 			}
 			pDlg.dismiss();
 		}
@@ -214,6 +220,33 @@ public class ViewCenterUpcomingPlansActivity extends Activity implements OnItemC
 			startActivity(intent);		
 		}
 		
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		MenuItem leaveCenterItem = menu.findItem(R.id.leaveGroup);
+		leaveCenterItem.setVisible(true);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+		case (R.id.leaveGroup):
+			Intent leaveCenterIntent = new Intent(this,
+					LeaveGroupActivity.class);
+			startActivity(leaveCenterIntent);
+			return true;
+		case (R.id.aboutUs):
+			Intent aboutUsIntent = new Intent(this, AboutUsActivity.class);
+			startActivity(aboutUsIntent);
+			return true;
+		default:
+			return false;
+		}
 	}
 	
 	@Override

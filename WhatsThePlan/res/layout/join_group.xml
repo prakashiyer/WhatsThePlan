@@ -59,6 +59,7 @@
             android:id="@+id/groupSearchResultsLabel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginLeft="@dimen/left_margin"
             android:layout_marginTop="@dimen/top_less_margin"
             android:text="@string/group_search_results_label"

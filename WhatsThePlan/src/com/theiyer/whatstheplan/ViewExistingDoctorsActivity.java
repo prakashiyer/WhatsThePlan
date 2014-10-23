@@ -19,7 +19,6 @@ import org.apache.http.util.EntityUtils;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,7 +45,7 @@ import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewExistingDoctorsActivity extends Activity implements
-OnItemClickListener {
+		OnItemClickListener {
 
 	private GridView doctorsGridView;
 	private DoctorsGridAdapter adapter;
@@ -80,46 +79,43 @@ OnItemClickListener {
 			SharedPreferences.Editor editor = prefs.edit();
 			editor.putString("selectedIndividuals", selectedIndividuals);
 			editor.apply();
-			
+
 			Cursor phones = getContentResolver().query(
 					ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
 					null, null, null);
 			StringBuffer phoneBuffer = new StringBuffer();
-			
+
 			while (phones.moveToNext()) {
 				int phoneType = phones
 						.getInt(phones
 								.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-				
+
 				String phoneNumber = phones
 						.getString(
 								phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
 						.trim();
-				String[] source = new String[]{"(",")","+","-","."," "};
-				String[] replace = new String[]{"","","","","",""};
-				phoneNumber = StringUtils.replaceEach(phoneNumber, source, replace);
+				String[] source = new String[] { "(", ")", "+", "-", ".", " " };
+				String[] replace = new String[] { "", "", "", "", "", "" };
+				phoneNumber = StringUtils.replaceEach(phoneNumber, source,
+						replace);
 				int len = phoneNumber.length();
 				if (len >= 10 && StringUtils.isNumeric(phoneNumber)) {
 					phoneNumber = phoneNumber.substring(len - 10);
 					switch (phoneType) {
 					case Phone.TYPE_MOBILE:
 						phoneBuffer.append(phoneNumber);
-						System.out.println("Phone: "+phoneNumber);
 						phoneBuffer.append(",");
 						break;
 					case Phone.TYPE_HOME:
 						phoneBuffer.append(phoneNumber);
-						System.out.println("Phone: "+phoneNumber);
 						phoneBuffer.append(",");
 						break;
 					case Phone.TYPE_WORK:
 						phoneBuffer.append(phoneNumber);
-						System.out.println("Phone: "+phoneNumber);
 						phoneBuffer.append(",");
 						break;
 					case Phone.TYPE_OTHER:
 						phoneBuffer.append(phoneNumber);
-						System.out.println("Phone: "+phoneNumber);
 						phoneBuffer.append(",");
 						break;
 					default:
@@ -129,9 +125,9 @@ OnItemClickListener {
 
 			}
 			phones.close();
-			
+
 			phoneBuffer.deleteCharAt(phoneBuffer.lastIndexOf(","));
-			
+
 			String searchQuery = "/fetchExistingDoctors?phoneList="
 					+ phoneBuffer.toString();
 
@@ -142,14 +138,12 @@ OnItemClickListener {
 			startActivity(intent);
 		}
 
-		
-		
-		SearchView searchView = (SearchView) findViewById(R.id.docSearchView);	
+		SearchView searchView = (SearchView) findViewById(R.id.docSearchView);
 		searchView.setOnQueryTextListener(new OnQueryTextListener() {
-			
+
 			@Override
 			public boolean onQueryTextSubmit(String query) {
-				
+
 				String searchQuery = "/searchDoctors?name="
 						+ query.replace(" ", "%20");
 
@@ -157,36 +151,36 @@ OnItemClickListener {
 				restClient.execute(new String[] { searchQuery });
 				return true;
 			}
-			
+
 			@Override
 			public boolean onQueryTextChange(String newText) {
 				if (!existingDoctorsList.isEmpty()) {
-					
-					filteredList = new ArrayList<Map<String,User>>();
-					for(Map<String, User> member: existingDoctorsList){
-						for(Entry<String, User> entry : member.entrySet()){
+
+					filteredList = new ArrayList<Map<String, User>>();
+					for (Map<String, User> member : existingDoctorsList) {
+						for (Entry<String, User> entry : member.entrySet()) {
 							User user = entry.getValue();
-							if(user.getName().toLowerCase(Locale.ENGLISH).contains(newText.toLowerCase(Locale.ENGLISH))){
+							if (user.getName()
+									.toLowerCase(Locale.ENGLISH)
+									.contains(
+											newText.toLowerCase(Locale.ENGLISH))) {
 								filteredList.add(member);
 							}
 						}
 					}
-					
+
 					adapter.setData(filteredList);
 					doctorsGridView.setAdapter(adapter);
-					//memberListLabel.setVisibility(TextView.VISIBLE);
+					// memberListLabel.setVisibility(TextView.VISIBLE);
 					doctorsGridView.setVisibility(GridView.VISIBLE);
-					
-					
+
 				}
 				return true;
 			}
 		});
-		
-		
-		
+
 	}
-	
+
 	/** Called when the user clicks the see members button */
 	public void goToCentersSelection(View view) {
 		Button button = (Button) findViewById(R.id.goToCentersSelectionButton);
@@ -194,31 +188,32 @@ OnItemClickListener {
 		Intent intent = new Intent(this, AppointmentActivity.class);
 		startActivity(intent);
 	}
-	
+
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		
-		for(Map<String, User> selectedMap: existingDoctorsList){
+
+		for (Map<String, User> selectedMap : existingDoctorsList) {
 			for (Entry<String, User> entry : selectedMap.entrySet()) {
 				User user = entry.getValue();
-				if(user.isSelected()){
+				if (user.isSelected()) {
 					user.setSelected(false);
 				}
 			}
 		}
-		
+
 		if (filteredList != null && !filteredList.isEmpty()) {
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			SharedPreferences.Editor editor = prefs.edit();
-			for(Map<String, User> selectedMap: filteredList){
+			for (Map<String, User> selectedMap : filteredList) {
 				for (Entry<String, User> entry : selectedMap.entrySet()) {
 					User user = entry.getValue();
-					if(user.isSelected()){
+					if (user.isSelected()) {
 						user.setSelected(false);
 						selectedIndividuals = "";
-						editor.putString("selectedIndividuals", selectedIndividuals);
+						editor.putString("selectedIndividuals",
+								selectedIndividuals);
 						editor.apply();
 						adapter.setData(filteredList);
 						doctorsGridView.setAdapter(adapter);
@@ -229,7 +224,7 @@ OnItemClickListener {
 			Map<String, User> selectedMap = filteredList.get(position);
 
 			for (Entry<String, User> entry : selectedMap.entrySet()) {
-				
+
 				String selectedMember = entry.getKey();
 				User user = entry.getValue();
 				user.setSelected(true);
@@ -239,15 +234,15 @@ OnItemClickListener {
 				adapter.setData(filteredList);
 				doctorsGridView.setAdapter(adapter);
 				doctorsGridView.setVisibility(GridView.VISIBLE);
-				
+
 				break;
 			}
 		}
 	}
-	
+
 	@Override
 	public void onBackPressed() {
-		Intent intent = new Intent(this,HomePlanGroupFragmentActivity.class);
+		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 		startActivity(intent);
 	}
 
@@ -255,7 +250,7 @@ OnItemClickListener {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
-		
+
 		public WebServiceClient(Context mContext) {
 			this.mContext = mContext;
 		}
@@ -279,7 +274,7 @@ OnItemClickListener {
 
 		@Override
 		protected String doInBackground(String... params) {
-			
+
 			String path = WTPConstants.SERVICE_PATH + params[0];
 
 			// HttpHost target = new HttpHost(TARGET_HOST);
@@ -301,10 +296,9 @@ OnItemClickListener {
 
 		@Override
 		protected void onPostExecute(String response) {
-			
 
 			if (response != null) {
-				
+
 				XStream userXstream = new XStream();
 				userXstream.alias("UserList", UserList.class);
 				userXstream.addImplicitCollection(UserList.class, "users");
@@ -314,28 +308,26 @@ OnItemClickListener {
 						"centers", String.class);
 				UserList userList = (UserList) userXstream.fromXML(response);
 				if (userList != null) {
-					
+
 					List<User> users = userList.getUsers();
-					if(users != null && !users.isEmpty()){
-						for(User user: users){
+					if (users != null && !users.isEmpty()) {
+						for (User user : users) {
 							Map<String, User> memberMap = new HashMap<String, User>();
 							memberMap.put(user.getPhone(), user);
 							existingDoctorsList.add(memberMap);
-							
+
 						}
-						
+
 						if (!existingDoctorsList.isEmpty()) {
-							filteredList = new ArrayList<Map<String,User>>();
+							filteredList = new ArrayList<Map<String, User>>();
 							filteredList.addAll(existingDoctorsList);
 							adapter.setData(filteredList);
 							doctorsGridView.setAdapter(adapter);
-							//memberListLabel.setVisibility(TextView.VISIBLE);
+							// memberListLabel.setVisibility(TextView.VISIBLE);
 							doctorsGridView.setVisibility(GridView.VISIBLE);
-							
-							
+
 						}
 					}
-					
 
 				}
 			}
@@ -364,6 +356,5 @@ OnItemClickListener {
 
 		return true;
 	}
-
 
 }

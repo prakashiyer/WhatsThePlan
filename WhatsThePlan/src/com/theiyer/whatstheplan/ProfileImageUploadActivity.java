@@ -45,11 +45,6 @@ public class ProfileImageUploadActivity extends Activity {
 	private ImageView imgView;
 	private String filePath;
 
-	public static final String PROPERTY_REG_ID = "registration_id";
-
-	SharedPreferences prefs;
-	Context context;
-	String regid;
 	private Bitmap bitmap;
 
 	/** Called when the activity is first created. */
@@ -67,7 +62,6 @@ public class ProfileImageUploadActivity extends Activity {
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String phone = prefs.getString("phone", "");
-			context = getApplicationContext();
 
 			imgView = (ImageView) findViewById(R.id.profilePicView);
 			WebImageRetrieveRestWebServiceClient userImageClient = new WebImageRetrieveRestWebServiceClient(
@@ -100,8 +94,6 @@ public class ProfileImageUploadActivity extends Activity {
 
 			restClient.execute(
 					new String[] { "uploadUserImage", phone, filePath });
-			Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
-			startActivity(intent);
 		}
 		
 	}

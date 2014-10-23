@@ -26,18 +26,18 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.theiyer.whatstheplan.entity.Center;
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewMemberProfileActivity extends Activity {
 	private static final String TAG = "Health Meet/ViewProfileActivity";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if(haveInternet(this)){
+
+		if (haveInternet(this)) {
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			setContentView(R.layout.view_profile);
@@ -47,23 +47,21 @@ public class ViewMemberProfileActivity extends Activity {
 			aBar.setBackgroundDrawable(actionBckGrnd);
 			aBar.setTitle(" Profile Details");
 
-			
 			String phone = prefs.getString("memberPhone", "");
-			
-			String userQuery = "/fetchUser?phone="+phone;
+
+			String userQuery = "/fetchUser?phone=" + phone;
 			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
-			userRestClient.execute(new String[] { userQuery});			
-			
+			userRestClient.execute(new String[] { userQuery });
+
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
 		}
-		
 
 	}
 
-
-	public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
+	public class UserWebServiceClient extends
+			AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
@@ -85,17 +83,17 @@ public class ViewMemberProfileActivity extends Activity {
 
 		@Override
 		protected void onPreExecute() {
-			
-		   showProgressDialog();
+
+			showProgressDialog();
 
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
-			String path = WTPConstants.SERVICE_PATH+params[0];
+			String path = WTPConstants.SERVICE_PATH + params[0];
 			query = params[0];
-			
-			//HttpHost target = new HttpHost(TARGET_HOST);
+
+			// HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
 			HttpGet get = new HttpGet(path);
@@ -103,11 +101,11 @@ public class ViewMemberProfileActivity extends Activity {
 
 			try {
 				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
+				results = response.getEntity();
 				String result = EntityUtils.toString(results);
 				return result;
 			} catch (Exception e) {
-				
+
 			}
 			return null;
 		}
@@ -115,47 +113,35 @@ public class ViewMemberProfileActivity extends Activity {
 		@Override
 		protected void onPostExecute(String response) {
 			if (response != null && query.contains("fetchUser")) {
-				    Log.i(TAG, response);
-				    XStream userXs = new XStream();
-					userXs.alias("UserInformation", User.class);
-					userXs.alias("centers", String.class);
-					userXs.addImplicitCollection(User.class, "centers",
-							"centers", String.class);
-					User user = (User) userXs.fromXML(response);
-					if (user != null && user.getName() != null) {
-						 Log.i(TAG, user.getName());
-						 SharedPreferences prefs = getSharedPreferences("Prefs",
-									Activity.MODE_PRIVATE);
-							SharedPreferences.Editor editor = prefs.edit();
-							editor.putString("userName", user.getName());
-							editor.putString("phone", user.getPhone());
-							editor.putString("dob", user.getDob());
-							editor.putString("gender", user.getSex());
-							editor.putString("bloodGrp", user.getBloodGroup());
-							editor.putString("Address", user.getAddress());
-							editor.putString("doctor", user.getDoctorFlag());
-							editor.apply();
-							
+				Log.i(TAG, response);
+				XStream userXs = new XStream();
+				userXs.alias("UserInformation", User.class);
+				userXs.alias("centers", String.class);
+				userXs.addImplicitCollection(User.class, "centers", "centers",
+						String.class);
+				User user = (User) userXs.fromXML(response);
+				if (user != null && user.getName() != null) {
 					TextView phoneValue = (TextView) findViewById(R.id.viewProfilePhone);
 					phoneValue.setText("Phone: " + user.getPhone());
 					TextView userNameValue = (TextView) findViewById(R.id.viewProfileName);
-					userNameValue.setText("Name: " +user.getName());
+					userNameValue.setText("Name: " + user.getName());
 					TextView dobValue = (TextView) findViewById(R.id.viewProfileDob);
 					dobValue.setText("Date of Birth: " + user.getDob());
 					TextView genderValue = (TextView) findViewById(R.id.viewProfilegender);
-					genderValue.setText("Gender:" + user.getSex());
+					genderValue.setText("Gender: " + user.getSex());
 					TextView bloodGrpValue = (TextView) findViewById(R.id.viewProfilebloodGrp);
-					bloodGrpValue.setText("Blood Group: " + user.getBloodGroup());
+					bloodGrpValue.setText("Blood Group: "
+							+ user.getBloodGroup());
 					TextView addressValue = (TextView) findViewById(R.id.viewProfileaddress);
 					addressValue.setText("Address: " + user.getAddress());
 					ImageView imgView = (ImageView) findViewById(R.id.viewProfilePicThumbnail);
 					byte[] image = user.getImage();
-					if(image != null){
+					if (image != null) {
 						Bitmap img = BitmapFactory.decodeByteArray(image, 0,
 								image.length);
 						imgView.setImageBitmap(img);
 					}
-					}
+				}
 			}
 			pDlg.dismiss();
 		}
@@ -182,5 +168,5 @@ public class ViewMemberProfileActivity extends Activity {
 
 		return true;
 	}
-	
+
 }

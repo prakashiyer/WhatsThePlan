@@ -14,8 +14,6 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -33,27 +31,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.theiyer.whatstheplan.NewHealthCenterSignUpActivity.WebImageRestWebServiceClient;
-import com.theiyer.whatstheplan.ViewProfileActivity.UserWebServiceClient;
 import com.theiyer.whatstheplan.entity.Center;
-import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
@@ -63,7 +49,6 @@ public class EditCenterProfileActivity extends FragmentActivity {
 	private ImageView imgView;
 	private static final int PICK_IMAGE = 1;
 	private Context context;
-    private static final String TAG = "Health Meet/Edit";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -248,7 +233,6 @@ public class EditCenterProfileActivity extends FragmentActivity {
 		@Override
 		protected void onPostExecute(String response) {
 			if (response != null && query.contains("fetchCenterForAdmin")) {
-				    Log.i(TAG, response);
 				    XStream userXs = new XStream();
 				    userXs.alias("Center", Center.class);
 					userXs.alias("members", String.class);
@@ -256,7 +240,6 @@ public class EditCenterProfileActivity extends FragmentActivity {
 							"members", String.class);
 					Center center = (Center) userXs.fromXML(response);
 					if (center != null && center.getName() != null) {
-						 Log.i(TAG, center.getName());
 						 SharedPreferences prefs = getSharedPreferences("Prefs",
 									Activity.MODE_PRIVATE);
 							SharedPreferences.Editor editor = prefs.edit();
@@ -302,7 +285,6 @@ public class EditCenterProfileActivity extends FragmentActivity {
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		String id = prefs.getString("centerId","New User");
-		Log.i("Center Id", id);
 		WebImageRestWebServiceClient imageRestClient = new WebImageRestWebServiceClient(
 				context);
 
@@ -381,7 +363,6 @@ public class EditCenterProfileActivity extends FragmentActivity {
 		protected void onPostExecute(String response) {
 			
 			if (response != null) {
-				System.out.println("**** response " + response);
 				XStream userXs = new XStream();
 			    userXs.alias("Center", Center.class);
 				userXs.alias("members", String.class);

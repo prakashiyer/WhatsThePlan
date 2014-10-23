@@ -7,13 +7,13 @@
     <string name="action_edit_profile">Edit Profile</string>
    <string name="action_add_doctor">Edit primary Doctor</string>
    <string name="action_add_center">Edit primary Center</string>
-    <string name="action_change_profile_pic">Change Profile Pic</string>
-    <string name="action_change_group_pic">Change Group Pic</string>
+    <string name="action_change_profile_pic">Edit Profile Image</string>
+    <string name="action_change_group_pic">Edit Group Image</string>
     <string name="action_invite_group">Invite Members</string>
-    <string name="action_leave_group">Exit Group</string>
+    <string name="action_leave_group">Exit Center</string>
     <string name="action_join_group">Join Group</string>
-    <string name="action_edit_plan">Edit Plan</string>
-    <string name="action_delete_plan">Delete Plan</string>
+    <string name="action_edit_plan">Edit Appointment</string>
+    <string name="action_delete_plan">Delete Appointment</string>
     <string name="welcome_statement">Create and manage your plans here!</string>
     <string name="new_user_button_text">New User Sign Up</string>
     <string name="manage_groups_button_text">Manage Groups</string>
@@ -25,7 +25,7 @@
     <string name="login_button_text">Log In</string>
     <string name="user_email_id_label">Email Id (eg. healthmeet@gmail.com)</string>
     <string name="user_details_label">User Information:</string>
-    <string name="user_name_label">Admin Name (eg. Prakash Iyer)</string>
+    <string name="user_name_label">Name (eg. Prakash Iyer)</string>
     <string name="centre_name_label">Centre Name (eg. Joy hospital)</string>
     <string name="user_address_label">Address </string>
     <string name="user_phone_label">10-digit Mobile Number</string>
@@ -69,7 +69,7 @@
      <string name="end_time_button_text">End Time</string>
      <string name="end_date_button_text">End Date</string>
     <string name="register_plan_button_text">Register Plan</string>
-    <string name="add_prescription_button_text">Add Prescription</string>
+    <string name="add_prescription_button_text">Save to Calendar</string>
     <string name="register_appointment_button_text">Register Appointment</string>
     <string name="edit_plan_button_text">Edit Plan</string>
     <string name="delete_plan_button_text">Delete Plan</string>
@@ -118,8 +118,8 @@
     <string name="action_about_us_title">About this application:\n\n</string>
      <string name="action_about_us_feature_title">Features:\n</string>
     <string name="action_about_us_text">We are happy to present you with HealthMeet - Health care made easy.  Connecting people,  doctors and health centres.  Medical services are now just a few clicks away.\n\n</string>
-    <string name="action_about_us_features">#Individual or health center registration\n #Select your preferred doctor and health center\n #Fix an appointment\n Doctors can confirm/deny appointments\n # See upcoming Appointments\n #Emergency button with easy access to primary doctor or health center administrator\n #Appointments get organised and stored in the calendar\n #Doctors and individuals get notifications about appointment requests instantly. \n # Allows health center to set up events and notify all members.\n</string>
-    <string name="action_about_us_sign">Keep exploring! We would be happy to hear from you.</string>
+    <string name="action_about_us_features"># Individual or health center registration\n # Select your preferred doctor and health center\n # Fix an appointment\n # Doctors can confirm/deny appointments\n # See upcoming Appointments\n # Emergency button with easy access to primary doctor or health center administrator\n # Appointments get organised and stored in the calendar\n # Doctors and individuals get notifications about appointment requests instantly. \n # Allows health center to set up events and notify all members.\n</string>
+    <string name="action_about_us_sign">Keep exploring! You can write to us at healthmeetfeedback@gmail.com. We would be happy to hear from you.</string>
     <string name="old_password_label">Type existing password</string>
     <string name="new_password_label">Type new password</string>
     <string name="retype_new_password_label">Re-type new password</string>
@@ -143,7 +143,7 @@
     <string name="view_plan_date_label">  From </string>
     <string name="view_plan_date_label_till"> To </string>
     <string name="view_plan_location_label">  With</string>
-    <string name="home_plan_label"> Home Plan</string>
+    <string name="home_plan_label"> Appointments</string>
     <string name="emergency_label"> Emergency</string>
     <string name="prescription_label"> Precription</string>
     <string name="groups_list_label"> Group List</string>

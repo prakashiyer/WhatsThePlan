@@ -1,9 +1,7 @@
 package com.theiyer.whatstheplan;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -16,14 +14,6 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.james.mime4j.message.Multipart;
-
-import com.theiyer.whatstheplan.CreateGroupActivity.WebImageRestWebServiceClient;
-import com.theiyer.whatstheplan.JoinGroupActivity.WebServiceClient;
-import com.theiyer.whatstheplan.entity.Center;
-import com.theiyer.whatstheplan.entity.Group;
-import com.theiyer.whatstheplan.util.WTPConstants;
-import com.thoughtworks.xstream.XStream;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -46,29 +36,36 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
+
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.theiyer.whatstheplan.entity.Center;
+import com.theiyer.whatstheplan.util.WTPConstants;
+import com.thoughtworks.xstream.XStream;
 
 public class NewHealthCenterSignUpActivity extends FragmentActivity {
 
 	private Context context;
+	private GoogleCloudMessaging gcm;
+	private String regid;
 	private String filePath;
 	private Bitmap bitmap;
 	private ImageView imgView;
 	private static final int PICK_IMAGE = 1;
+	private static final String TAG = "Health Meet GCM";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
-		
-		if(haveInternet(this)){
+
+		if (haveInternet(this)) {
 			setContentView(R.layout.new_healthcenter_registration);
 			ActionBar aBar = getActionBar();
 			Resources res = getResources();
@@ -77,11 +74,12 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 			aBar.setTitle(" Health Centre Registration form");
 			context = getApplicationContext();
 			imgView = (ImageView) findViewById(R.id.healthcentrePicView);
-		  } else {
-				Intent intent = new Intent(this, RetryActivity.class);
-				startActivity(intent);
-			}
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
 	}
+
 	public void selectGroupImage(View view) {
 		try {
 			Intent intent = new Intent();
@@ -95,7 +93,7 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 			Log.e(e.getClass().getName(), e.getMessage(), e);
 		}
 	}
-	
+
 	public void onClickRegisterHealthCentre(View view) {
 		Button button = (Button) findViewById(R.id.registerHealthButton);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
@@ -115,14 +113,19 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 		editor.putString("docFlag", "N");
 		editor.putString("centerFlag", "Y");
 		editor.apply();
+
+		gcm = GoogleCloudMessaging.getInstance(context);
+		Asyncer syncer = new Asyncer();
+		syncer.execute(new String[] { adminPhone });
+
 		WebImageRestWebServiceClient imageRestClient = new WebImageRestWebServiceClient(
 				this);
 
-		imageRestClient.execute(
-				new String[] { "addCenter", centreName, adminName, 
-						adminPhone, adminAddress, "", filePath });
-		
+		imageRestClient.execute(new String[] { "addCenter", centreName,
+				adminName, adminPhone, adminAddress, "", filePath });
+
 	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
@@ -162,6 +165,7 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 		default:
 		}
 	}
+
 	public void decodeFile(String filePath) {
 		// Decode image size
 		BitmapFactory.Options o = new BitmapFactory.Options();
@@ -190,6 +194,88 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 		imgView.setImageBitmap(bitmap);
 
 	}
+
+	/**
+	 * For GCM registration and storage
+	 * 
+	 * @author Dell
+	 * 
+	 */
+	private class Asyncer extends AsyncTask<String, Integer, String> {
+
+		@Override
+		protected void onPreExecute() {
+
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String msg = "";
+			if (gcm == null) {
+				gcm = GoogleCloudMessaging.getInstance(context);
+			}
+			try {
+				Log.i(TAG, "Registering GCM");
+				regid = gcm.register(WTPConstants.SENDER_ID);
+			} catch (IOException ex) {
+				msg = "Error :" + ex.getMessage();
+				Log.e(TAG, msg);
+
+				ex.printStackTrace();
+				// If there is an error, don't just keep trying to register.
+				// Require the user to click a button again, or perform
+				// exponential back-off.
+			}
+			msg = "Device registered, registration ID=" + regid;
+			Log.i(TAG, msg);
+
+			if (regid != null && regid != "") {
+				// Persist the regID - no need to register again.
+				storeRegistrationId(context, regid);
+
+				// Store the reg id in server
+
+				String path = WTPConstants.SERVICE_PATH + "/addRegId?regId="
+						+ regid + "&phone=" + params[0];
+
+				// HttpHost target = new HttpHost(TARGET_HOST);
+				HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
+				HttpClient client = new DefaultHttpClient();
+				HttpGet get = new HttpGet(path);
+				try {
+					client.execute(target, get);
+				} catch (Exception e) {
+
+				}
+			}
+
+			return msg;
+		}
+
+		@Override
+		protected void onPostExecute(String msg) {
+
+		}
+
+	}
+
+	/**
+	 * Stores the registration ID and app versionCode in the application's
+	 * {@code SharedPreferences}.
+	 * 
+	 * @param context
+	 *            application's context.
+	 * @param regId
+	 *            registration ID
+	 */
+	private void storeRegistrationId(Context context, String regId) {
+		SharedPreferences prefs = getSharedPreferences("Prefs",
+				Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString("regId", regId);
+		editor.apply();
+	}
+
 	@SuppressWarnings("deprecation")
 	public String getPath(Uri uri) {
 		String[] projection = { MediaStore.Images.Media.DATA };
@@ -204,7 +290,9 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 		} else
 			return null;
 	}
-	public class WebImageRestWebServiceClient extends AsyncTask<String, Integer, String> {
+
+	public class WebImageRestWebServiceClient extends
+			AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
@@ -231,43 +319,42 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 
 		@Override
 		protected String doInBackground(String... params) {
-			
-			String method = params[0];
-			String path = WTPConstants.SERVICE_PATH+"/"+method;
 
-			//HttpHost target = new HttpHost(TARGET_HOST);
+			String method = params[0];
+			String path = WTPConstants.SERVICE_PATH + "/" + method;
+
+			// HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(path);
 			HttpEntity results = null;
 			try {
 				MultipartEntity entity = new MultipartEntity();
-		        entity.addPart("name", new StringBody(params[1]));
-		        entity.addPart("adminName", new StringBody(params[2]));
-		        entity.addPart("adminPhone", new StringBody(params[3]));
-		        entity.addPart("address", new StringBody(params[4]));
-		        entity.addPart("members",  new StringBody(""));
-		        entity.addPart("image", new FileBody(new File(filePath)));
-		        
-		        post.setEntity(entity);
+				entity.addPart("name", new StringBody(params[1]));
+				entity.addPart("adminName", new StringBody(params[2]));
+				entity.addPart("adminPhone", new StringBody(params[3]));
+				entity.addPart("address", new StringBody(params[4]));
+				entity.addPart("members", new StringBody(""));
+				entity.addPart("image", new FileBody(new File(filePath)));
 
-		        HttpResponse response = client.execute(target, post);
-		        results = response.getEntity(); 
+				post.setEntity(entity);
+
+				HttpResponse response = client.execute(target, post);
+				results = response.getEntity();
 				String result = EntityUtils.toString(results);
 				return result;
 			} catch (Exception e) {
-				
+
 			}
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(String response) {
-			
+
 			if (response != null) {
-				System.out.println("**** response " + response);
 				XStream userXs = new XStream();
-			    userXs.alias("Center", Center.class);
+				userXs.alias("Center", Center.class);
 				userXs.alias("members", String.class);
 				userXs.addImplicitCollection(Center.class, "members",
 						"members", String.class);
@@ -282,20 +369,50 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 					bundle.putString("center", "Y");
 					bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
 							account.name);
-					am.addAccountExplicitly(account, center.getAdminPhone(), bundle);
-					am.setAuthToken(account, "Full Access", center.getAdminPhone());
-					Toast.makeText(getApplicationContext(), "Congratulations! Your center is active now.",
+					am.addAccountExplicitly(account, center.getAdminPhone(),
+							bundle);
+					am.setAuthToken(account, "Full Access",
+							center.getAdminPhone());
+					Toast.makeText(getApplicationContext(),
+							"Congratulations! Your center is active now.",
 							Toast.LENGTH_LONG).show();
-					Intent intent = new Intent(mContext, HomePlanGroupFragmentActivity.class);
+					Intent intent = new Intent(mContext,
+							HomePlanGroupFragmentActivity.class);
 					startActivity(intent);
-					
+
 				}
-				
-			}	
+
+			}
 			pDlg.dismiss();
 		}
 
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+		case (R.id.aboutUs):
+			Intent intent = new Intent(this, AboutUsActivity.class);
+			startActivity(intent);
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(this, MainActivity.class);
+		startActivity(intent);
+	}
+
 	/**
 	 * Checks if we have a valid Internet Connection on the device.
 	 * 

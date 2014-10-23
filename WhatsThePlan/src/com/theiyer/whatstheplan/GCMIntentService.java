@@ -78,7 +78,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         .setStyle(new NotificationCompat.BigTextStyle()
         .bigText(msg))
         .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
-        .setContentText(msg);
+        .setAutoCancel(true).setContentText(msg);
         SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
         

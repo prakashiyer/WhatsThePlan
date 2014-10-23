@@ -1,7 +1,5 @@
 package com.theiyer.whatstheplan;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -49,7 +47,7 @@ public class ViewMyNewPlansActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if(haveInternet(this)){
+		if (haveInternet(this)) {
 			setContentView(R.layout.view_new_plan);
 			ActionBar aBar = getActionBar();
 			Resources res = getResources();
@@ -63,14 +61,13 @@ public class ViewMyNewPlansActivity extends Activity {
 			TextView userNameValue = (TextView) findViewById(R.id.welcomeViewNewPlanLabel);
 			userNameValue.setText(userName + ", here's selected plan details!");
 
-			
 			selectedPlan = prefs.getString("selectedPlan", "New User");
 			selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 			String docFlag = prefs.getString("docFlag", "");
 			TextView selectedPlanValue = (TextView) findViewById(R.id.viewNewPlanTitle);
 			selectedPlanValue.setText(" " + selectedPlan);
 
-			String searchQuery = "/fetchPlan?id="+selectedPlanIndex;
+			String searchQuery = "/fetchPlan?id=" + selectedPlanIndex;
 			String phone = prefs.getString("phone", "");
 
 			WebServiceClient restClient = new WebServiceClient(this);
@@ -79,7 +76,7 @@ public class ViewMyNewPlansActivity extends Activity {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
 		}
-		
+
 	}
 
 	/** Called when the user clicks the see members button */
@@ -109,39 +106,40 @@ public class ViewMyNewPlansActivity extends Activity {
 			rsvp = "Y";
 		}
 
-		String updateQuery = "/rsvpPlan?id="+selectedPlanIndex + "&phone="+phone+"&docFlag=" + docFlag
-				+"&centerPlanFlag="+centerPlanFlag+ "&rsvp=" + rsvp;
+		String updateQuery = "/rsvpPlan?id=" + selectedPlanIndex + "&phone="
+				+ phone + "&docFlag=" + docFlag + "&centerPlanFlag="
+				+ centerPlanFlag + "&rsvp=" + rsvp;
 		WebServiceClient restClient = new WebServiceClient(this);
 		restClient.execute(new String[] { updateQuery, phone, docFlag });
-		if ("N".equals(rsvp)) { 
-		CalendarHelper calendarHelper = new CalendarHelper(context);
-		calendarHelper.execute(new String[] { "",
-				selectedPlan, "", "", "", "delete"});
-		System.out.println("Plan deleted.....");
-		rsvpPlanButton.setVisibility(1);
-		rsvpLabel.setVisibility(1);
-		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
-		startActivity(intent);
+		if ("N".equals(rsvp)) {
+			CalendarHelper calendarHelper = new CalendarHelper(context);
+			calendarHelper.execute(new String[] { "", selectedPlan, "", "", "",
+					"delete" });
+			rsvpPlanButton.setVisibility(1);
+			rsvpLabel.setVisibility(1);
+			Intent intent = new Intent(this,
+					HomePlanGroupFragmentActivity.class);
+			startActivity(intent);
 		} else {
-			System.out.println("Selected plan : " + selectedPlan);
-			System.out.println("******** Plan : " +plan.getStartTime().toString());
 			CalendarHelper calendarHelper = new CalendarHelper(context);
 			String[] startPlanTime = null;
 			String planTime = plan.getStartTime();
-			if(planTime != null) {
+			if (planTime != null) {
 				startPlanTime = WhatstheplanUtil.createGmtToLocalTime(planTime);
 			}
 			String[] endPlanTime = null;
 			String planEndTime = plan.getStartTime();
-			if(planEndTime != null) {
-				endPlanTime = WhatstheplanUtil.createGmtToLocalTime(planEndTime);
+			if (planEndTime != null) {
+				endPlanTime = WhatstheplanUtil
+						.createGmtToLocalTime(planEndTime);
 			}
-			
-			calendarHelper.execute(new String[] { startPlanTime[0] +" " + startPlanTime[1],
-					//plan.getName(), plan.getLocation(),
-					String.valueOf(plan.getId()),plan.getTitle(),"","","create", endPlanTime[1], endPlanTime[0] });
+
+			calendarHelper.execute(new String[] {
+					startPlanTime[0] + " " + startPlanTime[1],
+					// plan.getName(), plan.getLocation(),
+					String.valueOf(plan.getId()), plan.getTitle(), "", "",
+					"create", endPlanTime[1], endPlanTime[0] });
 		}
-		
 
 	}
 
@@ -150,20 +148,11 @@ public class ViewMyNewPlansActivity extends Activity {
 		this.menu = menu;
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-		MenuItem viewProfileItem = menu.findItem(R.id.viewProfile);
-		viewProfileItem.setVisible(true);
-
-		MenuItem changeProfilePicItem = menu.findItem(R.id.changeProfilePic);
-		changeProfilePicItem.setVisible(true);
+		
 
 		MenuItem editPlanItem = menu.findItem(R.id.editPlan);
 		editPlanItem.setVisible(true);
-		/*
-		MenuItem viewGroupsInvitedListItem = menu.findItem(R.id.viewGroupsInvitedList);
-		viewGroupsInvitedListItem.setVisible(true);*/
 		
-		/*MenuItem viewMembersInvitedListItem = menu.findItem(R.id.viewMembersInvitedList);
-		viewMembersInvitedListItem.setVisible(true);*/
 
 		return true;
 	}
@@ -171,22 +160,8 @@ public class ViewMyNewPlansActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		super.onOptionsItemSelected(item);
-		
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
-		
+
 		switch (item.getItemId()) {
-		case (R.id.viewProfile):
-			Intent viewProfileIntent = new Intent(this,
-					ViewProfileActivity.class);
-			startActivity(viewProfileIntent);
-			return true;
-		case (R.id.changeProfilePic):
-			Intent changeProfilePicIntent = new Intent(this,
-					ProfileImageUploadActivity.class);
-			startActivity(changeProfilePicIntent);
-			return true;
 		case (R.id.editPlan):
 			Intent editPlanIntent = new Intent(this, EditPlanActivity.class);
 			startActivity(editPlanIntent);
@@ -194,7 +169,7 @@ public class ViewMyNewPlansActivity extends Activity {
 		case (R.id.deletePlan):
 			AlertDialog.Builder ad = new AlertDialog.Builder(this);
 			ad.setTitle("Delete Plan confirmation");
-			ad.setMessage("Are you sure about deleting this plan?");
+			ad.setMessage("Are you sure about deleting this appointment?");
 
 			ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 				@Override
@@ -205,8 +180,8 @@ public class ViewMyNewPlansActivity extends Activity {
 					WebServiceClient restClient = new WebServiceClient(context);
 					restClient.execute(new String[] { updateQuery });
 					CalendarHelper calendarHelper = new CalendarHelper(context);
-					calendarHelper.execute(new String[] { "",
-							selectedPlan, "", "", "", "delete"});
+					calendarHelper.execute(new String[] { "", selectedPlan, "",
+							"", "", "delete" });
 					Intent homeIntent = new Intent(context,
 							HomePlanGroupFragmentActivity.class);
 					startActivity(homeIntent);
@@ -224,22 +199,24 @@ public class ViewMyNewPlansActivity extends Activity {
 			Intent aboutUsIntent = new Intent(this, AboutUsActivity.class);
 			startActivity(aboutUsIntent);
 			return true;
-			
-		/*case (R.id.viewGroupsInvitedList):
-			
-			editor.putString("viewSelected", "groupsInvited");
-			editor.apply();
-			Intent viewGroupsInvitedIntent = new Intent(this, ViewPlanMembersActivity.class);
-			startActivity(viewGroupsInvitedIntent);
-			return true;*/
-			
-		/*case (R.id.viewMembersInvitedList):
-			editor.putString("viewSelected", "membersInvited");
-			editor.apply();
-			Intent viewMembersInvitedIntent = new Intent(this, ViewPlanMembersActivity.class);
-			startActivity(viewMembersInvitedIntent);
-			return true;*/
-			
+
+			/*
+			 * case (R.id.viewGroupsInvitedList):
+			 * 
+			 * editor.putString("viewSelected", "groupsInvited");
+			 * editor.apply(); Intent viewGroupsInvitedIntent = new Intent(this,
+			 * ViewPlanMembersActivity.class);
+			 * startActivity(viewGroupsInvitedIntent); return true;
+			 */
+
+			/*
+			 * case (R.id.viewMembersInvitedList):
+			 * editor.putString("viewSelected", "membersInvited");
+			 * editor.apply(); Intent viewMembersInvitedIntent = new
+			 * Intent(this, ViewPlanMembersActivity.class);
+			 * startActivity(viewMembersInvitedIntent); return true;
+			 */
+
 		default:
 			return false;
 		}
@@ -285,7 +262,7 @@ public class ViewMyNewPlansActivity extends Activity {
 			query = params[0];
 			String path = WTPConstants.SERVICE_PATH + query;
 			if (query.contains("fetchPlan") || query.contains("rsvpPlan")) {
-				Log.i("REQUEST",query);
+				Log.i("REQUEST", query);
 				phone = params[1];
 				docFlag = params[2];
 			}
@@ -310,7 +287,6 @@ public class ViewMyNewPlansActivity extends Activity {
 		@Override
 		protected void onPostExecute(String response) {
 			Button rsvpPlanButton = (Button) findViewById(R.id.rsvpNewPlanButton);
-			Log.i("RESPONSE",response);
 			if (response != null && query.contains("fetchPlan")) {
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
@@ -319,8 +295,15 @@ public class ViewMyNewPlansActivity extends Activity {
 				if (plan != null) {
 
 					if (phone.equals(plan.getUserPhone())) {
-						MenuItem deletePlanItem = menu.findItem(R.id.deletePlan);
+						MenuItem deletePlanItem = menu
+								.findItem(R.id.deletePlan);
 						deletePlanItem.setVisible(true);
+					}
+					
+					if ("Y".equals(plan.getCenterPlanFlag()) && !phone.equals(plan.getUserPhone())) {
+						MenuItem deletePlanItem = menu
+								.findItem(R.id.editPlan);
+						deletePlanItem.setVisible(false);
 					}
 
 					TextView planTimeValue = (TextView) findViewById(R.id.viewNewPlanTime);
@@ -328,18 +311,21 @@ public class ViewMyNewPlansActivity extends Activity {
 
 					String date = plan.getStartTime().substring(0, 10);
 					String time = plan.getStartTime().substring(11, 16);
-					String[] postedLocalDate = WhatstheplanUtil.createGmtToLocalTime(date + " " + time+":00");
+					String[] postedLocalDate = WhatstheplanUtil
+							.createGmtToLocalTime(date + " " + time + ":00");
 					date = postedLocalDate[0];
 					time = postedLocalDate[1];
 					String hour = time.substring(0, 2);
-					String min = time.substring(3,5);
+					String min = time.substring(3, 5);
 					String endDate = plan.getEndTime().substring(0, 10);
 					String endTime = plan.getEndTime().substring(11, 16);
-					String[] endLocalDate = WhatstheplanUtil.createGmtToLocalTime(endDate + " " + endTime+":00");
+					String[] endLocalDate = WhatstheplanUtil
+							.createGmtToLocalTime(endDate + " " + endTime
+									+ ":00");
 					endDate = endLocalDate[0];
 					endTime = endLocalDate[1];
 					String endHour = endTime.substring(0, 2);
-					String endMin = endTime.substring(3,5);
+					String endMin = endTime.substring(3, 5);
 					int hourInt = Integer.valueOf(hour);
 					String ampm = "AM";
 					if (hourInt > 12) {
@@ -360,29 +346,28 @@ public class ViewMyNewPlansActivity extends Activity {
 					}
 					planTimeValue.setText(" " + date + " " + hour + ":" + min
 							+ " " + ampm);
-					
-					planEndTimeValue.setText(" "+ endDate + " " + endHour + ":" + endMin
-					+ " " + endAmPm);
+
+					planEndTimeValue.setText(" " + endDate + " " + endHour
+							+ ":" + endMin + " " + endAmPm);
 
 					TextView planLocationValue = (TextView) findViewById(R.id.viewNewPlanLocation);
-					
+
 					Button membersAttending = (Button) findViewById(R.id.seeMembersAttendingButton);
 					TextView rsvpLabel = (TextView) findViewById(R.id.rsvpNewLabel);
-					
+
 					SharedPreferences prefs = getSharedPreferences("Prefs",
 							Activity.MODE_PRIVATE);
 					SharedPreferences.Editor editor = prefs.edit();
 					editor.putString("centerPlanFlag", plan.getCenterPlanFlag());
 					editor.apply();
-					if("Y".equals(plan.getCenterPlanFlag())){
-						
-						
-						
+					if ("Y".equals(plan.getCenterPlanFlag())) {
+
 						planLocationValue.setText(" " + plan.getCenterName());
 						String planFile = plan.getPlanFile();
-						String[] membersArray = StringUtils.splitByWholeSeparator(planFile, ",");
-						int count=0;
-						for(String memberRsvp: membersArray){
+						String[] membersArray = StringUtils
+								.splitByWholeSeparator(planFile, ",");
+						int count = 0;
+						for (String memberRsvp : membersArray) {
 							if (!plan.getUserPhone().equals(phone)) {
 								if (memberRsvp.contains(phone)
 										&& memberRsvp.contains("Y")) {
@@ -399,42 +384,45 @@ public class ViewMyNewPlansActivity extends Activity {
 								rsvpLabel.setVisibility(TextView.INVISIBLE);
 								rsvpPlanButton.setVisibility(Button.INVISIBLE);
 							}
-							
-							if(memberRsvp.contains("Y")){
-								count = count +1;
+
+							if (memberRsvp.contains("Y")) {
+								count = count + 1;
 							}
 						}
 						membersAttending.setText("Members Attending ("
 								+ String.valueOf(count) + ") >>");
-						
+
 					} else {
 						planLocationValue.setText(" " + plan.getDocName());
-						int count=0;
+						int count = 0;
 						rsvpPlanButton.setVisibility(Button.VISIBLE);
-						if("Y".equals(docFlag) && "Y".equals(plan.getDocRsvp())){
+						if ("Y".equals(docFlag)
+								&& "Y".equals(plan.getDocRsvp())) {
 							rsvpLabel.setText("You are going, Click here to");
 							rsvpPlanButton.setText("Say No");
-						} else if ("Y".equals(docFlag) && "N".equals(plan.getDocRsvp())){
+						} else if ("Y".equals(docFlag)
+								&& "N".equals(plan.getDocRsvp())) {
 							rsvpLabel
 									.setText("Are you attending? Click here to");
 							rsvpPlanButton.setText("Say Yes");
 						}
-						
-						if("N".equals(docFlag) && "Y".equals(plan.getUserRsvp())){
+
+						if ("N".equals(docFlag)
+								&& "Y".equals(plan.getUserRsvp())) {
 							rsvpLabel.setText("You are going, Click here to");
 							rsvpPlanButton.setText("Say No");
-						} else if ("N".equals(docFlag) && "N".equals(plan.getUserRsvp())){
+						} else if ("N".equals(docFlag)
+								&& "N".equals(plan.getUserRsvp())) {
 							rsvpLabel
 									.setText("Are you attending? Click here to");
 							rsvpPlanButton.setText("Say Yes");
 						}
-						
-						
-						if("Y".equals(plan.getUserRsvp())){
+
+						if ("Y".equals(plan.getUserRsvp())) {
 							count = 1;
 						}
-						
-						if("Y".equals(plan.getDocRsvp())){
+
+						if ("Y".equals(plan.getDocRsvp())) {
 							count = 2;
 						}
 						membersAttending.setText("Members Attending ("
@@ -454,13 +442,13 @@ public class ViewMyNewPlansActivity extends Activity {
 					TextView rsvpLabel = (TextView) findViewById(R.id.rsvpNewLabel);
 					if ("Y".equals(plan.getCenterPlanFlag())) {
 						planLocationValue.setText(" " + plan.getCenterName());
-						
+
 						int count = 0;
 						String planFile = plan.getPlanFile();
-						if(!StringUtils.isEmpty(planFile)) {
+						if (!StringUtils.isEmpty(planFile)) {
 							String[] membersArray = StringUtils
 									.splitByWholeSeparator(planFile, ",");
-							
+
 							for (String memberRsvp : membersArray) {
 								if (!plan.getUserPhone().equals(phone)) {
 									if (memberRsvp.contains(phone)
@@ -473,10 +461,12 @@ public class ViewMyNewPlansActivity extends Activity {
 												.setText("Are you attending? Click here to");
 										rsvpPlanButton.setText("Say Yes");
 									}
-									rsvpPlanButton.setVisibility(Button.VISIBLE);
+									rsvpPlanButton
+											.setVisibility(Button.VISIBLE);
 								} else {
 									rsvpLabel.setVisibility(TextView.INVISIBLE);
-									rsvpPlanButton.setVisibility(Button.INVISIBLE);
+									rsvpPlanButton
+											.setVisibility(Button.INVISIBLE);
 								}
 
 								if (memberRsvp.contains("Y")) {
@@ -484,7 +474,7 @@ public class ViewMyNewPlansActivity extends Activity {
 								}
 							}
 						}
-						
+
 						membersAttending.setText("Members Attending ("
 								+ String.valueOf(count) + ") >>");
 						rsvpPlanButton.setTextColor(getResources().getColor(
@@ -525,10 +515,10 @@ public class ViewMyNewPlansActivity extends Activity {
 						}
 						membersAttending.setText("Members Attending ("
 								+ String.valueOf(count) + ") >>");
-						
+
 						rsvpPlanButton.setTextColor(getResources().getColor(
-										R.color.button_text));
-						
+								R.color.button_text));
+
 					}
 				}
 			}

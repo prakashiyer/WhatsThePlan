@@ -1,7 +1,6 @@
 package com.theiyer.whatstheplan;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -11,7 +10,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import android.R.string;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActionBar;
@@ -44,15 +42,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.theiyer.whatstheplan.AddHealthCenterActivity.UserWebServiceClient;
-import com.theiyer.whatstheplan.entity.Plan;
-import com.theiyer.whatstheplan.entity.PlanList;
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
-public class NewUserSignUpActivity extends FragmentActivity implements OnItemSelectedListener {
-	
+public class NewUserSignUpActivity extends FragmentActivity implements
+		OnItemSelectedListener {
+
 	private Context context;
 	private String genderVar;
 	private String doctorFlag;
@@ -62,64 +58,60 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 
 	private GoogleCloudMessaging gcm;
 	private String regid;
-	Spinner gender; 
-	 //TextView selGender;
-	 Spinner bloodGrp;
-	 //TextView selblood;
-	 private String[] genderString = { "(Select)", "Male", "Female" };
-	 private String[] bloodGrpString = {"(Select)", "A-positive", "B-positive", "B-negative", "A-negative", "O-positive" , "O-negative", "AB-positive", "AB-negative" };
-	
+	private Spinner gender;
+	private Spinner bloodGrp;
+	private String[] genderString = { "(Select)", "Male", "Female" };
+	private String[] bloodGrpString = { "(Select)", "A-positive", "B-positive",
+			"B-negative", "A-negative", "O-positive", "O-negative",
+			"AB-positive", "AB-negative" };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
-		
-		if(haveInternet(this)){
+
+		if (haveInternet(this)) {
 			setContentView(R.layout.new_user_registration);
 			ActionBar aBar = getActionBar();
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" Individual Registration form");
+			aBar.setTitle(" Registration form");
 			context = getApplicationContext();
 			doctorFlag = "N";
-			  //selGender = (TextView) findViewById(R.id.selGender);
-			  gender = (Spinner) findViewById(R.id.genderDrp);
-			  ArrayAdapter<String> adapter_state = new ArrayAdapter<String>(this,
-			    android.R.layout.simple_spinner_item, genderString);
-			  adapter_state
-			    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			  gender.setAdapter(adapter_state);
-			  gender.setOnItemSelectedListener(this);
-			  
-			  System.out.println("blood group : " + bloodGrpString.length);
-			  //selblood = (TextView) findViewById(R.id.selblood);
-			  bloodGrp = (Spinner) findViewById(R.id.bloodGrp);
-			  ArrayAdapter<String> adapter_state1 = new ArrayAdapter<String>(this,
-			    android.R.layout.simple_spinner_item, bloodGrpString);
-			  adapter_state1
-			    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			  bloodGrp.setAdapter(adapter_state1);
-			  bloodGrp.setOnItemSelectedListener(this);
+			gender = (Spinner) findViewById(R.id.genderDrp);
+			ArrayAdapter<String> adapter_state = new ArrayAdapter<String>(this,
+					android.R.layout.simple_spinner_item, genderString);
+			adapter_state
+					.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			gender.setAdapter(adapter_state);
+			gender.setOnItemSelectedListener(this);
+
+			bloodGrp = (Spinner) findViewById(R.id.bloodGrp);
+			ArrayAdapter<String> adapter_state1 = new ArrayAdapter<String>(
+					this, android.R.layout.simple_spinner_item, bloodGrpString);
+			adapter_state1
+					.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			bloodGrp.setAdapter(adapter_state1);
+			bloodGrp.setOnItemSelectedListener(this);
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
 		}
-		
 
 	}
-	
+
 	/** Called when the user checks the change password */
 	public void enterDocCheck(View view) {
 		CheckBox checkBox = (CheckBox) findViewById(R.id.codeCheckBox);
-		if(checkBox.isChecked()){
-			doctorFlag="Y";
+		if (checkBox.isChecked()) {
+			doctorFlag = "Y";
 		} else {
-			doctorFlag="N";
+			doctorFlag = "N";
 		}
-			
+
 	}
+
 	public void setDate(View v) {
 		Button button = (Button) findViewById(R.id.setDateOfBirth);
 		button.setTextColor(getResources().getColor(R.color.click_button_2));
@@ -137,7 +129,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 
 		EditText phoneText = (EditText) findViewById(R.id.newUserPhoneValue);
 		String phone = phoneText.getText().toString();
-		
+
 		TextView dob = (TextView) findViewById(R.id.dateOfBirth);
 		String dobText = dob.getText().toString();
 
@@ -150,12 +142,12 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 		} else if (TextUtils.isEmpty(phone)) {
 			Toast.makeText(getApplicationContext(),
 					"Can I have your phone number?", Toast.LENGTH_LONG).show();
-		} else if (TextUtils.isEmpty(dobText)) {			
+		} else if (TextUtils.isEmpty(dobText)) {
 			Toast.makeText(getApplicationContext(),
 					"Can I have your date of birth?", Toast.LENGTH_LONG).show();
-		} else if (TextUtils.isEmpty(genderVar)) {			
-			Toast.makeText(getApplicationContext(),
-					"Can I have your gender?", Toast.LENGTH_LONG).show();
+		} else if (TextUtils.isEmpty(genderVar)) {
+			Toast.makeText(getApplicationContext(), "Can I have your gender?",
+					Toast.LENGTH_LONG).show();
 		} else {
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
@@ -171,27 +163,26 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 			editor.putString("centerFlag", "N");
 			editor.putString("newUser", "Y");
 			editor.apply();
-			System.out.println("****** bloodVar  ::  " + bloodVar);
-			if("Y".equals(doctorFlag)){
-				String userQuery = "/addUser?phone="+phone+"&name="+userName.replace(" ", "%20")
-						+"&bloodGroup=" + bloodVar
-						+"&dob=" + dobText
-						+"&sex=" + genderVar
-						+"&address=" + address
-						+"&doctorFlag=" + doctorFlag
-						+"&primaryCenterId="+ "0"
-						+"&primaryDoctorId="+ "0"
-						+"&centers=" + "";
-				UserWebServiceClient userRestClient = new UserWebServiceClient(this);
-				userRestClient.execute(new String[] { userQuery});
-						
-				
+
+			if ("Y".equals(doctorFlag)) {
+				gcm = GoogleCloudMessaging.getInstance(context);
+				Asyncer syncer = new Asyncer();
+				syncer.execute(new String[] { phone });
+				String userQuery = "/addUser?phone=" + phone + "&name="
+						+ userName.replace(" ", "%20") + "&bloodGroup="
+						+ bloodVar + "&dob=" + dobText + "&sex=" + genderVar
+						+ "&address=" + address + "&doctorFlag=" + doctorFlag
+						+ "&primaryCenterId=" + "0" + "&primaryDoctorId=" + "0"
+						+ "&centers=" + "";
+				UserWebServiceClient userRestClient = new UserWebServiceClient(
+						this);
+				userRestClient.execute(new String[] { userQuery });
+
 			} else {
-				Intent intent = new Intent(this,
-						AddDoctorActivity.class);
+				Intent intent = new Intent(this, AddDoctorActivity.class);
 				startActivity(intent);
 			}
-			
+
 		}
 	}
 
@@ -219,11 +210,12 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 	}
-	
+
 	/**
 	 * For GCM registration and storage
+	 * 
 	 * @author Dell
-	 *
+	 * 
 	 */
 	private class Asyncer extends AsyncTask<String, Integer, String> {
 
@@ -244,7 +236,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 			} catch (IOException ex) {
 				msg = "Error :" + ex.getMessage();
 				Log.e(TAG, msg);
-				
+
 				ex.printStackTrace();
 				// If there is an error, don't just keep trying to register.
 				// Require the user to click a button again, or perform
@@ -259,9 +251,9 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 
 				// Store the reg id in server
 
-				String path = WTPConstants.SERVICE_PATH+"/addRegId?regId="
-						+ regid + "&phone="+params[0];
-                
+				String path = WTPConstants.SERVICE_PATH + "/addRegId?regId="
+						+ regid + "&phone=" + params[0];
+
 				// HttpHost target = new HttpHost(TARGET_HOST);
 				HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 				HttpClient client = new DefaultHttpClient();
@@ -278,12 +270,13 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 
 		@Override
 		protected void onPostExecute(String msg) {
-			
+
 		}
 
 	}
-	
-	public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
+
+	public class UserWebServiceClient extends
+			AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
@@ -304,16 +297,16 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 
 		@Override
 		protected void onPreExecute() {
-			
-		   showProgressDialog();
+
+			showProgressDialog();
 
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
-			String path = WTPConstants.SERVICE_PATH+params[0];
-			
-			//HttpHost target = new HttpHost(TARGET_HOST);
+			String path = WTPConstants.SERVICE_PATH + params[0];
+
+			// HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
 			HttpGet get = new HttpGet(path);
@@ -321,11 +314,11 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 
 			try {
 				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
+				results = response.getEntity();
 				String result = EntityUtils.toString(results);
 				return result;
 			} catch (Exception e) {
-				
+
 			}
 			return null;
 		}
@@ -333,37 +326,40 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 		@Override
 		protected void onPostExecute(String response) {
 			if (response != null) {
-				    Log.i(TAG, response);
-				    XStream userXs = new XStream();
-					userXs.alias("UserInformation", User.class);
-					userXs.alias("centers", String.class);
-					userXs.addImplicitCollection(User.class, "centers",
-							"centers", String.class);
-					User user = (User) userXs.fromXML(response);
-					if (user != null && user.getName() != null) {
-						 Log.i(TAG, user.getName());
-						 AccountManager am = AccountManager.get(mContext);
-							final Account account = new Account(user.getPhone(),
-									WTPConstants.ACCOUNT_ADDRESS);
-							final Bundle bundle = new Bundle();
-							bundle.putString("userName", user.getName());
-							bundle.putString("phone", user.getPhone());
-							bundle.putString("doctor", doctorFlag);
-							bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
-									account.name);
-							am.addAccountExplicitly(account, user.getPhone(), bundle);
-							am.setAuthToken(account, "Full Access", user.getPhone());
-						 Toast.makeText(getApplicationContext(), "Congratulations! Your Profile has been activated.",
-									Toast.LENGTH_LONG).show();
-						 Intent intent = new Intent(mContext, ProfileImageUploadActivity.class);
-							startActivity(intent);
-					}
+				Log.i(TAG, response);
+				XStream userXs = new XStream();
+				userXs.alias("UserInformation", User.class);
+				userXs.alias("centers", String.class);
+				userXs.addImplicitCollection(User.class, "centers", "centers",
+						String.class);
+				User user = (User) userXs.fromXML(response);
+				if (user != null && user.getName() != null) {
+					Log.i(TAG, user.getName());
+					AccountManager am = AccountManager.get(mContext);
+					final Account account = new Account(user.getPhone(),
+							WTPConstants.ACCOUNT_ADDRESS);
+					final Bundle bundle = new Bundle();
+					bundle.putString("userName", user.getName());
+					bundle.putString("phone", user.getPhone());
+					bundle.putString("doctor", doctorFlag);
+					bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
+							account.name);
+					am.addAccountExplicitly(account, user.getPhone(), bundle);
+					am.setAuthToken(account, "Full Access", user.getPhone());
+					Toast.makeText(
+							getApplicationContext(),
+							"Congratulations! Your Profile has been activated.",
+							Toast.LENGTH_LONG).show();
+					Intent intent = new Intent(mContext,
+							ProfileImageUploadActivity.class);
+					startActivity(intent);
+				}
 			}
 			pDlg.dismiss();
 		}
 
 	}
-	
+
 	/**
 	 * Stores the registration ID and app versionCode in the application's
 	 * {@code SharedPreferences}.
@@ -378,9 +374,9 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 				Activity.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString("regId", regId);
-		editor.apply();		
+		editor.apply();
 	}
-	
+
 	/**
 	 * Checks if we have a valid Internet Connection on the device.
 	 * 
@@ -404,26 +400,24 @@ public class NewUserSignUpActivity extends FragmentActivity implements OnItemSel
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
-			   long id) {
-		switch(parent.getId()) {
+			long id) {
+		switch (parent.getId()) {
 		case R.id.genderDrp:
 			gender.setSelection(position);
 			genderVar = (String) gender.getSelectedItem();
-			System.out.println("Selected gender is : " + genderVar);
 			break;
 		case R.id.bloodGrp:
 			bloodGrp.setSelection(position);
 			bloodVar = (String) bloodGrp.getSelectedItem();
-			System.out.println("Selected blood group is : " + bloodVar);
 			break;
 		}
-			  
-			  //selGender.setText("Gender :" + selState);
-			 }
+
+		// selGender.setText("Gender :" + selState);
+	}
 
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

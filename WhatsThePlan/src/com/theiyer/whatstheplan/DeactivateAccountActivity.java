@@ -34,18 +34,19 @@ import com.theiyer.whatstheplan.util.WTPConstants;
 public class DeactivateAccountActivity extends Activity {
 
 	private Context context;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if(haveInternet(this)){
+
+		if (haveInternet(this)) {
 			context = this;
 			setContentView(R.layout.delete_profile);
 			ActionBar aBar = getActionBar();
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" De-activate Account Form");
+			aBar.setTitle(" De-activate Account");
 
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
@@ -63,57 +64,58 @@ public class DeactivateAccountActivity extends Activity {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
 		}
-		
 
 	}
 
 	/** Called when the user clicks the delete profile button */
 	public void deleteProfile(View view) {
 		Button changePassButton = (Button) findViewById(R.id.deleteProfileButton);
-		changePassButton.setTextColor(getResources().getColor(R.color.click_button_2));
+		changePassButton.setTextColor(getResources().getColor(
+				R.color.click_button_2));
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		String phone = prefs.getString("phone", "");
 		TextView errorFieldValue = (TextView) findViewById(R.id.deleteProfileErrorField);
 		errorFieldValue.setText("");
-		
 
 		String centerFlag = prefs.getString("centerFlag", "");
 		String searchQuery = "";
-		if("Y".equals(centerFlag)){
+		if ("Y".equals(centerFlag)) {
 			searchQuery = "/deleteCenter?phone=" + phone;
 		} else {
 			searchQuery = "/deleteUser?phone=" + phone;
 		}
-		
-		
 
 		WebServiceClient restClient = new WebServiceClient(this);
-		restClient.execute(
-				new String[] { searchQuery });
-		
-		 AccountManager am = AccountManager.get(this);
-		 Account[] accounts = am.getAccountsByType(WTPConstants.ACCOUNT_ADDRESS);
-			if(accounts != null && accounts.length > 0){
-				Account account = accounts[0];
-				am.removeAccount(account, new OnTokenAcquired(),          // Callback called when a token is successfully acquired
-					    new Handler());
-			}
-			
-		changePassButton.setTextColor(getResources().getColor(R.color.button_text));
+		restClient.execute(new String[] { searchQuery });
+
+		AccountManager am = AccountManager.get(this);
+		Account[] accounts = am.getAccountsByType(WTPConstants.ACCOUNT_ADDRESS);
+		if (accounts != null && accounts.length > 0) {
+			Account account = accounts[0];
+			am.removeAccount(account, new OnTokenAcquired(), // Callback called
+																// when a token
+																// is
+																// successfully
+																// acquired
+					new Handler());
+		}
+
+		changePassButton.setTextColor(getResources().getColor(
+				R.color.button_text));
 		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 	}
-	
+
 	private class OnTokenAcquired implements AccountManagerCallback<Boolean> {
-	    @Override
-	    public void run(AccountManagerFuture<Boolean> result) {
-	        // Get the result of the operation from the AccountManagerFuture.
-	    	Intent intent = new Intent(context, MainActivity.class);
+		@Override
+		public void run(AccountManagerFuture<Boolean> result) {
+			// Get the result of the operation from the AccountManagerFuture.
+			Intent intent = new Intent(context, MainActivity.class);
 			startActivity(intent);
-	    }
+		}
 	}
-	
+
 	public class WebServiceClient extends AsyncTask<String, Integer, String> {
 
 		private Context mContext;
@@ -135,16 +137,16 @@ public class DeactivateAccountActivity extends Activity {
 
 		@Override
 		protected void onPreExecute() {
-			
-		   showProgressDialog();
+
+			showProgressDialog();
 
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
-			String path = WTPConstants.SERVICE_PATH+params[0];
+			String path = WTPConstants.SERVICE_PATH + params[0];
 
-			//HttpHost target = new HttpHost(TARGET_HOST);
+			// HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
 			HttpGet get = new HttpGet(path);
@@ -152,11 +154,11 @@ public class DeactivateAccountActivity extends Activity {
 
 			try {
 				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
+				results = response.getEntity();
 				String result = EntityUtils.toString(results);
 				return result;
 			} catch (Exception e) {
-				
+
 			}
 			return null;
 		}
@@ -167,24 +169,26 @@ public class DeactivateAccountActivity extends Activity {
 		}
 
 	}
-	
+
 	/**
 	 * Checks if we have a valid Internet Connection on the device.
+	 * 
 	 * @param ctx
 	 * @return True if device has internet
-	 *
-	 * Code from: http://www.androidsnippets.org/snippets/131/
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
 	 */
 	public static boolean haveInternet(Context ctx) {
 
-	    NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
-	            .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
 
-	    if (info == null || !info.isConnected()) {
-	        return false;
-	    }
-	    
-	    return true;
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
 	}
 
 }

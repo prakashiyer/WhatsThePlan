@@ -34,7 +34,6 @@ public class WhatstheplanUtil {
 			SimpleDateFormat localFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			localFormat.setTimeZone(TimeZone.getDefault());
 			String localDate = localFormat.format(dateTOConvert);
-			System.out.println("Local Date " + localDate);
 			dateStr = localDate.split(" ");
 		} catch (ParseException e) {
 		}

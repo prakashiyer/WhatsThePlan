@@ -22,7 +22,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -178,7 +177,6 @@ public class AppointmentActivity extends FragmentActivity {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
-		private String phone;
 
 		public WebServiceClient(Context mContext) {
 			this.mContext = mContext;
@@ -204,7 +202,6 @@ public class AppointmentActivity extends FragmentActivity {
 		@Override
 		protected String doInBackground(String... params) {
 			String path = WTPConstants.SERVICE_PATH+params[0];
-			phone = params[1];
 			//HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
@@ -226,7 +223,6 @@ public class AppointmentActivity extends FragmentActivity {
 		protected void onPostExecute(String response) {
 			
 			if (response != null) {
-				Log.i("RESPONSE",response);
 				XStream xstream = new XStream();
 				xstream.alias("Plan", Plan.class);
 				Plan plan = (Plan) xstream.fromXML(response);
@@ -246,16 +242,15 @@ public class AppointmentActivity extends FragmentActivity {
 					//editor.putString("selectedPlan", plan.getName());
 					editor.putString("selectedPlanIndex", String.valueOf(plan.getId()));
 					editor.apply();
-					
+					pDlg.dismiss();
 					Intent intent = new Intent(mContext, ViewMyNewPlansActivity.class);
 					startActivity(intent);
 				} else {
+					pDlg.dismiss();
 					Toast.makeText(mContext, "Plan creation failed", Toast.LENGTH_SHORT).show();
-					Intent intent = new Intent(mContext, ViewExistingMembersActivity.class);
-					startActivity(intent);
 				}
 			}
-			pDlg.dismiss();
+			
 		}
 
 	}

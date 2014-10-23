@@ -39,7 +39,7 @@ import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewAppointmentMembersActivity extends Activity implements
-OnItemClickListener {
+		OnItemClickListener {
 
 	GridView membersGridView;
 	MemberGridAdapter adapter;
@@ -66,8 +66,7 @@ OnItemClickListener {
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
-			String searchQuery = "/fetchPlanUsers?id="
-					+selectedPlanIndex;
+			String searchQuery = "/fetchPlanUsers?id=" + selectedPlanIndex;
 
 			WebServiceClient restClient = new WebServiceClient(this);
 			restClient.execute(new String[] { searchQuery });
@@ -76,7 +75,7 @@ OnItemClickListener {
 			startActivity(intent);
 		}
 	}
-	
+
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
@@ -92,16 +91,15 @@ OnItemClickListener {
 				editor.apply();
 				break;
 			}
-			
+
 			Intent intent = new Intent(this, ViewMemberProfileActivity.class);
 			startActivity(intent);
 		}
 	}
-	
-	
+
 	@Override
 	public void onBackPressed() {
-		Intent intent = new Intent(this,HomePlanGroupFragmentActivity.class);
+		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
 		startActivity(intent);
 	}
 
@@ -109,7 +107,7 @@ OnItemClickListener {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
-		
+
 		public WebServiceClient(Context mContext) {
 			this.mContext = mContext;
 		}
@@ -133,7 +131,7 @@ OnItemClickListener {
 
 		@Override
 		protected String doInBackground(String... params) {
-			
+
 			String path = WTPConstants.SERVICE_PATH + params[0];
 
 			// HttpHost target = new HttpHost(TARGET_HOST);
@@ -155,10 +153,8 @@ OnItemClickListener {
 
 		@Override
 		protected void onPostExecute(String response) {
-			
 
 			if (response != null) {
-				System.out.println("RESPONSE: "+response);
 				XStream userXstream = new XStream();
 				userXstream.alias("UserList", UserList.class);
 				userXstream.addImplicitCollection(UserList.class, "users");
@@ -168,43 +164,43 @@ OnItemClickListener {
 						"centers", String.class);
 				UserList userList = (UserList) userXstream.fromXML(response);
 				if (userList != null) {
-					
+
 					List<User> users = userList.getUsers();
-					if(users != null && !users.isEmpty()){
-						for(User user: users){
+					if (users != null && !users.isEmpty()) {
+						for (User user : users) {
 							Map<String, User> memberMap = new HashMap<String, User>();
 							memberMap.put(user.getPhone(), user);
 							membersList.add(memberMap);
-							
+
 						}
-						
+
 						if (!membersList.isEmpty()) {
 							adapter.setData(membersList);
 							membersGridView.setAdapter(adapter);
-							//memberListLabel.setVisibility(TextView.VISIBLE);
+							// memberListLabel.setVisibility(TextView.VISIBLE);
 							membersGridView.setVisibility(GridView.VISIBLE);
-							
-							
+							TextView label = (TextView) findViewById(R.id.viewMembersAttendingListLabel);
+							label.setVisibility(TextView.INVISIBLE);
+
 						} else {
 							membersGridView.setVisibility(ListView.INVISIBLE);
-							TextView label =(TextView) findViewById(R.id.viewMembersAttendingListLabel);
+							TextView label = (TextView) findViewById(R.id.viewMembersAttendingListLabel);
 							label.setText("No members found for this center.");
 						}
 					} else {
 						membersGridView.setVisibility(ListView.INVISIBLE);
-						TextView label =(TextView) findViewById(R.id.viewMembersAttendingListLabel);
+						TextView label = (TextView) findViewById(R.id.viewMembersAttendingListLabel);
 						label.setText("No members are attending this appointment.");
 					}
-					
 
 				} else {
 					membersGridView.setVisibility(ListView.INVISIBLE);
-					TextView label =(TextView) findViewById(R.id.viewMembersAttendingListLabel);
+					TextView label = (TextView) findViewById(R.id.viewMembersAttendingListLabel);
 					label.setText("No members are attending this appointment.");
 				}
 			} else {
 				membersGridView.setVisibility(ListView.INVISIBLE);
-				TextView label =(TextView) findViewById(R.id.viewMembersAttendingListLabel);
+				TextView label = (TextView) findViewById(R.id.viewMembersAttendingListLabel);
 				label.setText("No members are attending this appointment.");
 			}
 			pDlg.dismiss();
@@ -232,6 +228,5 @@ OnItemClickListener {
 
 		return true;
 	}
-
 
 }

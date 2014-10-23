@@ -8,91 +8,91 @@
     </item>
     <item
         android:id="@+id/editProfile"
-        android:orderInCategory="14"
+        android:orderInCategory="2"
         android:showAsAction="never"
         android:title="@string/action_edit_profile" android:visible="false">
     </item>
     <item
         android:id="@+id/addDoctor"
-        android:orderInCategory="15"
+        android:orderInCategory="3"
         android:showAsAction="never"
         android:title="@string/action_add_doctor" android:visible="false">
     </item>
     <item
         android:id="@+id/addCenter"
-        android:orderInCategory="15"
+        android:orderInCategory="4"
         android:showAsAction="never"
         android:title="@string/action_add_center" android:visible="false">
     </item>
     <item
         android:id="@+id/changeProfilePic"
-        android:orderInCategory="2"
+        android:orderInCategory="5"
         android:showAsAction="never"
         android:title="@string/action_change_profile_pic" android:visible="false">
     </item>
     <item
         android:id="@+id/changeGroupPic"
-        android:orderInCategory="3"
+        android:orderInCategory="6"
         android:showAsAction="never"
         android:title="@string/action_change_group_pic" android:visible="false">
     </item>
     <item
         android:id="@+id/joinGroup"
-        android:orderInCategory="4"
+        android:orderInCategory="7"
         android:showAsAction="never"
         android:title="@string/action_join_group" android:visible="false">
     </item>
     <item
         android:id="@+id/inviteMembers"
-        android:orderInCategory="5"
+        android:orderInCategory="8"
         android:showAsAction="never"
         android:title="@string/action_invite_group" android:visible="false">
     </item>
     <item
         android:id="@+id/leaveGroup"
-        android:orderInCategory="6"
+        android:orderInCategory="9"
         android:showAsAction="never"
         android:title="@string/action_leave_group" android:visible="false">
     </item>
     <item
         android:id="@+id/editPlan"
-        android:orderInCategory="7"
+        android:orderInCategory="10"
         android:showAsAction="never"
         android:title="@string/action_edit_plan" android:visible="false">
     </item>
     <item
         android:id="@+id/deletePlan"
-        android:orderInCategory="8"
+        android:orderInCategory="11"
         android:showAsAction="never"
         android:title="@string/action_delete_plan" android:visible="false">
     </item>
     <item
         android:id="@+id/viewUserList"
-        android:orderInCategory="9"
+        android:orderInCategory="12"
         android:showAsAction="never"
         android:title="@string/action_view_users" android:visible="false">
     </item>
     <item
         android:id="@+id/viewGroupsInvitedList"
-        android:orderInCategory="10"
+        android:orderInCategory="13"
         android:showAsAction="never"
         android:title="@string/action_view_groups_invited" android:visible="false">
     </item>
     <item
         android:id="@+id/viewMembersInvitedList"
-        android:orderInCategory="11"
+        android:orderInCategory="14"
         android:showAsAction="never"
         android:title="@string/action_view_members_invited" android:visible="false">
     </item>
     <item
         android:id="@+id/deactivateAccount"
-        android:orderInCategory="12"
+        android:orderInCategory="15"
         android:showAsAction="never"
         android:title="@string/action_deactivate_account" android:visible="false">
     </item>
     <item
         android:id="@+id/aboutUs"
-        android:orderInCategory="13"
+        android:orderInCategory="16"
         android:showAsAction="never"
         android:title="@string/action_about_us">
     </item>

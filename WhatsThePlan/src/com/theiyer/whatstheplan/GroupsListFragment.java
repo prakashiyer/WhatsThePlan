@@ -28,14 +28,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -67,15 +63,11 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" My Groups");
+			aBar.setTitle(" Registered Centers");
 
 			SharedPreferences prefs = activity.getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
-			String userName = prefs.getString("userName", "New User");
-			rootView = inflater.inflate(R.layout.groups_list, container, false);
-			TextView userNameValue = (TextView)rootView.findViewById(R.id.welcomeListGroupsLabel);
-			userNameValue.setText(userName + ", View all the groups here!");
-			
+			rootView = inflater.inflate(R.layout.groups_list, container, false);			
 			adapter = new GroupListAdapter(activity);
 			gridView = (GridView) rootView.findViewById(R.id.groupList);
 			gridView.setOnItemClickListener(this);
@@ -92,15 +84,6 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 			startActivity(intent);
 		}
         return rootView;
-	}
-	
-	/** Called when the user clicks the Create group button */
-	public void joinGroups(View view) {
-		Button button = (Button) activity.findViewById(R.id.joinGroupBtn);
-		button.setTextColor(getResources().getColor(R.color.click_button_1));
-		Intent intent = new Intent(activity, JoinGroupActivity.class);
-		
-		startActivity(intent);
 	}
 	
 
@@ -126,45 +109,7 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 		}
 	}
 	
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		activity.getMenuInflater().inflate(R.menu.main, menu);
-		MenuItem viewProfileItem = menu.findItem(R.id.viewProfile);
-		viewProfileItem.setVisible(true);
-		
-		MenuItem changeProfilePicItem = menu.findItem(R.id.changeProfilePic);
-		changeProfilePicItem.setVisible(true);
-		
-		MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
-		deactivateAccountItem.setVisible(true);	
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		super.onOptionsItemSelected(item);
-		switch (item.getItemId()) {
-		case (R.id.viewProfile):
-			Intent viewProfileIntent = new Intent(activity, ViewProfileActivity.class);
-            startActivity(viewProfileIntent);
-			return true;
-		case (R.id.changeProfilePic):
-			Intent changeProfilePicIntent = new Intent(activity, ProfileImageUploadActivity.class);
-            startActivity(changeProfilePicIntent);
-			return true;
-		case (R.id.deactivateAccount):
-			Intent deactivateAccountIntent = new Intent(activity, DeactivateAccountActivity.class);
-            startActivity(deactivateAccountIntent);
-			return true;
-		case (R.id.aboutUs):
-			Intent aboutUsIntent = new Intent(activity, AboutUsActivity.class);
-            startActivity(aboutUsIntent);
-			return true;
-		default:
-			return false;
-		}
-	}
+	
 	
 	private class WebServiceClient extends AsyncTask<String, Integer, String> {
 
@@ -220,7 +165,6 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 		protected void onPostExecute(String response) {
 			
 			if (response != null) {
-				System.out.println("RESPONSE: "+response);
 				XStream userXs = new XStream();
 			    userXs.alias("CenterList", CenterList.class);
 				userXs.addImplicitCollection(CenterList.class, "centers");
@@ -242,14 +186,23 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 							adapter.setData(centersList);
 							gridView.setAdapter(adapter);
 						}
+					} else {
+						gridView.setVisibility(ListView.INVISIBLE);
+						TextView userNameValue = (TextView)rootView.findViewById(R.id.welcomeListGroupsLabel);
+						userNameValue.setText("You haven't joined any centers");
+						
 					}					
 				} else {
 					gridView.setVisibility(ListView.INVISIBLE);
 					TextView userNameValue = (TextView)rootView.findViewById(R.id.welcomeListGroupsLabel);
-					userNameValue.setText("You haven't joined any groups");
-					activity.setContentView(R.layout.groups_list);
+					userNameValue.setText("You haven't joined any centers");
 					
-				}
+				} 
+			} else {
+				gridView.setVisibility(ListView.INVISIBLE);
+				TextView userNameValue = (TextView)rootView.findViewById(R.id.welcomeListGroupsLabel);
+				userNameValue.setText("You haven't joined any centers");
+				
 			}
 			pDlg.dismiss();
 		}	
@@ -259,8 +212,7 @@ public class GroupsListFragment extends Fragment implements OnItemClickListener 
 	
 	
 	public void onBackPressed() {
-	    Intent intent = new Intent(activity, MainActivity.class);
-	    startActivity(intent);
+	    //Do Nothing
 	}
 	
 	/**

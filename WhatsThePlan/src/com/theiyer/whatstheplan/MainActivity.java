@@ -1,54 +1,24 @@
 package com.theiyer.whatstheplan;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.theiyer.whatstheplan.ViewGroupMembersActivity.WebImageRetrieveRestWebServiceClient;
-import com.theiyer.whatstheplan.entity.Center;
-import com.theiyer.whatstheplan.entity.CenterList;
-import com.theiyer.whatstheplan.entity.Plan;
-import com.theiyer.whatstheplan.entity.PlanList;
-import com.theiyer.whatstheplan.entity.User;
-import com.theiyer.whatstheplan.entity.UserList;
 import com.theiyer.whatstheplan.util.WTPConstants;
-import com.thoughtworks.xstream.XStream;
 
 public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity";
-
-	private static int SPLASH_TIME_OUT = 3000;
 	private Context context;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,5 +64,24 @@ public class MainActivity extends Activity {
     		startActivity(intent);
    		}
 
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+		case (R.id.aboutUs):
+			Intent intent = new Intent(this, AboutUsActivity.class);
+			startActivity(intent);
+			return true;
+		default:
+			return false;
+		}
 	}
 }

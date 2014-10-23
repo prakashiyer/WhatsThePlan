@@ -32,19 +32,19 @@ import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
 public class ViewProfileActivity extends Activity {
-	private static final String TAG = "Health Meet/ViewProfileActivity";
 	private String centerFlag;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if(haveInternet(this)){
+
+		if (haveInternet(this)) {
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			centerFlag = prefs.getString("centerFlag", "");
 			Log.i("Center FLAG", centerFlag);
 			if (!"Y".equals(centerFlag)) {
-			    setContentView(R.layout.view_profile);
+				setContentView(R.layout.view_profile);
 			} else {
 				setContentView(R.layout.view_profile_center);
 			}
@@ -54,34 +54,34 @@ public class ViewProfileActivity extends Activity {
 			aBar.setBackgroundDrawable(actionBckGrnd);
 			aBar.setTitle(" Profile Details");
 
-			
 			String userName = prefs.getString("userName", "New User");
 			String phone = prefs.getString("phone", "");
 			if (!"Y".equals(centerFlag)) {
 				TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeViewProfileLabel);
 				welcomeStmnt.setText(userName + ", Your profile details!");
-				
-				String userQuery = "/fetchUser?phone="+phone;
-				UserWebServiceClient userRestClient = new UserWebServiceClient(this);
-				userRestClient.execute(new String[] { userQuery});
+
+				String userQuery = "/fetchUser?phone=" + phone;
+				UserWebServiceClient userRestClient = new UserWebServiceClient(
+						this);
+				userRestClient.execute(new String[] { userQuery });
 			} else {
 				TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeViewProfileCenterLabel);
 				welcomeStmnt.setText(userName + ", Your profile details!");
-				String userQuery = "/fetchCenterForAdmin?phone="+phone;
-				UserWebServiceClient userRestClient = new UserWebServiceClient(this);
-				userRestClient.execute(new String[] { userQuery});
-			}			
-			
+				String userQuery = "/fetchCenterForAdmin?phone=" + phone;
+				UserWebServiceClient userRestClient = new UserWebServiceClient(
+						this);
+				userRestClient.execute(new String[] { userQuery });
+			}
+
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
 		}
-		
 
 	}
 
-
-	public class UserWebServiceClient extends AsyncTask<String, Integer, String> {
+	public class UserWebServiceClient extends
+			AsyncTask<String, Integer, String> {
 
 		private Context mContext;
 		private ProgressDialog pDlg;
@@ -103,17 +103,17 @@ public class ViewProfileActivity extends Activity {
 
 		@Override
 		protected void onPreExecute() {
-			
-		   showProgressDialog();
+
+			showProgressDialog();
 
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
-			String path = WTPConstants.SERVICE_PATH+params[0];
+			String path = WTPConstants.SERVICE_PATH + params[0];
 			query = params[0];
-			
-			//HttpHost target = new HttpHost(TARGET_HOST);
+
+			// HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
 			HttpGet get = new HttpGet(path);
@@ -121,11 +121,11 @@ public class ViewProfileActivity extends Activity {
 
 			try {
 				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
+				results = response.getEntity();
 				String result = EntityUtils.toString(results);
 				return result;
 			} catch (Exception e) {
-				
+
 			}
 			return null;
 		}
@@ -133,84 +133,62 @@ public class ViewProfileActivity extends Activity {
 		@Override
 		protected void onPostExecute(String response) {
 			if (response != null && query.contains("fetchUser")) {
-				    Log.i(TAG, response);
-				    XStream userXs = new XStream();
-					userXs.alias("UserInformation", User.class);
-					userXs.alias("centers", String.class);
-					userXs.addImplicitCollection(User.class, "centers",
-							"centers", String.class);
-					User user = (User) userXs.fromXML(response);
-					if (user != null && user.getName() != null) {
-						 Log.i(TAG, user.getName());
-						 SharedPreferences prefs = getSharedPreferences("Prefs",
-									Activity.MODE_PRIVATE);
-							SharedPreferences.Editor editor = prefs.edit();
-							editor.putString("userName", user.getName());
-							editor.putString("phone", user.getPhone());
-							editor.putString("dob", user.getDob());
-							editor.putString("gender", user.getSex());
-							editor.putString("bloodGrp", user.getBloodGroup());
-							editor.putString("Address", user.getAddress());
-							editor.putString("doctor", user.getDoctorFlag());
-							editor.apply();
-							
+				XStream userXs = new XStream();
+				userXs.alias("UserInformation", User.class);
+				userXs.alias("centers", String.class);
+				userXs.addImplicitCollection(User.class, "centers", "centers",
+						String.class);
+				User user = (User) userXs.fromXML(response);
+				if (user != null && user.getName() != null) {
 					TextView phoneValue = (TextView) findViewById(R.id.viewProfilePhone);
 					phoneValue.setText("Phone: " + user.getPhone());
 					TextView userNameValue = (TextView) findViewById(R.id.viewProfileName);
-					userNameValue.setText("Name: " +user.getName());
+					userNameValue.setText("Name: " + user.getName());
 					TextView dobValue = (TextView) findViewById(R.id.viewProfileDob);
 					dobValue.setText("Date of Birth: " + user.getDob());
 					TextView genderValue = (TextView) findViewById(R.id.viewProfilegender);
-					genderValue.setText("Gender:" + user.getSex());
+					genderValue.setText("Gender: " + user.getSex());
 					TextView bloodGrpValue = (TextView) findViewById(R.id.viewProfilebloodGrp);
-					bloodGrpValue.setText("Blood Group: " + user.getBloodGroup());
+					bloodGrpValue.setText("Blood Group: "
+							+ user.getBloodGroup());
 					TextView addressValue = (TextView) findViewById(R.id.viewProfileaddress);
 					addressValue.setText("Address: " + user.getAddress());
 					ImageView imgView = (ImageView) findViewById(R.id.viewProfilePicThumbnail);
 					byte[] image = user.getImage();
-					if(image != null){
+					if (image != null) {
 						Bitmap img = BitmapFactory.decodeByteArray(image, 0,
 								image.length);
 						imgView.setImageBitmap(img);
 					}
-					}
+				}
 			}
 			if (response != null && query.contains("fetchCenterForAdmin")) {
-			    Log.i(TAG, response);
-			    XStream userXs = new XStream();
-			    userXs.alias("Center", Center.class);
+				XStream userXs = new XStream();
+				userXs.alias("Center", Center.class);
 				userXs.alias("members", String.class);
 				userXs.addImplicitCollection(Center.class, "members",
 						"members", String.class);
 				Center center = (Center) userXs.fromXML(response);
 				if (center != null && center.getName() != null) {
-					 Log.i(TAG, center.getName());
-					 SharedPreferences prefs = getSharedPreferences("Prefs",
-								Activity.MODE_PRIVATE);
-						SharedPreferences.Editor editor = prefs.edit();
-						editor.putString("userName", center.getName());
-						editor.putString("phone", center.getAdminPhone());
-						editor.putString("adminPhone", center.getAdminName());
-						editor.putString("Address", center.getAddress());
-						editor.apply();
-		
-				TextView phoneValue = (TextView) findViewById(R.id.ViewProfileCenterPhone);
-				phoneValue.setText("Admin Phone: " + center.getAdminPhone());
-				TextView adminNameValue = (TextView) findViewById(R.id.ViewProfileCenterAdminName);
-				adminNameValue.setText("Admin Name: " + center.getAdminName());
-				TextView nameValue = (TextView) findViewById(R.id.ViewProfileCenterName);
-				nameValue.setText("Center Name: " + center.getName());
-				TextView addressValue = (TextView) findViewById(R.id.ViewProfileCenteraddress);
-				addressValue.setText("Address: " + center.getAddress());
-				ImageView imgView = (ImageView) findViewById(R.id.ViewProfileCenterPicThumbnail);
-				byte[] image = center.getImage();
-				if(image != null){
-					Bitmap img = BitmapFactory.decodeByteArray(image, 0,
-							image.length);
-					imgView.setImageBitmap(img);
+					TextView phoneValue = (TextView) findViewById(R.id.ViewProfileCenterPhone);
+					phoneValue
+							.setText("Admin Phone: " + center.getAdminPhone());
+					TextView adminNameValue = (TextView) findViewById(R.id.ViewProfileCenterAdminName);
+					adminNameValue.setText("Admin Name: "
+							+ center.getAdminName());
+					TextView nameValue = (TextView) findViewById(R.id.ViewProfileCenterName);
+					nameValue.setText("Center Name: " + center.getName());
+					TextView addressValue = (TextView) findViewById(R.id.ViewProfileCenteraddress);
+					addressValue.setText("Address: " + center.getAddress());
+					ImageView imgView = (ImageView) findViewById(R.id.ViewProfileCenterPicThumbnail);
+					byte[] image = center.getImage();
+					if (image != null) {
+						Bitmap img = BitmapFactory.decodeByteArray(image, 0,
+								image.length);
+						imgView.setImageBitmap(img);
+					}
 				}
-				}
-		}
+			}
 			pDlg.dismiss();
 		}
 
@@ -236,5 +214,5 @@ public class ViewProfileActivity extends Activity {
 
 		return true;
 	}
-	
+
 }

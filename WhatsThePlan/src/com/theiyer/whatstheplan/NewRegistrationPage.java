@@ -8,13 +8,14 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 public class NewRegistrationPage extends Activity implements OnItemSelectedListener{
 	
@@ -55,13 +56,11 @@ public class NewRegistrationPage extends Activity implements OnItemSelectedListe
 	    switch(view.getId()) {
 	        case R.id.invidual:
 	            if (checked) {
-	                System.out.println("invidual ****");
 	                setRadioSelected("invidual");
 	        }
 	            break;
 	        case R.id.health_centre:
 	            if (checked) {
-	            System.out.println("HEALTH CENTER ****");
 	            setRadioSelected("health_centre");
 	        }
 	            break;
@@ -78,9 +77,29 @@ public class NewRegistrationPage extends Activity implements OnItemSelectedListe
 			}
 		} else {
 			Toast.makeText(getApplicationContext(),
-					"Can I please know who you are?", Toast.LENGTH_LONG).show();
+					"Please select an option.", Toast.LENGTH_SHORT).show();
 		}
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+		case (R.id.aboutUs):
+			Intent intent = new Intent(this, AboutUsActivity.class);
+			startActivity(intent);
+			return true;
+		default:
+			return false;
+		}
+	}
+	
 	/**
 	 * Checks if we have a valid Internet Connection on the device.
 	 * 

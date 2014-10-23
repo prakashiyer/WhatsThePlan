@@ -18,8 +18,6 @@ import org.apache.http.util.EntityUtils;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
@@ -44,8 +43,7 @@ import com.theiyer.whatstheplan.entity.CenterList;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
-public class JoinGroupActivity extends Activity implements
-OnItemClickListener {
+public class JoinGroupActivity extends Activity implements OnItemClickListener {
 
 	private GridView centersGridView;
 	private CentersGridAdapter adapter;
@@ -55,12 +53,12 @@ OnItemClickListener {
 	private Context context;
 	private String selectedCenter;
 	private Button button;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if(haveInternet(this)){
+
+		if (haveInternet(this)) {
 			setContentView(R.layout.join_group);
 			ActionBar aBar = getActionBar();
 			Resources res = getResources();
@@ -74,20 +72,21 @@ OnItemClickListener {
 			String userName = prefs.getString("userName", "New User");
 			TextView userNameValue = (TextView) findViewById(R.id.welcomeJoinGroupLabel);
 			userNameValue.setText(userName + ", Search and join your center!");
-			
+
 			centersList = new ArrayList<Map<String, Center>>();
 			centersGridView = (GridView) findViewById(R.id.joingroupList);
 			adapter = new CentersGridAdapter(this);
 			centersGridView.setOnItemClickListener(this);
+			centersGridView.setVisibility(GridView.INVISIBLE);
 			context = this;
 			button = (Button) findViewById(R.id.joinGroupButton);
 			final SearchView searchView = (SearchView) findViewById(R.id.groupSearchView);
-				
+
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
-				
+
 				@Override
 				public boolean onQueryTextSubmit(String query) {
-					
+
 					String searchQuery = "/searchCenter?name="
 							+ query.replace(" ", "%20");
 
@@ -95,25 +94,32 @@ OnItemClickListener {
 					restClient.execute(new String[] { searchQuery });
 					return true;
 				}
-				
+
 				@Override
 				public boolean onQueryTextChange(String newText) {
 					if (!centersList.isEmpty()) {
-						
-						filteredList = new ArrayList<Map<String,Center>>();
-						for(Map<String, Center> centerMap: centersList){
-							for(Entry<String, Center> entry : centerMap.entrySet()){
+
+						filteredList = new ArrayList<Map<String, Center>>();
+						for (Map<String, Center> centerMap : centersList) {
+							for (Entry<String, Center> entry : centerMap
+									.entrySet()) {
 								Center center = entry.getValue();
-								if(center.getName().toLowerCase(Locale.ENGLISH).contains(newText.toLowerCase(Locale.ENGLISH))){
+								if (center
+										.getName()
+										.toLowerCase(Locale.ENGLISH)
+										.contains(
+												newText.toLowerCase(Locale.ENGLISH))) {
 									filteredList.add(centerMap);
 								}
 							}
+
 						}
-						
+
 						adapter.setData(filteredList);
 						centersGridView.setAdapter(adapter);
-						//memberListLabel.setVisibility(TextView.VISIBLE);
-						centersGridView.setVisibility(GridView.VISIBLE);						
+						// memberListLabel.setVisibility(TextView.VISIBLE);
+						centersGridView.setVisibility(GridView.VISIBLE);
+
 					}
 					return true;
 				}
@@ -121,23 +127,23 @@ OnItemClickListener {
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
-		}	
-		
+		}
+
 	}
-	
+
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		
-		for(Map<String, Center> selectedMap: centersList){
+
+		for (Map<String, Center> selectedMap : centersList) {
 			for (Entry<String, Center> entry : selectedMap.entrySet()) {
 				Center center = entry.getValue();
-				if(center.isSelected()){
+				if (center.isSelected()) {
 					center.setSelected(false);
 				}
 			}
 		}
-		
+
 		if (filteredList != null && !filteredList.isEmpty()) {
 			Map<String, Center> selectedMap = filteredList.get(position);
 
@@ -155,12 +161,11 @@ OnItemClickListener {
 				centersGridView.setAdapter(adapter);
 				centersGridView.setVisibility(GridView.VISIBLE);
 				button.setVisibility(Button.VISIBLE);
-				
+
 				break;
 			}
 		}
 	}
-
 
 	/** Called when the user clicks the button */
 	public void goFromJoinGroupToViewGroups(View view) {
@@ -170,18 +175,19 @@ OnItemClickListener {
 				Activity.MODE_PRIVATE);
 		String phone = prefs.getString("phone", "");
 
-		String joinQuery = "/joinCenter?id=" + selectedCenter
-				+ "&phone=" + phone;
+		String joinQuery = "/joinCenter?id=" + selectedCenter + "&phone="
+				+ phone;
 		WebServiceClient restClient = new WebServiceClient(this);
-		restClient.execute(
-				new String[] { joinQuery });
-		Toast.makeText(getApplicationContext(), "You have been added to the Health Center "+selectedCenterName,
-				Toast.LENGTH_LONG).show();
+		restClient.execute(new String[] { joinQuery });
+		Toast.makeText(
+				getApplicationContext(),
+				"You have been added to the Health Center "
+						+ selectedCenterName, Toast.LENGTH_LONG).show();
 		Intent intent = new Intent(this, ViewCenterUpcomingPlansActivity.class);
 		startActivity(intent);
-		
+
 	}
-	
+
 	public class WebServiceClient extends AsyncTask<String, Integer, String> {
 
 		private Context mContext;
@@ -204,19 +210,19 @@ OnItemClickListener {
 
 		@Override
 		protected void onPreExecute() {
-			
-		   showProgressDialog();
+
+			showProgressDialog();
 
 		}
 
 		@Override
 		protected String doInBackground(String... params) {
-			String path = WTPConstants.SERVICE_PATH+params[0];
+			String path = WTPConstants.SERVICE_PATH + params[0];
 
-			if(params[0].contains("searchCenter")){
+			if (params[0].contains("searchCenter")) {
 				isSearchCall = true;
 			}
-			//HttpHost target = new HttpHost(TARGET_HOST);
+			// HttpHost target = new HttpHost(TARGET_HOST);
 			HttpHost target = new HttpHost(WTPConstants.TARGET_HOST, 8080);
 			HttpClient client = new DefaultHttpClient();
 			HttpGet get = new HttpGet(path);
@@ -224,55 +230,68 @@ OnItemClickListener {
 
 			try {
 				HttpResponse response = client.execute(target, get);
-				results = response.getEntity(); 
+				results = response.getEntity();
 				String result = EntityUtils.toString(results);
 				return result;
 			} catch (Exception e) {
-				
+
 			}
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(String response) {
-			
+
 			if (response != null && isSearchCall) {
 				XStream centersXs = new XStream();
-			    centersXs.alias("CenterList", CenterList.class);
+				centersXs.alias("CenterList", CenterList.class);
 				centersXs.addImplicitCollection(CenterList.class, "centers");
-			    centersXs.alias("centers", Center.class);
+				centersXs.alias("centers", Center.class);
 				centersXs.alias("members", String.class);
 				centersXs.addImplicitCollection(Center.class, "members",
 						"members", String.class);
-				CenterList centerList = (CenterList) centersXs.fromXML(response);
+				CenterList centerList = (CenterList) centersXs
+						.fromXML(response);
 				if (centerList != null) {
 					List<Center> centers = centerList.getCenters();
-					if(centers != null && !centers.isEmpty())
-					for(Center center: centerList.getCenters()){
-						Map<String, Center> centerMap = new HashMap<String, Center>();
-						centerMap.put(String.valueOf(center.getId()), center);
-						centersList.add(centerMap);
-					}
-					
+					if (centers != null && !centers.isEmpty())
+						for (Center center : centerList.getCenters()) {
+							Map<String, Center> centerMap = new HashMap<String, Center>();
+							centerMap.put(String.valueOf(center.getId()),
+									center);
+							centersList.add(centerMap);
+						}
+
 					if (!centersList.isEmpty()) {
-						filteredList = new ArrayList<Map<String,Center>>();
+						filteredList = new ArrayList<Map<String, Center>>();
 						filteredList.addAll(centersList);
 						adapter.setData(filteredList);
 						centersGridView.setAdapter(adapter);
+						TextView planLabel = (TextView) findViewById(R.id.groupSearchResultsLabel);
+						planLabel.setVisibility(TextView.INVISIBLE);
 						centersGridView.setVisibility(GridView.VISIBLE);
+					} else {
+						centersGridView.setVisibility(ListView.INVISIBLE);
+						TextView planLabel = (TextView) findViewById(R.id.groupSearchResultsLabel);
+						planLabel.setVisibility(TextView.VISIBLE);
+						planLabel.setText("No Center available for the search");
 					}
+				} else {
+					centersGridView.setVisibility(ListView.INVISIBLE);
+					TextView planLabel = (TextView) findViewById(R.id.groupSearchResultsLabel);
+					planLabel.setVisibility(TextView.VISIBLE);
+					planLabel.setText("No Center available for the search");
 				}
-			} else if(response == null && isSearchCall) {
-				Toast.makeText(mContext,
-						"Seems like an invalid group name", Toast.LENGTH_LONG)
-						.show();
-			} 
+			} else {
+				centersGridView.setVisibility(ListView.INVISIBLE);
+				TextView planLabel = (TextView) findViewById(R.id.groupSearchResultsLabel);
+				planLabel.setVisibility(TextView.VISIBLE);
+				planLabel.setText("No Center available for the search");
+			}
 			pDlg.dismiss();
 		}
 
 	}
-	
-	
 
 	/**
 	 * Checks if we have a valid Internet Connection on the device.
@@ -294,7 +313,7 @@ OnItemClickListener {
 
 		return true;
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
