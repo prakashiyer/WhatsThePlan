@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -30,20 +31,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.entity.UserList;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
-public class ViewGroupMembersFragment extends Fragment {
+public class ViewGroupMembersFragment extends Fragment implements
+OnItemClickListener {
 
 	private static final String TAG = "ViewGroupMembersActivity";
 	
 	private GridView memberListView;
-	private MemberListNewAdapter adapter;
-	private List<Map<String, byte[]>> membersList;
+	MemberGridAdapter adapter;
+	List<Map<String, User>> membersList;
 	private Activity activity;
 	View rootView;
 	
@@ -68,10 +74,10 @@ public class ViewGroupMembersFragment extends Fragment {
 			String searchQuery = "/fetchCenterUsers?phone=" + phone;
 
 			
-			membersList = new ArrayList<Map<String, byte[]>>();
+			membersList = new ArrayList<Map<String, User>>();
 			memberListView = (GridView) rootView.findViewById(R.id.viewgroupMemberList);
-			adapter = new MemberListNewAdapter(activity);
-			
+			adapter = new MemberGridAdapter(activity);
+			memberListView.setOnItemClickListener(this);
 			WebServiceClient restClient = new WebServiceClient(activity);
 			restClient.execute(new String[] { searchQuery });
 		} else {
@@ -79,6 +85,27 @@ public class ViewGroupMembersFragment extends Fragment {
 			startActivity(intent);
 		}
 		return rootView;
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		if (membersList != null && !membersList.isEmpty()) {
+			Map<String, User> selectedMap = membersList.get(position);
+
+			for (Entry<String, User> entry : selectedMap.entrySet()) {
+				SharedPreferences prefs = activity.getSharedPreferences("Prefs",
+						Activity.MODE_PRIVATE);
+				SharedPreferences.Editor editor = prefs.edit();
+				String selectedMember = entry.getKey();
+				editor.putString("memberPhone", selectedMember);
+				editor.apply();
+				break;
+			}
+			
+			Intent intent = new Intent(activity, ViewMemberProfileActivity.class);
+			startActivity(intent);
+		}
 	}
 	
 	private class WebServiceClient extends AsyncTask<String, Integer, String> {
@@ -147,8 +174,8 @@ public class ViewGroupMembersFragment extends Fragment {
 					if(users != null){
 						Log.i(TAG, "Got User list " +users.size());
 						for(User user: users){
-							Map<String, byte[]> memberMap = new HashMap<String, byte[]>();
-							memberMap.put(user.getName(), user.getImage());
+							Map<String, User> memberMap = new HashMap<String, User>();
+							memberMap.put(user.getPhone(), user);
 							membersList.add(memberMap);
 						}
 						
@@ -156,8 +183,20 @@ public class ViewGroupMembersFragment extends Fragment {
 					if(!membersList.isEmpty()){
 						adapter.setData(membersList);
 						memberListView.setAdapter(adapter);
+					} else {
+						memberListView.setVisibility(ListView.INVISIBLE);
+						TextView planLabel = (TextView) rootView.findViewById(R.id.viewGroupMemberListLabel);
+						planLabel.setText("No members found for this center.");
 					}
-				}           
+				} else {
+					memberListView.setVisibility(ListView.INVISIBLE);
+					TextView planLabel = (TextView) rootView.findViewById(R.id.viewGroupMemberListLabel);
+					planLabel.setText("No members found for this center.");
+				}          
+			} else {
+				memberListView.setVisibility(ListView.INVISIBLE);
+				TextView planLabel = (TextView) rootView.findViewById(R.id.viewGroupMemberListLabel);
+				planLabel.setText("No members found for this center.");
 			}
 			pDlg.dismiss();
 		}

@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 
 import com.theiyer.whatstheplan.entity.Plan;
+import com.theiyer.whatstheplan.util.WhatstheplanUtil;
 
 import android.app.Activity;
 import android.content.Context;
@@ -74,7 +75,15 @@ public class PlanListAdapter extends BaseAdapter {
             	
             	Plan plan = entry.getValue();
             	planName.setText(plan.getTitle());
-            	String date = plan.getStartTime().substring(0, 10);
+            	
+            	
+            	String startTime = plan.getStartTime();
+				String[] startPlanTime = null;
+				if(startTime != null) {
+					startPlanTime = WhatstheplanUtil.createGmtToLocalTime(startTime);
+				}
+            	
+            	String date = startPlanTime[0];
             	Calendar cal = Calendar.getInstance();
             	String year = date.substring(0, 4);
             	String month = date.substring(5, 7);
@@ -84,9 +93,10 @@ public class PlanListAdapter extends BaseAdapter {
             	String weekday = retrieveDay(day);
             	int mon = cal.get(Calendar.MONTH);
             	String monthStr = retrieveMonth(mon);
-            	String time = plan.getStartTime().substring(11, 16);
+            	
+            	String time = startPlanTime[1];
             	String hour = time.substring(0, 2);
-            	String min = time.substring(3);
+            	String min = time.substring(3,5);
             	int hourInt = Integer.valueOf(hour);
             	String ampm = "AM";
             	if(hourInt > 12){

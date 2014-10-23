@@ -255,14 +255,26 @@ public class HomePlanFragment extends Fragment implements OnItemClickListener {
 								adapter.setData(plansResult);
 								planListView.setAdapter(adapter);
 								// Click event for single list row
+							} else {
+								planListView.setVisibility(ListView.INVISIBLE);
+								TextView planLabel = (TextView) rootView.findViewById(R.id.upcomingPlanListLabel);
+								planLabel.setText("No upcoming plans for you.");
 							}
 
-						} 
+						} else {
+							planListView.setVisibility(ListView.INVISIBLE);
+							TextView planLabel = (TextView) rootView.findViewById(R.id.upcomingPlanListLabel);
+							planLabel.setText("No upcoming plans for you.");
+						}
 					} else {
 						planListView.setVisibility(ListView.INVISIBLE);
 						TextView planLabel = (TextView) rootView.findViewById(R.id.upcomingPlanListLabel);
 						planLabel.setText("No upcoming plans for you.");
 					}
+				} else {
+					planListView.setVisibility(ListView.INVISIBLE);
+					TextView planLabel = (TextView) rootView.findViewById(R.id.upcomingPlanListLabel);
+					planLabel.setText("No upcoming plans for you.");
 				}
 			}
 		}

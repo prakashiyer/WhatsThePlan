@@ -3,11 +3,9 @@ package com.theiyer.whatstheplan;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -19,33 +17,29 @@ import org.apache.http.util.EntityUtils;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.GridView;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
 
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.entity.UserList;
 import com.theiyer.whatstheplan.util.WTPConstants;
 import com.thoughtworks.xstream.XStream;
 
-public class ViewAppointmentMembersActivity extends Activity {
+public class ViewAppointmentMembersActivity extends Activity implements
+OnItemClickListener {
 
 	GridView membersGridView;
 	MemberGridAdapter adapter;
@@ -78,6 +72,27 @@ public class ViewAppointmentMembersActivity extends Activity {
 			restClient.execute(new String[] { searchQuery });
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		if (membersList != null && !membersList.isEmpty()) {
+			Map<String, User> selectedMap = membersList.get(position);
+
+			for (Entry<String, User> entry : selectedMap.entrySet()) {
+				SharedPreferences prefs = getSharedPreferences("Prefs",
+						Activity.MODE_PRIVATE);
+				SharedPreferences.Editor editor = prefs.edit();
+				String selectedMember = entry.getKey();
+				editor.putString("memberPhone", selectedMember);
+				editor.apply();
+				break;
+			}
+			
+			Intent intent = new Intent(this, ViewMemberProfileActivity.class);
 			startActivity(intent);
 		}
 	}
@@ -169,11 +184,27 @@ public class ViewAppointmentMembersActivity extends Activity {
 							membersGridView.setVisibility(GridView.VISIBLE);
 							
 							
+						} else {
+							membersGridView.setVisibility(ListView.INVISIBLE);
+							TextView label =(TextView) findViewById(R.id.viewMembersAttendingListLabel);
+							label.setText("No members found for this center.");
 						}
+					} else {
+						membersGridView.setVisibility(ListView.INVISIBLE);
+						TextView label =(TextView) findViewById(R.id.viewMembersAttendingListLabel);
+						label.setText("No members are attending this appointment.");
 					}
 					
 
+				} else {
+					membersGridView.setVisibility(ListView.INVISIBLE);
+					TextView label =(TextView) findViewById(R.id.viewMembersAttendingListLabel);
+					label.setText("No members are attending this appointment.");
 				}
+			} else {
+				membersGridView.setVisibility(ListView.INVISIBLE);
+				TextView label =(TextView) findViewById(R.id.viewMembersAttendingListLabel);
+				label.setText("No members are attending this appointment.");
 			}
 			pDlg.dismiss();
 		}
