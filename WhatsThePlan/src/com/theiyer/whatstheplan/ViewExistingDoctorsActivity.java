@@ -7,7 +7,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -23,21 +22,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
+import android.widget.TextView;
 
 import com.theiyer.whatstheplan.entity.User;
 import com.theiyer.whatstheplan.entity.UserList;
@@ -64,7 +62,7 @@ public class ViewExistingDoctorsActivity extends Activity implements
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle("Select a Doctor");
+			aBar.setTitle("Search and Select a Doctor");
 
 			existingDoctorsList = new ArrayList<Map<String, User>>();
 			filteredList = new ArrayList<Map<String, User>>();
@@ -80,7 +78,7 @@ public class ViewExistingDoctorsActivity extends Activity implements
 			editor.putString("selectedIndividuals", selectedIndividuals);
 			editor.apply();
 
-			Cursor phones = getContentResolver().query(
+			/*Cursor phones = getContentResolver().query(
 					ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
 					null, null, null);
 			StringBuffer phoneBuffer = new StringBuffer();
@@ -132,7 +130,7 @@ public class ViewExistingDoctorsActivity extends Activity implements
 					+ phoneBuffer.toString();
 
 			WebServiceClient restClient = new WebServiceClient(this);
-			restClient.execute(new String[] { searchQuery });
+			restClient.execute(new String[] { searchQuery });*/
 		} else {
 			Intent intent = new Intent(this, RetryActivity.class);
 			startActivity(intent);
@@ -234,6 +232,8 @@ public class ViewExistingDoctorsActivity extends Activity implements
 				adapter.setData(filteredList);
 				doctorsGridView.setAdapter(adapter);
 				doctorsGridView.setVisibility(GridView.VISIBLE);
+				Button button = (Button) findViewById(R.id.goToCentersSelectionButton);
+				button.setVisibility(Button.VISIBLE);
 
 				break;
 			}
@@ -325,11 +325,33 @@ public class ViewExistingDoctorsActivity extends Activity implements
 							doctorsGridView.setAdapter(adapter);
 							// memberListLabel.setVisibility(TextView.VISIBLE);
 							doctorsGridView.setVisibility(GridView.VISIBLE);
+							TextView planLabel = (TextView) findViewById(R.id.doctorsListLabel);
+							planLabel.setVisibility(TextView.INVISIBLE);
 
+						} else {
+							doctorsGridView.setVisibility(ListView.INVISIBLE);
+							TextView planLabel = (TextView) findViewById(R.id.doctorsListLabel);
+							planLabel.setVisibility(TextView.VISIBLE);
+							planLabel.setText("No doctors found for this search.");
 						}
+					} else {
+						doctorsGridView.setVisibility(ListView.INVISIBLE);
+						TextView planLabel = (TextView) findViewById(R.id.doctorsListLabel);
+						planLabel.setVisibility(TextView.VISIBLE);
+						planLabel.setText("No doctors found for this search.");
 					}
 
+				} else {
+					doctorsGridView.setVisibility(ListView.INVISIBLE);
+					TextView planLabel = (TextView) findViewById(R.id.doctorsListLabel);
+					planLabel.setVisibility(TextView.VISIBLE);
+					planLabel.setText("No doctors found for this search.");
 				}
+			} else {
+				doctorsGridView.setVisibility(ListView.INVISIBLE);
+				TextView planLabel = (TextView) findViewById(R.id.doctorsListLabel);
+				planLabel.setVisibility(TextView.VISIBLE);
+				planLabel.setText("No doctors found for this search.");
 			}
 			pDlg.dismiss();
 		}
