@@ -86,7 +86,6 @@ public class GCMIntentService extends GCMBaseIntentService {
         	String planName = null;
         	String temp[] = msg.split("'");
         	planName = temp[1];
-        	System.out.println("***** Plan Name in GCM (Added): " + planName);
         	SharedPreferences.Editor editor = prefs.edit();
     		editor.putString("selectedPlan", planName);
     		editor.apply();
@@ -99,7 +98,6 @@ public class GCMIntentService extends GCMBaseIntentService {
         	String planName = null;
         	String temp[] = msg.split(":");
         	planName = temp[1];
-        	System.out.println("***** Plan Name in GCM (RSVP): " + planName);
         	SharedPreferences.Editor editor = prefs.edit();
     		editor.putString("selectedPlan", planName);
     		editor.apply();
@@ -109,7 +107,6 @@ public class GCMIntentService extends GCMBaseIntentService {
         	String planName = null;
         	String temp[] = msg.split("'");
         	planName = temp[1];
-        	System.out.println("***** Plan Name in GCM (edited): " + planName);
         	SharedPreferences.Editor editor = prefs.edit();
     		editor.putString("selectedPlan", planName);
     		editor.apply();
@@ -119,29 +116,13 @@ public class GCMIntentService extends GCMBaseIntentService {
         	String phone = null;
         	String temp[] = msg.split("'");
         	phone = temp[1];
-        	System.out.println("***** center phone in GCM (left): " + phone);
         	SharedPreferences.Editor editor = prefs.edit();
     		editor.putString("phone", phone);
     		editor.apply();
     		contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewGroupMembersFragment.class), 0);
-        } /*else if (msg.contains("expense")) {
-        	String groupName = null;
-        	String planName = null;
-        	String temp[] = msg.split("'");
-        	planName = temp[1];
-        	groupName = temp[3];
-        	System.out.println("***** Plan Name in GCM (expense): " + planName);
-        	System.out.println("***** Group Name in GCM (expense): " + groupName);
-        	SharedPreferences.Editor editor = prefs.edit();
-    		editor.putString("selectedGroup", groupName);
-    		editor.putString("selectedPlan", planName);
-    		editor.apply();
-    		contentIntent = PendingIntent.getActivity(this, 0,
-                    new Intent(this, ExpenseReportActivity.class), 0);
-        }*/
+        }
 
-        System.out.println("Print notification !!!!");
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
