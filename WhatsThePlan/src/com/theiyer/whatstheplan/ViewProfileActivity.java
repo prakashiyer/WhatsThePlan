@@ -54,7 +54,7 @@ public class ViewProfileActivity extends Activity {
 			aBar.setBackgroundDrawable(actionBckGrnd);
 			aBar.setTitle(" Profile Details");
 
-			String userName = prefs.getString("userName", "New User");
+			String userName = prefs.getString("name", "New User");
 			String phone = prefs.getString("phone", "");
 			if (!"Y".equals(centerFlag)) {
 				TextView welcomeStmnt = (TextView) findViewById(R.id.welcomeViewProfileLabel);

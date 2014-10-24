@@ -63,7 +63,7 @@ public class EditCenterProfileActivity extends FragmentActivity {
 			aBar.setTitle(" Health Centre Registration form");
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
-			String userName = prefs.getString("userName", "New User");
+			String userName = prefs.getString("name", "New User");
 			context = this;
 			TextView userNameValue = (TextView) findViewById(R.id.healthNameText);
 			userNameValue.setText(userName);
@@ -243,7 +243,7 @@ public class EditCenterProfileActivity extends FragmentActivity {
 						 SharedPreferences prefs = getSharedPreferences("Prefs",
 									Activity.MODE_PRIVATE);
 							SharedPreferences.Editor editor = prefs.edit();
-							editor.putString("userName", center.getName());
+							editor.putString("name", center.getName());
 							editor.putString("phone", center.getAdminPhone());
 							editor.putString("Address", center.getAddress());
 							editor.putString("centerId", String.valueOf(center.getId()));

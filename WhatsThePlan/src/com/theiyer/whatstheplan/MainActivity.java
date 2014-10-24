@@ -84,4 +84,9 @@ public class MainActivity extends Activity {
 			return false;
 		}
 	}
+	@Override
+	public void onBackPressed()
+	{
+	    android.os.Process.killProcess(android.os.Process.myPid());
+	}
 }

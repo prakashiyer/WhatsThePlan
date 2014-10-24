@@ -275,17 +275,19 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements
 		MenuItem viewProfileItem = menu.findItem(R.id.editProfile);
 		viewProfileItem.setVisible(true);
 
-		MenuItem addDoctorItem = menu.findItem(R.id.addDoctor);
-		addDoctorItem.setVisible(true);
+		if (!"Y".equals(centerFlag) && !"Y".equals(docFlag)) {
+			MenuItem addDoctorItem = menu.findItem(R.id.addDoctor);
+			addDoctorItem.setVisible(true);
 
-		MenuItem addCenterItem = menu.findItem(R.id.addCenter);
-		addCenterItem.setVisible(true);
+			MenuItem addCenterItem = menu.findItem(R.id.addCenter);
+			addCenterItem.setVisible(true);
 
+			MenuItem changeProfilePicItem = menu
+					.findItem(R.id.changeProfilePic);
+			changeProfilePicItem.setVisible(true);
+		}
 		MenuItem editProfileItem = menu.findItem(R.id.viewProfile);
 		editProfileItem.setVisible(true);
-
-		MenuItem changeProfilePicItem = menu.findItem(R.id.changeProfilePic);
-		changeProfilePicItem.setVisible(true);
 
 		MenuItem deactivateAccountItem = menu.findItem(R.id.deactivateAccount);
 		deactivateAccountItem.setVisible(true);
@@ -349,8 +351,9 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onBackPressed() {
-		// Do Nothing
+	public void onBackPressed()
+	{
+	    android.os.Process.killProcess(android.os.Process.myPid());
 	}
 
 	/**
