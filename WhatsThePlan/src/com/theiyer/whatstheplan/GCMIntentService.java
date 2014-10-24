@@ -92,7 +92,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewMyNewPlansActivity.class), 0);
-        } else if(msg.contains("deleted")) {
+        } else if(msg.contains("cancelled")) {
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, HomePlanGroupFragmentActivity.class), 0);
         } else if(msg.contains("appointment")) {
