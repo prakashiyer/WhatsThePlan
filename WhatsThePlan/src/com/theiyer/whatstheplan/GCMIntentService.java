@@ -82,43 +82,40 @@ public class GCMIntentService extends GCMBaseIntentService {
         SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
         
-        if (msg.contains("A new plan has been added")) {
-        	String planName = null;
-        	String temp[] = msg.split("'");
-        	planName = temp[1];
+        if (msg.contains("has been created")) {
+        	String selectedPlanIndex = null;
+        	String temp[] = msg.split(",");
+        	selectedPlanIndex = temp[1];
         	SharedPreferences.Editor editor = prefs.edit();
-    		editor.putString("selectedPlan", planName);
+    		editor.putString("selectedPlanIndex", selectedPlanIndex);
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewMyNewPlansActivity.class), 0);
         } else if(msg.contains("cancelled")) {
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, HomePlanGroupFragmentActivity.class), 0);
-        } else if(msg.contains("appointment")) {
-        	String planName = null;
+        } else if(msg.contains("declined appointment") || msg.contains("accepted appointment")) {
+        	String selectedPlanIndex = null;
         	String temp[] = msg.split(":");
-        	planName = temp[1];
+        	selectedPlanIndex = temp[1];
         	SharedPreferences.Editor editor = prefs.edit();
-    		editor.putString("selectedPlan", planName);
+    		editor.putString("selectedPlanIndex", selectedPlanIndex);
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewMyNewPlansActivity.class), 0);
-        } else if (msg.contains("edited")) {
-        	String planName = null;
-        	String temp[] = msg.split("'");
-        	planName = temp[1];
+        } else if (msg.contains("Center edited")) {
+        	String centerPhone = null;
+        	String temp[] = msg.split(",");
+        	centerPhone = temp[1];
         	SharedPreferences.Editor editor = prefs.edit();
-    		editor.putString("selectedPlan", planName);
+    		editor.putString("selectedCenterPhone", centerPhone);
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
-                    new Intent(this, ViewMyNewPlansActivity.class), 0);
-        } else if (msg.contains("left the center")) {
-        	String phone = null;
-        	String temp[] = msg.split("'");
-        	phone = temp[1];
-        	SharedPreferences.Editor editor = prefs.edit();
-    		editor.putString("phone", phone);
-    		editor.apply();
+                    new Intent(this, ViewCenterUpcomingPlansActivity.class), 0);
+        } else if (msg.contains("left center")) {
+    		contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, ViewGroupMembersFragment.class), 0);
+        } else if (msg.contains("joined center")) {
     		contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewGroupMembersFragment.class), 0);
         }
