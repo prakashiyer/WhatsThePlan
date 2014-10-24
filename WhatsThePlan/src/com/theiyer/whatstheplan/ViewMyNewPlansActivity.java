@@ -176,7 +176,7 @@ public class ViewMyNewPlansActivity extends Activity {
 				public void onClick(DialogInterface dialog, int which) {
 					String updateQuery = "/editPlan?id="
 							+ selectedPlanIndex
-							+ "&phone=&title=&date=&time=&endDate=&endTime=&userPhone=&userRsvp=&docPhone=&docRsvp=&centerPlanFlag=&cancelFlag=Y";
+							+ "&phone=&title="+plan.getTitle()+"&date=&time=&endDate=&endTime=&userPhone=&userRsvp=&docPhone=&docRsvp=&centerPlanFlag=&cancelFlag=Y";
 					WebServiceClient restClient = new WebServiceClient(context);
 					restClient.execute(new String[] { updateQuery });
 					CalendarHelper calendarHelper = new CalendarHelper(context);
