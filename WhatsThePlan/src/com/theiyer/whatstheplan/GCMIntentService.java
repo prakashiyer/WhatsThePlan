@@ -96,7 +96,7 @@ public class GCMIntentService extends GCMBaseIntentService {
                     new Intent(this, HomePlanGroupFragmentActivity.class), 0);
         } else if(msg.contains("declined appointment") || msg.contains("accepted appointment")) {
         	String selectedPlanIndex = null;
-        	String temp[] = msg.split(":");
+        	String temp[] = msg.split(",");
         	selectedPlanIndex = temp[1];
         	SharedPreferences.Editor editor = prefs.edit();
     		editor.putString("selectedPlanIndex", selectedPlanIndex);
