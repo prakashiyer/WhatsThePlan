@@ -71,44 +71,43 @@ public class GCMIntentService extends GCMBaseIntentService {
                 new Intent(this, MainActivity.class), 0);*/
         PendingIntent contentIntent = null;
 
+        String temp[] = msg.split(",");
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
         .setSmallIcon(R.drawable.ic_launcher)
         .setContentTitle("Health Meet")
         .setStyle(new NotificationCompat.BigTextStyle()
-        .bigText(msg))
+        .bigText(temp[0]))
         .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
         .setAutoCancel(true).setContentText(msg);
         SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
         
         if (msg.contains("has been created")) {
-        	String selectedPlanIndex = null;
-        	String temp[] = msg.split(",");
-        	selectedPlanIndex = temp[1];
         	SharedPreferences.Editor editor = prefs.edit();
-    		editor.putString("selectedPlanIndex", selectedPlanIndex);
+    		editor.putString("selectedPlanIndex", temp[1]);
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewMyNewPlansActivity.class), 0);
-        } else if(msg.contains("cancelled")) {
+        } else if (msg.contains("has been edited")) {
+        	SharedPreferences.Editor editor = prefs.edit();
+    		editor.putString("selectedPlanIndex", temp[1]);
+    		editor.apply();
+        	contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, ViewMyNewPlansActivity.class), 0);
+        } 
+        else if(msg.contains("cancelled")) {
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, HomePlanGroupFragmentActivity.class), 0);
         } else if(msg.contains("declined appointment") || msg.contains("accepted appointment")) {
-        	String selectedPlanIndex = null;
-        	String temp[] = msg.split(",");
-        	selectedPlanIndex = temp[1];
         	SharedPreferences.Editor editor = prefs.edit();
-    		editor.putString("selectedPlanIndex", selectedPlanIndex);
+    		editor.putString("selectedPlanIndex", temp[1]);
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewMyNewPlansActivity.class), 0);
         } else if (msg.contains("Center edited")) {
-        	String centerPhone = null;
-        	String temp[] = msg.split(",");
-        	centerPhone = temp[1];
         	SharedPreferences.Editor editor = prefs.edit();
-    		editor.putString("selectedCenterPhone", centerPhone);
+    		editor.putString("selectedCenterPhone", temp[1]);
     		editor.apply();
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewCenterUpcomingPlansActivity.class), 0);
