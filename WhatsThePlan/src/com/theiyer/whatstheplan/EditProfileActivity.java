@@ -154,7 +154,6 @@ public class EditProfileActivity extends FragmentActivity implements
 		@Override
 		protected void onPostExecute(String response) {
 			if (response != null && query.contains("fetchUser")) {
-				Log.i(TAG, response);
 				XStream userXs = new XStream();
 				userXs.alias("UserInformation", User.class);
 				userXs.alias("centers", String.class);
@@ -162,56 +161,44 @@ public class EditProfileActivity extends FragmentActivity implements
 						String.class);
 				User user = (User) userXs.fromXML(response);
 				if (user != null && user.getName() != null) {
-					Log.i(TAG, user.getName());
-					SharedPreferences prefs = getSharedPreferences("Prefs",
-							Activity.MODE_PRIVATE);
-					SharedPreferences.Editor editor = prefs.edit();
-					editor.putString("userName", user.getName());
-					editor.putString("phone", user.getPhone());
-					editor.putString("dob", user.getDob());
-					editor.putString("gender", user.getSex());
-					editor.putString("bloodGrp", user.getBloodGroup());
-					editor.putString("Address", user.getAddress());
-					editor.putString("doctor", user.getDoctorFlag());
-					editor.apply();
-				}
-				LinearLayout phoneValue = (LinearLayout) findViewById(R.id.newUserPhoneLayout);
-				phoneValue.setVisibility(TextView.INVISIBLE);
-				TextView dobValue = (TextView) findViewById(R.id.dateOfBirth);
-				dobValue.setText(user.getDob());
+					LinearLayout phoneValue = (LinearLayout) findViewById(R.id.newUserPhoneLayout);
+					phoneValue.setVisibility(TextView.INVISIBLE);
+					TextView dobValue = (TextView) findViewById(R.id.dateOfBirth);
+					dobValue.setText(user.getDob());
 
-				if ("Male".equals(user.getSex())) {
-					genderSpinner.setSelection(0);
-				} else {
-					genderSpinner.setSelection(1);
-				}
-				if ("A-positive".equals(user.getBloodGroup())) {
-					bloodGroup.setSelection(0);
-				} else if ("B-positive".equals(user.getBloodGroup())) {
-					bloodGroup.setSelection(1);
-				} else if ("B-negative".equals(user.getBloodGroup())) {
-					bloodGroup.setSelection(2);
-				} else if ("A-negative".equals(user.getBloodGroup())) {
-					bloodGroup.setSelection(3);
-				} else if ("O-positive".equals(user.getBloodGroup())) {
-					bloodGroup.setSelection(4);
-				} else if ("O-negative".equals(user.getBloodGroup())) {
-					bloodGroup.setSelection(5);
-				} else if ("AB-positive".equals(user.getBloodGroup())) {
-					bloodGroup.setSelection(6);
-				} else if ("AB-negative".equals(user.getBloodGroup())) {
-					bloodGroup.setSelection(7);
-				}
-				checkBox = (CheckBox) findViewById(R.id.codeCheckBox);
-				TextView addressValue = (TextView) findViewById(R.id.newUserAddressValue);
-				addressValue.setText(user.getAddress());
-				if ("Y".equals(user.getAddress())) {
-					checkBox.setChecked(true);
-					doctorFlag = "Y";
-				} else {
-					checkBox.setChecked(false);
-					doctorFlag = "N";
-				}
+					if ("Male".equals(user.getSex())) {
+						genderSpinner.setSelection(0);
+					} else {
+						genderSpinner.setSelection(1);
+					}
+					if ("A-positive".equals(user.getBloodGroup())) {
+						bloodGroup.setSelection(0);
+					} else if ("B-positive".equals(user.getBloodGroup())) {
+						bloodGroup.setSelection(1);
+					} else if ("B-negative".equals(user.getBloodGroup())) {
+						bloodGroup.setSelection(2);
+					} else if ("A-negative".equals(user.getBloodGroup())) {
+						bloodGroup.setSelection(3);
+					} else if ("O-positive".equals(user.getBloodGroup())) {
+						bloodGroup.setSelection(4);
+					} else if ("O-negative".equals(user.getBloodGroup())) {
+						bloodGroup.setSelection(5);
+					} else if ("AB-positive".equals(user.getBloodGroup())) {
+						bloodGroup.setSelection(6);
+					} else if ("AB-negative".equals(user.getBloodGroup())) {
+						bloodGroup.setSelection(7);
+					}
+					checkBox = (CheckBox) findViewById(R.id.codeCheckBox);
+					TextView addressValue = (TextView) findViewById(R.id.newUserAddressValue);
+					addressValue.setText(user.getAddress());
+					if ("Y".equals(user.getDoctorFlag())) {
+						checkBox.setChecked(true);
+						doctorFlag = "Y";
+					} else {
+						checkBox.setChecked(false);
+						doctorFlag = "N";
+					}
+				}				
 			}
 			pDlg.dismiss();
 		}
@@ -271,10 +258,7 @@ public class EditProfileActivity extends FragmentActivity implements
 		UserWebServiceClientNew userRestClientNew = new UserWebServiceClientNew(
 				this);
 		userRestClientNew.execute(new String[] { userQuery });
-		Toast.makeText(getApplicationContext(), "User profile Updated.",
-				Toast.LENGTH_LONG).show();
-		Intent intent = new Intent(this, HomePlanGroupFragmentActivity.class);
-		startActivity(intent);
+		
 	}
 
 	public class UserWebServiceClientNew extends
@@ -336,13 +320,10 @@ public class EditProfileActivity extends FragmentActivity implements
 						String.class);
 				User user = (User) userXs.fromXML(response);
 				if (user != null && user.getName() != null) {
-					Log.i(TAG, "Name : " + user.getName());
-					Log.i(TAG, "Address : " + user.getAddress());
-					Log.i(TAG, "Blood group :" + user.getBloodGroup());
-					Log.i(TAG, "DOB : " + user.getDob());
-					Log.i(TAG, "Doctor ? " + user.getDoctorFlag());
-					Log.i(TAG, "Gender : " + user.getSex());
-					Log.i(TAG, "Phone : " + user.getPhone());
+					Toast.makeText(getApplicationContext(), "User profile Updated.",
+							Toast.LENGTH_LONG).show();
+					Intent intent = new Intent(mContext, HomePlanGroupFragmentActivity.class);
+					startActivity(intent);
 				}
 			}
 			pDlg.dismiss();
