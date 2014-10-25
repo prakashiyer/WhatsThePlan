@@ -67,7 +67,7 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener {
 
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
-			String userName = prefs.getString("name", "New User");
+			String userName = prefs.getString("userName", "New User");
 			TextView userNameValue = (TextView) findViewById(R.id.welcomeAddDoctorLabel);
 			userNameValue
 					.setText(userName + ", Search and select your doctor!");
@@ -116,7 +116,7 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener {
 			Intent intent = new Intent(this, AddHealthCenterActivity.class);
 			startActivity(intent);
 		} else if ("N".equals(newUserFlag)) {
-			String userQuery = "/addDoctor?phone=" + phone
+			String userQuery = "/addUserDoctor?phone=" + phone
 					+ "&primaryDoctorId=" + selectedDoctor;
 			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
 			userRestClient.execute(new String[] { userQuery });

@@ -152,13 +152,13 @@ public class NewUserSignUpActivity extends FragmentActivity implements
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			SharedPreferences.Editor editor = prefs.edit();
-			editor.putString("name", userName);
+			editor.putString("userName", userName);
 			editor.putString("phone", phone);
 			editor.putString("dob", dobText);
 			editor.putString("gender", genderVar);
 			editor.putString("bloodGrp", bloodVar);
 			editor.putString("Address", address);
-			editor.putString("doctor", doctorFlag);
+			editor.putString("docFlag", doctorFlag);
 			editor.putString("docFlag", doctorFlag);
 			editor.putString("centerFlag", "N");
 			editor.putString("newUser", "Y");
@@ -341,7 +341,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements
 					final Bundle bundle = new Bundle();
 					bundle.putString("userName", user.getName());
 					bundle.putString("phone", user.getPhone());
-					bundle.putString("doctor", doctorFlag);
+					bundle.putString("docFlag", doctorFlag);
 					bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
 							account.name);
 					am.addAccountExplicitly(account, user.getPhone(), bundle);

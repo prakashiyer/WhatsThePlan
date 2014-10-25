@@ -77,7 +77,7 @@ public class AddHealthCenterActivity extends Activity implements
 
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
-			String userName = prefs.getString("name", "New User");
+			String userName = prefs.getString("userName", "New User");
 			String newUserFlag = prefs.getString("newUser", "N");
 			TextView userNameValue = (TextView) findViewById(R.id.welcomeAddHealthCentreLabel);
 			userNameValue.setText(userName
@@ -116,13 +116,13 @@ public class AddHealthCenterActivity extends Activity implements
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		String name = prefs.getString("name", "");
+		String name = prefs.getString("userName", "");
 		String phone = prefs.getString("phone", "");
 		String dob = prefs.getString("dob", "");
 		String gender = prefs.getString("gender", "");
 		String bloodGrp = prefs.getString("bloodGrp", "");
 		String address = prefs.getString("Address", "");
-		String doctor = prefs.getString("doctor", "");
+		String doctor = prefs.getString("docFlag", "");
 		String selectedDoctor = prefs.getString("selectedDoctor", "0");
 		gcm = GoogleCloudMessaging.getInstance(context);
 		Asyncer syncer = new Asyncer();
@@ -141,25 +141,10 @@ public class AddHealthCenterActivity extends Activity implements
 					+ "&primaryDoctorId=" + selectedDoctor + "&centers=" + "";
 			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
 			userRestClient.execute(new String[] { userQuery });
-			AccountManager am = AccountManager.get(this);
-			final Account account = new Account(phone,
-					WTPConstants.ACCOUNT_ADDRESS);
-			final Bundle bundle = new Bundle();
-			bundle.putString("userName", name);
-			bundle.putString("phone", phone);
-			bundle.putString("doctor", doctor);
-			bundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-			am.addAccountExplicitly(account, phone, bundle);
-			am.setAuthToken(account, "Full Access", phone);
-
-			Toast.makeText(getApplicationContext(),
-					"Congratulations! Your Profile has been activated.",
-					Toast.LENGTH_SHORT).show();
-			Intent intent = new Intent(this, ProfileImageUploadActivity.class);
-			startActivity(intent);
+			
 			
 		} else if ("N".equals(newUserFlag)) {
-			String userQuery = "/addCenter?phone=" + phone
+			String userQuery = "/addUserCenter?phone=" + phone
 					+ "&primaryCenterId=" + selectedHealthCenter;
 			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
 			userRestClient.execute(new String[] { userQuery });
@@ -310,6 +295,22 @@ public class AddHealthCenterActivity extends Activity implements
 				User user = (User) userXs.fromXML(response);
 				if (user != null && user.getName() != null) {
 					Log.i(TAG, user.getName());
+					AccountManager am = AccountManager.get(mContext);
+					final Account account = new Account(user.getPhone(),
+							WTPConstants.ACCOUNT_ADDRESS);
+					final Bundle bundle = new Bundle();
+					bundle.putString("userName", user.getName());
+					bundle.putString("phone", user.getPhone());
+					bundle.putString("docFlag", user.getDoctorFlag());
+					bundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+					am.addAccountExplicitly(account, user.getPhone(), bundle);
+					am.setAuthToken(account, "Full Access", user.getPhone());
+
+					Toast.makeText(getApplicationContext(),
+							"Congratulations! Your Profile has been activated.",
+							Toast.LENGTH_SHORT).show();
+					Intent intent = new Intent(mContext, ProfileImageUploadActivity.class);
+					startActivity(intent);
 				}
 			} else if (response != null && response.contains("Center")){
 				Log.i(TAG, response);

@@ -94,7 +94,7 @@
     <string name="retry_text">No network found. Please tap below image to retry.</string>
     <string name="history_label_text">Plan History:</string>
     <string name="welcome_New_User_SignUp_Value">Welcome, You can start here!</string>
-    <string name="welcome_New_User_reg_Value"> Who are you ? </string>
+    <string name="welcome_New_User_reg_Value">Select an appropriate category </string>
     <string name="welcome_Code">We have sent you a secret code, type it here and click Register</string>
     <string name="expense_welcome">Expense Report</string>
     <string name="add_expense_text">Add/Edit the amount spent!</string>

@@ -109,7 +109,7 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString("name", centreName);
+		editor.putString("userName", centreName);
 		editor.putString("phone", adminPhone);
 		editor.putString("docFlag", "N");
 		editor.putString("centerFlag", "Y");
@@ -358,7 +358,7 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 					final Bundle bundle = new Bundle();
 					bundle.putString("userName", center.getName());
 					bundle.putString("phone", center.getAdminPhone());
-					bundle.putString("center", "Y");
+					bundle.putString("centerFlag", "Y");
 					bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
 							account.name);
 					am.addAccountExplicitly(account, center.getAdminPhone(),

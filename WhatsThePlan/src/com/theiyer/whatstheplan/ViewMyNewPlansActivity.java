@@ -53,13 +53,13 @@ public class ViewMyNewPlansActivity extends Activity {
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" Plan Information");
+			aBar.setTitle(" Appointment Details");
 
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String userName = prefs.getString("userName", "New User");
 			TextView userNameValue = (TextView) findViewById(R.id.welcomeViewNewPlanLabel);
-			userNameValue.setText(userName + ", here's selected plan details!");
+			userNameValue.setText(userName + ", here's selected appointment details!");
 
 			selectedPlan = prefs.getString("selectedPlan", "New User");
 			selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
@@ -168,7 +168,7 @@ public class ViewMyNewPlansActivity extends Activity {
 			return true;
 		case (R.id.deletePlan):
 			AlertDialog.Builder ad = new AlertDialog.Builder(this);
-			ad.setTitle("Delete Plan confirmation");
+			ad.setTitle("Delete Appointment confirmation");
 			ad.setMessage("Are you sure about deleting this appointment?");
 
 			ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {

@@ -242,13 +242,13 @@ public class EditProfileActivity extends FragmentActivity implements
 		SharedPreferences prefs = getSharedPreferences("Prefs",
 				Activity.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString("name", userName);
+		editor.putString("userName", userName);
 		editor.putString("phone", phone);
 		editor.putString("dob", dobText);
 		editor.putString("gender", genderVar);
 		editor.putString("bloodGrp", bloodVar);
 		editor.putString("Address", address);
-		editor.putString("doctor", doctorFlag);
+		editor.putString("docFlag", doctorFlag);
 		editor.apply();
 		String userQuery = "/editUser?phone=" + phone + "&name=" + userName
 				+ "&bloodGroup=" + bloodVar + "&dob=" + dobText + "&sex="

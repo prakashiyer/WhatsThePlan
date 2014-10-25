@@ -43,12 +43,12 @@ public class MainActivity extends Activity {
    			SharedPreferences prefs = getSharedPreferences("Prefs", Activity.MODE_PRIVATE);
                SharedPreferences.Editor editor = prefs.edit();
                editor.putString("userName", am.getUserData(account, "userName"));
-               editor.putString("docFlag", am.getUserData(account, "doctor"));
-               editor.putString("centerFlag", am.getUserData(account, "center"));
+               editor.putString("docFlag", am.getUserData(account, "docFlag"));
+               editor.putString("centerFlag", am.getUserData(account, "centerFlag"));
                editor.putString("phone", account.name);
                editor.apply();
                setTheme(R.style.AppTheme);
-               if (am.getUserData(account, "center") == "Y") {
+               if (("Y").equals(am.getUserData(account, "centerFlag"))) {
             	   Log.i(TAG, "Logging as an existing center: "+account.name);
             	   Intent intent = new Intent(context, HomePlanGroupFragmentActivity.class);
                    startActivity(intent);
