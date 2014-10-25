@@ -140,7 +140,7 @@ public class EmergencyCallTabFragment extends Fragment {
 					editor.putString("selectedDoctor", docPhone);
 					editor.putString("selectedHealthCenter", centerPhone);
 					editor.apply();
-					if (docPhone != null && docPhone == "") {
+					if (docPhone == null || docPhone.isEmpty() || docPhone.equals("0")) {
 						Button button = (Button) activity
 								.findViewById(R.id.call_doc_button);
 						button.setVisibility(TextView.INVISIBLE);
@@ -149,7 +149,7 @@ public class EmergencyCallTabFragment extends Fragment {
 								"Please select a primary doctor using the menu option",
 								Toast.LENGTH_SHORT).show();
 					}
-					if (centerPhone != null && centerPhone == "") {
+					if (centerPhone == null || centerPhone.isEmpty() || centerPhone.equals("0")) {
 						Button button = (Button) activity
 								.findViewById(R.id.call_health);
 						button.setVisibility(TextView.INVISIBLE);
