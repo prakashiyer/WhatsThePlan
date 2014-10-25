@@ -93,6 +93,11 @@ public class GCMIntentService extends GCMBaseIntentService {
         	SharedPreferences.Editor editor = prefs.edit();
     		editor.putString("selectedPlanIndex", temp[1]);
     		editor.apply();
+    		System.out.println("selectedPlanIndex " +  temp[1]);
+    		System.out.println("MSG " + msg);
+    		SharedPreferences prefs1 = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+    		System.out.println("selectedPlanIndex pref " +  prefs1.getString("selectedPlanIndex", ""));
         	contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, ViewMyNewPlansActivity.class), 0);
         } 

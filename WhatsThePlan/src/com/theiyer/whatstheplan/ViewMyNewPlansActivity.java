@@ -64,9 +64,9 @@ public class ViewMyNewPlansActivity extends Activity {
 			selectedPlan = prefs.getString("selectedPlan", "New User");
 			selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 			String docFlag = prefs.getString("docFlag", "");
-			TextView selectedPlanValue = (TextView) findViewById(R.id.viewNewPlanTitle);
-			selectedPlanValue.setText(" " + selectedPlan);
+			
 
+			System.out.println("selectedPlanIndex Activity " + selectedPlanIndex);
 			String searchQuery = "/fetchPlan?id=" + selectedPlanIndex;
 			String phone = prefs.getString("phone", "");
 
@@ -351,7 +351,8 @@ public class ViewMyNewPlansActivity extends Activity {
 							+ ":" + endMin + " " + endAmPm);
 
 					TextView planLocationValue = (TextView) findViewById(R.id.viewNewPlanLocation);
-
+					TextView selectedPlanValue = (TextView) findViewById(R.id.viewNewPlanTitle);
+					selectedPlanValue.setText(" " + plan.getTitle());
 					Button membersAttending = (Button) findViewById(R.id.seeMembersAttendingButton);
 					TextView rsvpLabel = (TextView) findViewById(R.id.rsvpNewLabel);
 
