@@ -52,11 +52,11 @@ public class EmergencyCallTabFragment extends Fragment {
 
 			SharedPreferences prefs = activity.getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
-			String selectedDoctor = prefs.getString("selectedDoctor", "");
-			String selectedHealthCenter = prefs.getString("selectedHealthCenter", "");
+			String selectedDoctor = prefs.getString("selectedDoctor", "0");
+			String selectedHealthCenter = prefs.getString("selectedHealthCenter", "0");
 			String phone = prefs.getString("phone", "");
 			
-			if("".equals(selectedDoctor) || "".equals(selectedHealthCenter)){
+			if("0".equals(selectedDoctor) || "0".equals(selectedHealthCenter)){
 				String userQuery = "/fetchUser?phone=" + phone;
 				UserWebServiceClientem userRestClient = new UserWebServiceClientem(
 						activity);
