@@ -14,8 +14,8 @@
         android:id="@+id/welcomeNewUserSignUpLabel"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/left_margin"
         android:layout_marginTop="@dimen/top_margin"
+        android:gravity="center"
         android:text="@string/welcome_New_User_reg_Value"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="@dimen/standard_text_size"
@@ -33,6 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onRadioButtonClicked"
+            android:layout_marginLeft="@dimen/left_margin"
             android:textSize="@dimen/standard_text_size"
             android:text="@string/invidual" />
 
@@ -40,6 +41,7 @@
             android:id="@+id/health_centre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/left_margin"
             android:onClick="onRadioButtonClicked"
             android:textSize="@dimen/standard_text_size"
             android:text="@string/health_centre" />
