@@ -1,6 +1,8 @@
 package com.theiyer.whatstheplan;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -182,31 +184,24 @@ public class ProfileImageUploadActivity extends Activity {
 	}
 
 	public void decodeFile(String filePath) {
-		// Decode image size
-		BitmapFactory.Options o = new BitmapFactory.Options();
-		o.inJustDecodeBounds = true;
-		BitmapFactory.decodeFile(filePath, o);
+		try {
+			File file = new File(filePath);
+			FileBody fBody = new FileBody(file);
+			BufferedInputStream bis = new BufferedInputStream(fBody.getInputStream());
+			bis.mark(1024);
+			BitmapFactory.Options opts = new BitmapFactory.Options();
+			opts.inJustDecodeBounds = true;
+			BitmapFactory.decodeStream(bis,null,opts);
+			Log.i("optwidth",opts.outWidth+"");
+			bis.reset();
+			bitmap = BitmapFactory.decodeStream(bis);
 
-		// The new size we want to scale to
-		final int REQUIRED_SIZE = 1024;
-
-		// Find the correct scale value. It should be the power of 2.
-		int width_tmp = o.outWidth, height_tmp = o.outHeight;
-		int scale = 1;
-		while (true) {
-			if (width_tmp < REQUIRED_SIZE && height_tmp < REQUIRED_SIZE)
-				break;
-			width_tmp /= 2;
-			height_tmp /= 2;
-			scale *= 2;
+			imgView.setImageBitmap(bitmap);
+		} catch (IOException e) {
+			Toast.makeText(getApplicationContext(), "Please select an image less than 1 MB",
+					Toast.LENGTH_SHORT).show();
 		}
-
-		// Decode with inSampleSize
-		BitmapFactory.Options o2 = new BitmapFactory.Options();
-		o2.inSampleSize = scale;
-		bitmap = BitmapFactory.decodeFile(filePath, o2);
-
-		imgView.setImageBitmap(bitmap);
+		
 
 	}
 	
