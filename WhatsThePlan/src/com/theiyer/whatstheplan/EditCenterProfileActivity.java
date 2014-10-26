@@ -239,7 +239,6 @@ public class EditCenterProfileActivity extends FragmentActivity {
 							SharedPreferences.Editor editor = prefs.edit();
 							editor.putString("userName", center.getName());
 							editor.putString("phone", center.getAdminPhone());
-							editor.putString("Address", center.getAddress());
 							editor.putString("centerId", String.valueOf(center.getId()));
 							editor.apply();
 							}
@@ -331,9 +330,9 @@ public class EditCenterProfileActivity extends FragmentActivity {
 			try {
 				MultipartEntity entity = new MultipartEntity();
 				entity.addPart("id", new StringBody(params[1]));
-		        entity.addPart("name", new StringBody(params[2]));
-		        entity.addPart("adminName", new StringBody(params[3]));
-		        entity.addPart("address", new StringBody(params[4]));
+		        entity.addPart("name", new StringBody(params[2].replace(" ", "%20")));
+		        entity.addPart("adminName", new StringBody(params[3].replace(" ", "%20")));
+		        entity.addPart("address", new StringBody(params[4].replace(" ", "%20")));
 		        
 		        if(filePath != null){
 		        	entity.addPart("image", new FileBody(new File(filePath)));

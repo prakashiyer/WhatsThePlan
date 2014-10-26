@@ -188,6 +188,7 @@ public class AddDoctorActivity extends Activity implements OnItemClickListener {
 							getApplicationContext(),
 							"Selected doctor has been added as your primary doctor.",
 							Toast.LENGTH_LONG).show();
+					pDlg.dismiss();
 					Intent intent = new Intent(mContext,
 							HomePlanGroupFragmentActivity.class);
 					startActivity(intent);

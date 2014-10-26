@@ -65,10 +65,8 @@ public class ViewMyNewPlansActivity extends Activity {
 			selectedPlanIndex = prefs.getString("selectedPlanIndex", "");
 			String docFlag = prefs.getString("docFlag", "");
 			
-
-			System.out.println("selectedPlanIndex Activity " + selectedPlanIndex);
 			String searchQuery = "/fetchPlan?id=" + selectedPlanIndex;
-			String phone = prefs.getString("phone", "");
+			String phone = prefs.getString("phone", "");  
 
 			WebServiceClient restClient = new WebServiceClient(this);
 			restClient.execute(new String[] { searchQuery, phone, docFlag });
@@ -176,7 +174,7 @@ public class ViewMyNewPlansActivity extends Activity {
 				public void onClick(DialogInterface dialog, int which) {
 					String updateQuery = "/editPlan?id="
 							+ selectedPlanIndex
-							+ "&phone=&title="+plan.getTitle()+"&date=&time=&endDate=&endTime=&userPhone=&userRsvp=&docPhone=&docRsvp=&centerPlanFlag=&cancelFlag=Y";
+							+ "&phone=&title="+plan.getTitle().replace(" ", "%20")+"&date=&time=&endDate=&endTime=&userPhone=&userRsvp=&docPhone=&docRsvp=&centerPlanFlag=&cancelFlag=Y";
 					WebServiceClient restClient = new WebServiceClient(context);
 					restClient.execute(new String[] { updateQuery });
 					CalendarHelper calendarHelper = new CalendarHelper(context);
@@ -368,30 +366,36 @@ public class ViewMyNewPlansActivity extends Activity {
 						String[] membersArray = StringUtils
 								.splitByWholeSeparator(planFile, ",");
 						int count = 0;
-						for (String memberRsvp : membersArray) {
-							if (!plan.getUserPhone().equals(phone)) {
-								if (memberRsvp.contains(phone)
-										&& memberRsvp.contains("Y")) {
-									rsvpLabel
-											.setText("You are going, Click here to");
-									rsvpPlanButton.setText("Say No");
+						if(membersArray != null && membersArray.length > 0) {
+							for (String memberRsvp : membersArray) {
+								if (!plan.getUserPhone().equals(phone)) {
+									rsvpPlanButton.setVisibility(Button.VISIBLE);
+									if (memberRsvp.contains(phone)
+											&& memberRsvp.contains("Y")) {
+										System.out.println("SET NO BUTTON: "+memberRsvp);
+										rsvpLabel
+												.setText("You are going, Click here to");
+										rsvpPlanButton.setText("Say No");
+									} else if (memberRsvp.contains(phone)
+											&& memberRsvp.contains("N")) {
+										rsvpLabel
+												.setText("Are you attending? Click here to");
+										rsvpPlanButton.setText("Say Yes");
+									}
+									
 								} else {
-									rsvpLabel
-											.setText("Are you attending? Click here to");
-									rsvpPlanButton.setText("Say Yes");
+									rsvpLabel.setVisibility(TextView.INVISIBLE);
+									rsvpPlanButton.setVisibility(Button.INVISIBLE);
 								}
-								rsvpPlanButton.setVisibility(Button.VISIBLE);
-							} else {
-								rsvpLabel.setVisibility(TextView.INVISIBLE);
-								rsvpPlanButton.setVisibility(Button.INVISIBLE);
-							}
 
-							if (memberRsvp.contains("Y")) {
-								count = count + 1;
+								if (memberRsvp.contains("Y")) {
+									count = count + 1;
+								}
 							}
+							membersAttending.setText("Memb Attending ("
+									+ String.valueOf(count) + ") >>");
 						}
-						membersAttending.setText("Members Attending ("
-								+ String.valueOf(count) + ") >>");
+						
 
 					} else {
 						planLocationValue.setText(" " + plan.getDocName());
@@ -452,12 +456,14 @@ public class ViewMyNewPlansActivity extends Activity {
 
 							for (String memberRsvp : membersArray) {
 								if (!plan.getUserPhone().equals(phone)) {
+									System.out.println("MEMBER RSVP: "+memberRsvp);
 									if (memberRsvp.contains(phone)
 											&& memberRsvp.contains("Y")) {
 										rsvpLabel
 												.setText("You are going, Click here to");
 										rsvpPlanButton.setText("Say No");
-									} else {
+									} else if (memberRsvp.contains(phone)
+											&& memberRsvp.contains("N")){
 										rsvpLabel
 												.setText("Are you attending? Click here to");
 										rsvpPlanButton.setText("Say Yes");

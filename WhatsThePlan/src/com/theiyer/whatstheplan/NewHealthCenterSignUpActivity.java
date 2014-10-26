@@ -322,10 +322,10 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 			HttpEntity results = null;
 			try {
 				MultipartEntity entity = new MultipartEntity();
-				entity.addPart("name", new StringBody(params[1]));
-				entity.addPart("adminName", new StringBody(params[2]));
+				entity.addPart("name", new StringBody(params[1].replace(" ", "%20")));
+				entity.addPart("adminName", new StringBody(params[2].replace(" ", "%20")));
 				entity.addPart("adminPhone", new StringBody(params[3]));
-				entity.addPart("address", new StringBody(params[4]));
+				entity.addPart("address", new StringBody(params[4].replace(" ", "%20")));
 				entity.addPart("members", new StringBody(""));
 				entity.addPart("image", new FileBody(new File(filePath)));
 

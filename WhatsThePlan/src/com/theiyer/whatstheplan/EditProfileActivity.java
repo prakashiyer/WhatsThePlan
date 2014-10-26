@@ -250,9 +250,9 @@ public class EditProfileActivity extends FragmentActivity implements
 		editor.putString("Address", address);
 		editor.putString("docFlag", doctorFlag);
 		editor.apply();
-		String userQuery = "/editUser?phone=" + phone + "&name=" + userName
+		String userQuery = "/editUser?phone=" + phone + "&name=" + userName.replace(" ", "%20")
 				+ "&bloodGroup=" + bloodVar + "&dob=" + dobText + "&sex="
-				+ genderVar + "&address=" + address + "&doctorFlag="
+				+ genderVar + "&address=" + address.replace(" ", "%20") + "&doctorFlag="
 				+ doctorFlag + "&primaryCenterId=" + "&primaryDoctorId="
 				+ "&centers=";
 		UserWebServiceClientNew userRestClientNew = new UserWebServiceClientNew(

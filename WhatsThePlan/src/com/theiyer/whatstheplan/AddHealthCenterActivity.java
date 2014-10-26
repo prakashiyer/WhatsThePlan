@@ -134,9 +134,9 @@ public class AddHealthCenterActivity extends Activity implements
 		editor.apply();
 		String newUserFlag = prefs.getString("newUser", "N");
 		if ("Y".equals(newUserFlag)) {
-			String userQuery = "/addUser?phone=" + phone + "&name=" + name
+			String userQuery = "/addUser?phone=" + phone + "&name=" + name.replace(" ", "%20")
 					+ "&bloodGroup=" + bloodGrp + "&dob=" + dob + "&sex="
-					+ gender + "&address=" + address + "&doctorFlag=" + doctor
+					+ gender + "&address=" + address.replace(" ", "%20") + "&doctorFlag=" + doctor
 					+ "&primaryCenterId=" + selectedHealthCenter
 					+ "&primaryDoctorId=" + selectedDoctor + "&centers=" + "";
 			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
@@ -148,9 +148,6 @@ public class AddHealthCenterActivity extends Activity implements
 					+ "&primaryCenterId=" + selectedHealthCenter;
 			UserWebServiceClient userRestClient = new UserWebServiceClient(this);
 			userRestClient.execute(new String[] { userQuery });
-			Toast.makeText(getApplicationContext(),
-					"Selected Center has been added as your primary center.",
-					Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -309,6 +306,8 @@ public class AddHealthCenterActivity extends Activity implements
 					Toast.makeText(getApplicationContext(),
 							"Congratulations! Your Profile has been activated.",
 							Toast.LENGTH_SHORT).show();
+					
+					pDlg.dismiss();
 					Intent intent = new Intent(mContext, ProfileImageUploadActivity.class);
 					startActivity(intent);
 				}
@@ -323,8 +322,15 @@ public class AddHealthCenterActivity extends Activity implements
 				if (center != null) {
 					 Log.i(TAG, center.getName());
 				}
+				Toast.makeText(getApplicationContext(),
+						"Selected Center has been added as your primary center.",
+						Toast.LENGTH_SHORT).show();
+				pDlg.dismiss();
+				Intent intent = new Intent(mContext, HomePlanGroupFragmentActivity.class);
+				startActivity(intent);
 			}
 			pDlg.dismiss();
+			
 		}
 
 	}

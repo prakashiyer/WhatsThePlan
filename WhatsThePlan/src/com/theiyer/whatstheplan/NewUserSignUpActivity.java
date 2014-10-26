@@ -157,7 +157,6 @@ public class NewUserSignUpActivity extends FragmentActivity implements
 			editor.putString("dob", dobText);
 			editor.putString("gender", genderVar);
 			editor.putString("bloodGrp", bloodVar);
-			editor.putString("Address", address);
 			editor.putString("docFlag", doctorFlag);
 			editor.putString("docFlag", doctorFlag);
 			editor.putString("centerFlag", "N");
@@ -171,7 +170,7 @@ public class NewUserSignUpActivity extends FragmentActivity implements
 				String userQuery = "/addUser?phone=" + phone + "&name="
 						+ userName.replace(" ", "%20") + "&bloodGroup="
 						+ bloodVar + "&dob=" + dobText + "&sex=" + genderVar
-						+ "&address=" + address + "&doctorFlag=" + doctorFlag
+						+ "&address=" + address.replace(" ", "%20") + "&doctorFlag=" + doctorFlag
 						+ "&primaryCenterId=" + "0" + "&primaryDoctorId=" + "0"
 						+ "&centers=" + "";
 				UserWebServiceClient userRestClient = new UserWebServiceClient(
