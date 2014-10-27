@@ -392,7 +392,7 @@ public class ViewMyNewPlansActivity extends Activity {
 									count = count + 1;
 								}
 							}
-							membersAttending.setText("Memb Attending ("
+							membersAttending.setText("Members Attending ("
 									+ String.valueOf(count) + ") >>");
 						}
 						

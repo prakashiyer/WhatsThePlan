@@ -124,6 +124,20 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 
 		imageRestClient.execute(new String[] { "addCenter", centreName,
 				adminName, adminPhone, adminAddress, "", filePath });
+		
+		AccountManager am = AccountManager.get(this);
+		final Account account = new Account(adminPhone,
+				WTPConstants.ACCOUNT_ADDRESS);
+		final Bundle bundle = new Bundle();
+		bundle.putString("userName", centreName);
+		bundle.putString("phone", adminPhone);
+		bundle.putString("centerFlag", "Y");
+		bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
+				account.name);
+		am.addAccountExplicitly(account, adminPhone,
+				bundle);
+		am.setAuthToken(account, "Full Access",
+				adminPhone);
 
 	}
 
@@ -352,19 +366,7 @@ public class NewHealthCenterSignUpActivity extends FragmentActivity {
 						"members", String.class);
 				Center center = (Center) userXs.fromXML(response);
 				if (center != null) {
-					AccountManager am = AccountManager.get(mContext);
-					final Account account = new Account(center.getAdminPhone(),
-							WTPConstants.ACCOUNT_ADDRESS);
-					final Bundle bundle = new Bundle();
-					bundle.putString("userName", center.getName());
-					bundle.putString("phone", center.getAdminPhone());
-					bundle.putString("centerFlag", "Y");
-					bundle.putString(AccountManager.KEY_ACCOUNT_NAME,
-							account.name);
-					am.addAccountExplicitly(account, center.getAdminPhone(),
-							bundle);
-					am.setAuthToken(account, "Full Access",
-							center.getAdminPhone());
+					
 					Toast.makeText(getApplicationContext(),
 							"Congratulations! Your center is active now.",
 							Toast.LENGTH_LONG).show();
