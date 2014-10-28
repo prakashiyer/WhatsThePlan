@@ -126,7 +126,7 @@ public class ViewMyNewPlansActivity extends Activity {
 				startPlanTime = WhatstheplanUtil.createGmtToLocalTime(planTime);
 			}
 			String[] endPlanTime = null;
-			String planEndTime = plan.getStartTime();
+			String planEndTime = plan.getEndTime();
 			if (planEndTime != null) {
 				endPlanTime = WhatstheplanUtil
 						.createGmtToLocalTime(planEndTime);
