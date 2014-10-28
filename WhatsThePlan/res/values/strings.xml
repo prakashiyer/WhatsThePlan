@@ -117,8 +117,15 @@
     <string name="action_view_members_invited">Members Invited</string>
     <string name="action_about_us_title">About this application:\n\n</string>
      <string name="action_about_us_feature_title">Features:\n</string>
-    <string name="action_about_us_text">We are happy to present you with HealthMeet - Health care made easy.  Connecting people,  doctors and health centres.  Medical services are now just a few clicks away.\n\n</string>
-    <string name="action_about_us_features"># Individual or health center registration\n # Select your preferred doctor and health center\n # Fix an appointment\n # Doctors can confirm/deny appointments\n # See upcoming Appointments\n # Emergency button with easy access to primary doctor or health center administrator\n # Appointments get organised and stored in the calendar\n # Doctors and individuals get notifications about appointment requests instantly \n # Medicines can be prescribed along with frequency of intake \n # Allows health center to set up events and notify all members\n</string>
+     <string name="title_0">Health Meet. Stay healthy. Stay connected.</string>
+     <string name="title_1">About the Application</string>
+     <string name="title_2">A complete health care solution. \n </string>
+          <string name="title_3"> &#8226; Connecting you to experts  \n&#8226; Your  health tracker \n&#8226; An emergency lifeline  \n&#8226; Valuable information </string>
+     
+     <string name="title_7">Prakash Iyer</string>
+     <string name="title_8">Gaurav Saheja</string>
+    <string name="action_about_us_text">We are happy to present you with Health Meet. Connecting people,  doctors and health centres. Medical services are now just a few clicks away.\n\n</string>
+    <string name="action_about_us_features">&#8226; Individual or health center registration\n&#8226; Organize appointments\n&#8226; Quick access to emergency contacts\n&#8226; Real time appointment notifications\n&#8226; Save medications to calendar\n&#8226; Health centers can broadcast events\n\nYou can write to us at healthmeetfeedback@gmail.com. We will be happy to hear from you.</string>
     <string name="action_about_us_sign">Keep exploring! You can write to us at healthmeetfeedback@gmail.com. We would be happy to hear from you.</string>
     <string name="old_password_label">Type existing password</string>
     <string name="new_password_label">Type new password</string>

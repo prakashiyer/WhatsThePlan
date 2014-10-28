@@ -18,7 +18,7 @@ public class AboutUsActivity extends Activity {
 		Resources res = getResources();
 		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" About Us");
+		aBar.setTitle(" About Health Meet");
 	}
 
 }
