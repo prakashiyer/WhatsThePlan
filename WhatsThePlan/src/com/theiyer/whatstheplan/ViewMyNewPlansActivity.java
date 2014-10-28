@@ -126,7 +126,7 @@ public class ViewMyNewPlansActivity extends Activity {
 				startPlanTime = WhatstheplanUtil.createGmtToLocalTime(planTime);
 			}
 			String[] endPlanTime = null;
-			String planEndTime = plan.getStartTime();
+			String planEndTime = plan.getEndTime();
 			if (planEndTime != null) {
 				endPlanTime = WhatstheplanUtil
 						.createGmtToLocalTime(planEndTime);
@@ -135,7 +135,7 @@ public class ViewMyNewPlansActivity extends Activity {
 			calendarHelper.execute(new String[] {
 					startPlanTime[0] + " " + startPlanTime[1],
 					// plan.getName(), plan.getLocation(),
-					String.valueOf(plan.getId()), plan.getTitle(), "", "",
+					String.valueOf(plan.getTitle()), "", "", "",
 					"create", endPlanTime[1], endPlanTime[0] });
 		}
 

@@ -62,7 +62,7 @@ public class EditCenterProfileActivity extends FragmentActivity {
 			Resources res = getResources();
 			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
 			aBar.setBackgroundDrawable(actionBckGrnd);
-			aBar.setTitle(" Health Centre Registration form");
+			aBar.setTitle(" Edit Centre Profile ");
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String userName = prefs.getString("userName", "New User");
