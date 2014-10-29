@@ -280,8 +280,9 @@ public class HomePlanGroupFragmentActivity extends FragmentActivity implements
 			addDoctorItem.setVisible(true);
 
 			MenuItem addCenterItem = menu.findItem(R.id.addCenter);
-			addCenterItem.setVisible(true);
-
+			addCenterItem.setVisible(true);			
+		}
+		if (!"Y".equals(centerFlag)) {
 			MenuItem changeProfilePicItem = menu
 					.findItem(R.id.changeProfilePic);
 			changeProfilePicItem.setVisible(true);

@@ -56,6 +56,7 @@ public class AddHealthCenterActivity extends Activity implements
 	private List<Map<String, Center>> filteredList;
 	private String selectedHealthCenter;
 	private Context context;
+	String newUserFlag;
 
 	private GoogleCloudMessaging gcm;
 	private String regid;
@@ -78,7 +79,7 @@ public class AddHealthCenterActivity extends Activity implements
 			SharedPreferences prefs = getSharedPreferences("Prefs",
 					Activity.MODE_PRIVATE);
 			String userName = prefs.getString("userName", "New User");
-			String newUserFlag = prefs.getString("newUser", "N");
+			newUserFlag = prefs.getString("newUser", "N");
 			TextView userNameValue = (TextView) findViewById(R.id.welcomeAddHealthCentreLabel);
 			userNameValue.setText(userName
 					+ ", Search and join your Health Centre!");
@@ -132,7 +133,7 @@ public class AddHealthCenterActivity extends Activity implements
 		}
 		editor.putString("selectedHealthCenter", selectedHealthCenter);
 		editor.apply();
-		String newUserFlag = prefs.getString("newUser", "N");
+		newUserFlag = prefs.getString("newUser", "N");
 		if ("Y".equals(newUserFlag)) {
 			String userQuery = "/addUser?phone=" + phone + "&name=" + name.replace(" ", "%20")
 					+ "&bloodGroup=" + bloodGrp + "&dob=" + dob + "&sex="
@@ -308,8 +309,13 @@ public class AddHealthCenterActivity extends Activity implements
 							Toast.LENGTH_SHORT).show();
 					
 					pDlg.dismiss();
-					Intent intent = new Intent(mContext, ProfileImageUploadActivity.class);
-					startActivity(intent);
+					if ("Y".equals(newUserFlag)) {
+					    Intent intent = new Intent(mContext, ProfileImageUploadActivity.class);
+					    startActivity(intent);
+					} else {
+						Intent intent = new Intent(mContext, HomePlanGroupFragmentActivity.class);
+					    startActivity(intent);
+					}
 				}
 			} else if (response != null && response.contains("Center")){
 				Log.i(TAG, response);
